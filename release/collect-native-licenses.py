@@ -11,7 +11,7 @@ from common import ROOT
 # Package names, upstream release tags and upstream notice filenames.
 SOURCES = {
     "musl": ("https://git.musl-libc.org/git/musl", "v{version}", ["COPYRIGHT"]),
-    "gc": ("https://github.com/ivmai/bdwgc.git", "v{version}", ["doc/README.copyright", "LICENSE"]),
+    "gc": ("https://github.com/ivmai/bdwgc.git", "v{version}", ["doc/README.copyright", "LICENSE", "README.md"]),
     "pcre2": ("https://github.com/PCRE2Project/pcre2.git", "pcre2-{version}", ["LICENCE"]),
     "yaml": ("https://github.com/yaml/libyaml.git", "{version}", ["License"]),
     "openssl": ("https://github.com/openssl/openssl.git", "openssl-{version}", ["LICENSE.txt", "NOTICE"]),
