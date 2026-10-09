@@ -68,7 +68,9 @@ bash release/build-static.sh prepare
 bash release/build-static.sh build
 ```
 
-`prepare` retrieves the official `crystallang/crystal:1.21.1-alpine` image, resolves its digest and adds static SQLite libraries and test tools. `build` uses the exact prepared image ID without rebuilding it. It checks Crystal 1.21.1, runs source checks, compiles with `--release --static --no-debug`, inspects the ELF and exercises the real binary in Alpine with SVG gnuplot output. Native-library notices are retrieved from upstream versions matching the Alpine packages.
+`prepare` retrieves the official `crystallang/crystal:1.21.1-alpine` image, resolves its digest and adds static SQLite libraries and test tools. `build` uses the exact prepared image ID without rebuilding it. It first retrieves native-library notices from upstream versions matching the Alpine packages, so collection failures stop before specs and compilation. It then checks Crystal 1.21.1, runs source checks, compiles with `--release --static --no-debug`, inspects the ELF and exercises the real binary in Alpine with SVG gnuplot output.
+
+The collector prefers versions of packages containing the static libraries; it does not require matching tools, such as the OpenSSL command, to be installed. The license manifest records the selected package names and versions.
 
 Outputs include `build/static/jedi`, `build/static/BUILD-INFO.json`, logs and `build/static/licenses/native/`. The executable must be an x86_64 ELF without an interpreter or dynamic segment. A successful `--static` command alone does not establish this.
 

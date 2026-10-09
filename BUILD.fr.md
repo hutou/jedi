@@ -68,7 +68,9 @@ bash release/build-static.sh prepare
 bash release/build-static.sh build
 ```
 
-`prepare` récupère l’image officielle `crystallang/crystal:1.21.1-alpine`, fixe son digest, puis ajoute les bibliothèques SQLite statiques et les outils d’essai. `build` utilise l’identifiant exact de cette image préparée ; il ne la reconstruit pas. Il vérifie Crystal 1.21.1, exécute les contrôles des sources, compile avec `--release --static --no-debug`, vérifie l’ELF, puis exerce le vrai binaire dans Alpine avec gnuplot en sortie SVG. Les mentions des bibliothèques natives sont récupérées dans les versions amont correspondant aux paquets Alpine.
+`prepare` récupère l’image officielle `crystallang/crystal:1.21.1-alpine`, fixe son digest, puis ajoute les bibliothèques SQLite statiques et les outils d’essai. `build` utilise l’identifiant exact de cette image préparée ; il ne la reconstruit pas. Il récupère d’abord les mentions des bibliothèques natives dans les versions amont correspondant aux paquets Alpine. Ainsi, un problème de collecte s’arrête avant les specs et la compilation. Il vérifie ensuite Crystal 1.21.1, exécute les contrôles des sources, compile avec `--release --static --no-debug`, vérifie l’ELF, puis exerce le vrai binaire dans Alpine avec gnuplot en sortie SVG.
+
+Le collecteur utilise en priorité la version des paquets contenant les bibliothèques statiques ; il ne demande pas que les outils correspondants, comme la commande OpenSSL, soient installés. Le manifeste des licences indique les noms des paquets retenus et leurs versions.
 
 Les résultats sont `build/static/jedi`, `build/static/BUILD-INFO.json`, les journaux et `build/static/licenses/native/`. Le binaire doit être un ELF x86_64 sans interpréteur ni segment dynamique. Un simple succès de `--static` ne suffit pas à l’affirmer.
 

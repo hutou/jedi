@@ -12,11 +12,23 @@ from common import ROOT
 SOURCES = {
     "musl": ("https://git.musl-libc.org/git/musl", "v{version}", ["COPYRIGHT"]),
     "gc": ("https://github.com/ivmai/bdwgc.git", "v{version}", ["doc/README.copyright", "LICENSE", "README.md"]),
-    "pcre2": ("https://github.com/PCRE2Project/pcre2.git", "pcre2-{version}", ["LICENCE"]),
+    "pcre2": ("https://github.com/PCRE2Project/pcre2.git", "pcre2-{version}", ["LICENCE", "LICENCE.md"]),
     "yaml": ("https://github.com/yaml/libyaml.git", "{version}", ["License"]),
     "openssl": ("https://github.com/openssl/openssl.git", "openssl-{version}", ["LICENSE.txt", "NOTICE"]),
     "zlib": ("https://github.com/madler/zlib.git", "v{version}", ["LICENSE"]),
     "libevent": ("https://github.com/libevent/libevent.git", "release-{version}-stable", ["LICENSE"]),
+}
+
+# Prefer the packages containing the static libraries linked into the binary.
+# Alpine may install those without the corresponding runtime or CLI package.
+APK_PACKAGES = {
+    "musl": ("musl-dev", "musl"),
+    "gc": ("gc-static", "gc"),
+    "pcre2": ("pcre2-static", "pcre2"),
+    "yaml": ("yaml-static", "yaml"),
+    "openssl": ("openssl-libs-static", "openssl", "openssl-dev", "libssl3"),
+    "zlib": ("zlib-static", "zlib"),
+    "libevent": ("libevent-static", "libevent"),
 }
 
 
@@ -36,7 +48,8 @@ destination.mkdir(parents=True, exist_ok=True)
 cache.mkdir(parents=True, exist_ok=True)
 manifest = {}
 for package, (url, pattern, candidates) in SOURCES.items():
-    package_version = installed.get(package)
+    apk_package = next((name for name in APK_PACKAGES[package] if name in installed), None)
+    package_version = installed.get(apk_package)
     if package_version is None:
         # Old and new Crystal runtimes do not link the same event-loop libraries.
         if package == "libevent":
@@ -59,11 +72,12 @@ for package, (url, pattern, candidates) in SOURCES.items():
     if not found:
         raise SystemExit(f"No upstream license notice found for {package} {tag}")
     commit = subprocess.check_output(["git", "-C", str(checkout), "rev-parse", "HEAD"], text=True).strip()
-    manifest[package] = {"apk_version": package_version, "upstream": url,
+    manifest[package] = {"apk_package": apk_package, "apk_version": package_version, "upstream": url,
                          "tag": tag, "commit": commit, "notices": found}
 
 # SQLite's upstream source is in the public domain; no upstream license file exists.
-sqlite_version = installed.get("sqlite-libs") or installed.get("sqlite")
+sqlite_package = next((name for name in ("sqlite-static", "sqlite-libs", "sqlite") if name in installed), None)
+sqlite_version = installed.get(sqlite_package)
 if not sqlite_version:
     raise SystemExit("SQLite package version not found")
 sqlite = destination / "sqlite"
@@ -72,7 +86,7 @@ sqlite.mkdir(exist_ok=True)
     "SQLite\n\nThe SQLite source code is in the public domain.\n"
     "Upstream statement: https://www.sqlite.org/copyright.html\n"
     f"Alpine package version: {sqlite_version}\n")
-manifest["sqlite"] = {"apk_version": sqlite_version,
+manifest["sqlite"] = {"apk_package": sqlite_package, "apk_version": sqlite_version,
                        "upstream": "https://www.sqlite.org/copyright.html",
                        "notices": ["PUBLIC-DOMAIN.txt"]}
 shutil.copytree(ROOT / "licenses/crystal", destination / "crystal", dirs_exist_ok=True)
