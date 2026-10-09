@@ -1,0 +1,12 @@
+* text=auto
+*.cr text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.lua text eol=lf
+*.tex text eol=lf
+launchers/* text eol=lf
+examples/launchers/* text eol=lf
+*.pdf binary

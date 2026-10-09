@@ -1,0 +1,77 @@
+en:
+  database:
+    header: "Manage database"
+    banner: |
+      Manage database
+
+      Usage: jedi database <subcommand>
+    #
+    # --- dump ---
+    #
+    dump:
+      header: "Generate jedi commands to populate an empty database"
+      banner: |
+        Description:
+          Generate jedi commands to populate an empty database
+      usage: |
+        Usage: 
+          jedi database dump [>filename] [options]
+          (Standard output is used, usually redirected to a file)
+      examples: |
+        Example: 
+          jedi database dump >jedidump.txt
+    #
+    # --- load ---
+    #
+    load:
+      header: "Populate an empty database from given file"
+      banner: |
+        Description:
+          Populate an empty database from file
+      usage: |
+        Usage: 
+          jedi database load <filename> [options]
+      required_arguments: |
+        Required argument: 
+          <filename>                       File resulting from the redirected ‘database dump’ subcommand
+      examples: |
+        Example: 
+          jedi database load jedidump.txt
+      #load:
+      notempty: "Database is not empty"
+      sepcount: "Invalid line format, missing field separator(s)"
+      jedi_missing: |
+        Error in line '%{linenum}' :
+        Command file lines must begin by the word 'jedi'
+      invalid_command: "Invalid command '%{command}' in line '%{linenum}'"
+      invalid_subcommand: "Invalid subcommand '%{subcommand}' in line '%{linenum}'"
+      invalid_security_field_count: "Invalid security field count in line '%{linenum}': expected 6 or 11, got %{count}"
+      invalid_quotation_value: "Invalid quotation value '%{value}' for field '%{field}' in line '%{linenum}'"
+      headers: "stock,scale,trade,settings,operation,note"
+      headers_format: "%6s %6s %5s %9s %10s %5s"
+      body_format: "%6d %6d %5d %9d %10d %5d"
+      done: "\nLoading ok"
+      not_exists: "No such file '%{filename}'"
+    #
+    # --- schema ---
+    #
+    schema:
+      header: "Display the database schema, along with its sha256 digest"
+      banner: |
+        Description: 
+          Display the database schema, along with its sha256 digest
+      usage: |
+        Usage: 
+          jedi database schema [options]
+          (Standard output is used)
+      examples: |
+        Example: 
+          jedi database schema
+      #schema:
+      title1: "Database schema"
+      title2: "sha256 digest"
+    #
+    # --- create ---
+    #
+    create:
+      done: "Database created"

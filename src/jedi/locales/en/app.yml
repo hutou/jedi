@@ -1,0 +1,27 @@
+en:
+  app:
+    invalid_environment: "Invalid environment '%{env}', allowed values: '%{allowed}'"
+    initialization:
+      cancelled: "Jedi environment creation cancelled"
+      conf_file_confirm: "Ok to create the configuration file <%{filename}> (Y/n)? "
+      log_file_confirm: "Ok to create the log file <%{filename}> (Y/n)? "
+      data_file_confirm: "Ok to create the SQL database <%{filename}> (Y/n)? "
+    dbfile:
+      not_found: "Database '%{filename}' not found"
+      empty: "File '%{filename}' is empty"
+      invalid_sqlite: "File '%{filename}' is not a Sqlite database"
+      not_jedi_database: "File '%{filename}' is not a Jedi database"
+      not_current: "The file '%{filename}' does not match the current version of the Jedi database"
+      mismatch: |-
+        incompatibility between the application configuration '%{config_sha256}'
+        and the database '%{database_sha256}'
+    database:
+      schema: |-
+        Database schema:
+        %{schema}
+    paths:
+      no_value_resolved: "Paths resolver: no value could be resolved"
+      home_not_defined: "Paths resolver: HOME is not defined"
+      log_file: "Log file is not initialized"
+    money:
+      invalid_limits: "Invalid money '%{name}' limits (min:%{min}, max:%{max})"

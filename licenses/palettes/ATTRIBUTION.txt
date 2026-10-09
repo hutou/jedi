@@ -1,0 +1,475 @@
+Palette notices preserved from cryplot 0.2.1
+Submodule: https://github.com/naqvis/gnuplot-palettes
+Commit: a6524fb74e4faa66308034f6077ce5e168570d16
+The following comment headers are copied verbatim from the palette files.
+
+accent.pal
+# line styles for ColorBrewer Accent
+# for use with qualitative/categorical data
+# provides 8 colors, 4 pale and 4 saturated
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+bentcoolwarm.pal
+#  Palette from Kenneth Moreland
+# http://www.kennethmoreland.com/color-advice/
+#
+# "Why We Use Bad Color Maps and What You Can Do About It."  See also
+# Kenneth Moreland. In Proceedings of Human Vision and Electronic Imaging
+#  (HVEI), 2016. (To appear)
+#
+# Converted for use with Gnuplot from Perl by Bruce Ravel
+# converted from 
+# https://raw.githubusercontent.com/bruceravel/Graphics-Gnuplot-Palettes/master/lib/Graphics/Gnuplot/Palettes/Moreland/BentCoolWarm.pm
+# to pal file by Adam Majewski
+# https://gitlab.com/adammajewski/color_gradient
+# to use : 
+# load "bentcoolwarm.pal"
+# set output "bentcoolwarm.png"
+# test palette
+
+# line styles
+
+blues.pal
+# line styles for ColorBrewer Blues
+# for use with sequential data
+# provides 8 blue colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+brbg.pal
+# line styles for ColorBrewer BrBG
+# for use with divering data
+# provides 8 colors with brown low, white middle, and blue-green high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+bugn.pal
+# line styles for ColorBrewer BuGn
+# for use with sequential data
+# provides 8 blue-green colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+bupu.pal
+# line styles for ColorBrewer BuPu
+# for use with sequential data
+# provides 8 blue-purple colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+chromajs.pal
+# line styles for chromajs
+# see:
+# http://gka.github.io/palettes/#colors=lightyellow,orangered,deeppink,darkred|steps=7|bez=1|coL=1
+# https://vis4.net/blog/posts/mastering-multi-hued-color-scales/
+
+# line styles
+
+dark2.pal
+# line styles for ColorBrewer Dark2
+# for use with qualitative/categorical data
+# provides 8 dark colors based on Set2
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+gnbu.pal
+# line styles for ColorBrewer GnBu
+# for use with sequential data
+# provides 8 green-blue colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+gnpu.pal
+# line styles
+
+greens.pal
+# line styles for ColorBrewer Greens
+# for use with sequential data
+# provides 8 green colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+greys.pal
+# line styles for ColorBrewer Greys
+# for use with sequential data
+# provides 8 grey colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+inferno.pal
+# New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt,
+# and (in the case of viridis) Eric Firing.
+#
+# This file and the colormaps in it are released under the CC0 license /
+# public domain dedication. We would appreciate credit if you use or
+# redistribute these colormaps, but do not impose any legal restrictions.
+#
+# To the extent possible under law, the persons who associated CC0 with
+# mpl-colormaps have waived all copyright and related or neighboring rights
+# to mpl-colormaps.
+#
+# You should have received a copy of the CC0 legalcode along with this
+# work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+#https://github.com/BIDS/colormap/blob/master/colormaps.py
+
+
+# line styles
+
+jet.pal
+# MATLAB jet color pallete
+
+# line styles
+
+magma.pal
+# New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt,
+# and (in the case of viridis) Eric Firing.
+#
+# This file and the colormaps in it are released under the CC0 license /
+# public domain dedication. We would appreciate credit if you use or
+# redistribute these colormaps, but do not impose any legal restrictions.
+#
+# To the extent possible under law, the persons who associated CC0 with
+# mpl-colormaps have waived all copyright and related or neighboring rights
+# to mpl-colormaps.
+#
+# You should have received a copy of the CC0 legalcode along with this
+# work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+#https://github.com/BIDS/colormap/blob/master/colormaps.py
+
+
+# line styles
+
+moreland.pal
+# Blue/Red color pallete after Moreland (2009)
+# http://www.sandia.gov/~kmorel/documents/ColorMaps/
+# http://bastian.rieck.ru/blog/posts/2012/gnuplot_better_colour_palettes/
+
+# line styles
+
+oranges.pal
+# line styles for ColorBrewer Oranges
+# for use with sequential data
+# provides 8 orange colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+orrd.pal
+# line styles for ColorBrewer OrRd
+# for use with sequential data
+# provides 8 orange-red colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+paired.pal
+# line styles for ColorBrewer Paired
+# for use with qualitative/categorical data
+# provides 8 colors in 4 pairs
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+parula.pal
+# Colormap similar to Matlab parula, see:
+# http://www.mathworks.de/products/matlab/matlab-graphics/#new_look_for_matlab_graphics
+
+# line styles
+
+pastel1.pal
+# line styles for ColorBrewer Pastel1
+# for use with qualitative/categorical data
+# provides 8 pale colors based on Set1
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+pastel2.pal
+# line styles for ColorBrewer Pastel2
+# for use with qualitative/categorical data
+# provides 8 pale colors based on Set2
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+piyg.pal
+# line styles for ColorBrewer PiYG
+# for use with divering data
+# provides 8 colors with pink low, white middle, and yellow-green high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+plasma.pal
+# New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt,
+# and (in the case of viridis) Eric Firing.
+#
+# This file and the colormaps in it are released under the CC0 license /
+# public domain dedication. We would appreciate credit if you use or
+# redistribute these colormaps, but do not impose any legal restrictions.
+#
+# To the extent possible under law, the persons who associated CC0 with
+# mpl-colormaps have waived all copyright and related or neighboring rights
+# to mpl-colormaps.
+#
+# You should have received a copy of the CC0 legalcode along with this
+# work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+#https://github.com/BIDS/colormap/blob/master/colormaps.py
+
+
+# line styles
+
+prgn.pal
+# line styles for ColorBrewer PRGn (aka PuGn)
+# for use with divering data
+# provides 8 colors with purple low, white middle, and green high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+pubu.pal
+# line styles for ColorBrewer PuBu
+# for use with sequential data
+# provides 8 purple-blue colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+pubugn.pal
+# line styles for ColorBrewer PuBuGn
+# for use with sequential data
+# provides 8 purple-blue-green colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+puor.pal
+# line styles for ColorBrewer PuOr
+# for use with divering data
+# provides 8 colors with orange low, white middle, and purple high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+purd.pal
+# line styles for ColorBrewer PuRd
+# for use with sequential data
+# provides 8 purple-red colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+purples.pal
+# line styles for ColorBrewer Purples
+# for use with sequential data
+# provides 8 purple colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+rdbu.pal
+# line styles for ColorBrewer RdBu
+# for use with divering data
+# provides 8 colors with red low, white middle, and blue high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+rdgy.pal
+# line styles for ColorBrewer RdGy
+# for use with divering data
+# provides 8 colors with red low, white middle, and grey high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+rdpu.pal
+# line styles for ColorBrewer PuRd
+# for use with sequential data
+# provides 8 red-purple colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+rdylbu.pal
+# line styles for ColorBrewer RdYlBu
+# for use with divering data
+# provides 8 colors with red low, pale yellow middle, and blue high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+rdylgn.pal
+# line styles for ColorBrewer RdYlGn
+# for use with divering data
+# provides 8 colors with red low, pale yellow middle, and green high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+reds.pal
+# line styles for ColorBrewer Reds
+# for use with sequential data
+# provides 8 red colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+sand.pal
+# Sequential palette in sand colors
+# From G. N. Peterson, Cartographer's toolkit, PertersonGIS, 2012
+
+# line styles
+
+set1.pal
+# line styles for ColorBrewer Set1
+# for use with qualitative/categorical data
+# provides 8 easy-to-name colors
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+set2.pal
+# line styles for ColorBrewer Set3
+# for use with qualitative/categorical data
+# provides 8 hard-to-name colors
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+set3.pal
+# line styles for ColorBrewer Set3
+# for use with qualitative/categorical data
+# provides 8 colors that are more saturated than the Pastels but less so than Set2
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+spectral.pal
+# line styles for ColorBrewer Spectral
+# for use with divering data
+# provides 8 rainbow colors with red low, pale yellow middle, and blue high
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+turbo.pal
+# Copyright 2019 Google LLC
+# License: Apache-2.0
+#
+# Converted for use with Gnuplot from Python by Jarvist Moore Frost
+# converted from 
+# https://gist.githubusercontent.com/mikhailov-work/ee72ba4191942acecc03fe6da94fc73f/raw/dccf2856de98e3c60c7f0ac8acf3c33d9726dfb8/turbo_colormap.py 
+# to use : 
+# load "turbo.pal"
+# set output "turbo.png"
+# test palette
+
+# line styles
+
+viridis.pal
+# New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt,
+# and (in the case of viridis) Eric Firing.
+#
+# This file and the colormaps in it are released under the CC0 license /
+# public domain dedication. We would appreciate credit if you use or
+# redistribute these colormaps, but do not impose any legal restrictions.
+#
+# To the extent possible under law, the persons who associated CC0 with
+# mpl-colormaps have waived all copyright and related or neighboring rights
+# to mpl-colormaps.
+#
+# You should have received a copy of the CC0 legalcode along with this
+# work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+#https://github.com/BIDS/colormap/blob/master/colormaps.py
+
+
+# line styles
+
+whylrd.pal
+# line styles
+
+ylgn.pal
+# line styles for ColorBrewer YlGn
+# for use with sequential data
+# provides 8 yellow-green colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+ylgnbu.pal
+# line styles for ColorBrewer YlGnBu
+# for use with sequential data
+# provides 8 yellow-green-blue colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+ylorbr.pal
+# line styles for ColorBrewer YlOrBr
+# for use with sequential data
+# provides 8 yellow-orange-brown colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+ylorrd.pal
+# line styles for ColorBrewer YlOrRd
+# for use with sequential data
+# provides 8 yellow-orange-red colors of increasing saturation
+# compatible with gnuplot >=4.2
+# author: Anna Schneider
+
+# line styles
+
+ylrd.pal
+# line styles
+

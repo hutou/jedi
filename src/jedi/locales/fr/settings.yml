@@ -1,0 +1,171 @@
+fr:
+  settings:
+    help: "Exécutez la commande 'jedi settings' pour afficher la liste des sous-commandes."
+    header: "Gère les paramétrages (barème, split, etc.)"
+    banner: |-
+      Gère les paramétrages (barème, split, etc.)
+
+      Usage: jedi settings <sous-commande>
+
+      sous-commandes :
+    #
+    # --- create ---
+    #
+    #
+    create:
+      header: "crée un nouveau paramétrage"
+      banner: |
+        Description :
+          crée un nouveau paramétrage de trade
+      usage: |
+        Usage : 
+          1ère forme, avec champs nommés :
+            jedi settings create <Trade: id | name> --scale <id | name> --date=DATE --time=TIME \
+                                 [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+
+          2ème forme, avec champs positionnels :
+            jedi settings create <Trade: id | name> <Scale: id | name> <date> <time> \
+                                 [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+      notes: |
+        Notes:
+          La syntaxe recommandée utilise un argument positionnel pour l'identifiant du trade
+          et des champs nommés pour les autres paramètres.  
+          La syntaxe positionnelle est un raccourci équivalent, sur les champs requis uniquement
+          ** Ne pas mélanger les syntaxes **
+      required_arguments: |
+        Arguments requis:
+          <id>                             Id du trade dans la base de données             
+          <name>                           Nom du trade
+      examples: |
+        Exemples:
+          jedi settings create g22 --scale=qdt --date 2026-04-15 --time 15:00:00
+          jedi settings create 22 qdt 2026-04-15 15:00:00
+      required_scale_id: "Identifiant de barème par son Id dans la table 'scale'"
+      required_scale_name: "Identifiant de barème par son nom"
+      required_date: "Date de prise d'effet (format ISO 8601: YYYY-MM-DD)"
+      required_time: "Heure de prise d'effet (format ISO 8601: HH:MM:SS)"
+      option_sync: "Synchronisation de position"
+      option_split: "Division ou regroupement d'actions"
+      option_reinit: "Réinitialise le trade pour revenir au contexte initial"
+      # from settings_creator:
+      last_settings_not_used: "Le dernier paramétrage enregistré pour le trade %{ref} n'a pas encore été utilisé."
+      sync_type_one_only: "La synchronisation de position est uniquement disponible pour les barèmes de type I."
+      success: "Paramétrage %{ref_settings} créé pour le trade %{ref}."
+      zero_or_one_option_only: "Les options split, sync et reinit sont mutuellement exclusives, une seule est acceptée."
+      option_not_allowed_in_empty_settings: "Option(s) non autorisée(s) sans paramètrage existant."
+      datetime_operation: "Date '%{date}' dépassée par la dernière opération."
+      datetime_settings: "Date '%{date}' dépassée par le dernier paramétrage."
+      scale_steps_incompatibility: "Barème non compatible avec la valeur d'échelon de la position."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Supprime le dernier paramétrage créé"
+      banner: |
+        Description :
+          Supprime le dernier paramétrage créé
+      usage: |
+        Usage: 
+          jedi settings delete [options]
+      notes: |
+        Condition : 
+          Aucune opération ne doit être rattachée à ce paramétrage
+      examples: |
+        Exemple:
+          jedi settings delete
+      # from settings_deleter:
+      nothing_to_delete: "Rien à supprimer."
+      success: "Paramétrage %{ref} supprimé."
+      in_use: "Paramétrage %{ref} utilisé, suppression impossible."
+      confirm: "Ok pour supprimer le paramétrage %{ref} (o/N)? "
+    #
+    # --- list ---
+    #
+    list:
+      header: "Liste les paramétrages"
+      banner: |
+        Description :
+          Liste les paramétrages
+      usage: |
+        Usage : 
+          jedi settings list [filters] [options]
+      filters:
+        regex: |2-
+                                             Les champs filtrables sont 'id' et 'timestamp' dans la table
+                                             'settings', ainsi que le champ 'name' dans les tables 'trade',
+                                             'security' et 'scale'
+      notes: |
+        Notes:
+          Le filtrage est réalisé dans l'ordre suivant :
+            1. Trades en cours
+            2. regex (Expression régulière)
+            3. Sélection d'enregistrements
+      examples: |
+        Exemples:
+          jedi settings list "2018-" -gr
+          jedi settings list -sl3 -r
+      option_layout: |-
+        Affiche la liste sous deux formats différents, selon la 
+        valeur de l'option :
+          0 : format complet (défaut)
+          1 : format réduit
+      option_group: "Groupe les paramétrages par trade"
+      # from settings_lister:
+      table:
+        title:
+          all: "Liste des paramétrages"
+          many: "Liste des paramétrages sélectionnés"
+          one: "Paramétrage sélectionné"
+        id: "Id"
+        trade: "Trade"
+        security: "Titre"
+        scale: "Barème"
+        timestamp: "Horodatage"
+        qty: "Qté (q0)"
+        price: "Prix (c0)"
+        position: "Position"
+        split: "split"
+        sync: "sync"
+        reinit: "reinit"
+        kspc: "kspc"
+        kcpc: "kcpc"
+        opcount: "# Op"
+    #
+    # --- show ---
+    #
+    show:
+      header: "Affiche les détails d'un paramétrage"
+      banner: |
+        Description :
+          Affiche les détails d'un paramétrage
+      usage: |
+        Usage : 
+          jedi settings show <id> [options]
+      required_arguments: |
+        Arguments requis : 
+          <id>                             Id du paramétrage dans la base de données
+      examples: |
+        Exemple :
+          jedi settings show 12
+      #show:
+      title: "Paramétrage %{ref}"
+      id: "Id"
+      trade: "Trade"
+      scale: "Barème"
+      rank: "Rang"
+      timestamp: "Horodatage"
+      split: "split"
+      sync: "sync"
+      reinit: "reinit"
+      q0: "q0"
+      c0: "c0"
+      position: "Position"
+      kspc: "kspc"
+      kcpc: "kcpc"
+      transpose:
+        fields: "Noms de champ"
+        contents: "Contenu"
+    #
+    # --- settings ---
+    #
+    query_failed: "Paramétrage %{ref} non trouvé."

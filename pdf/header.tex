@@ -1,0 +1,22 @@
+% Portable typography for the French and English manuals.
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{fontsize=\small}
+\makeatletter
+\renewcommand\small{\@setfontsize\small{8}{10}}
+\makeatother
+\setlength{\emergencystretch}{3em}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+\setcounter{secnumdepth}{-1}
+\widowpenalty=10000
+\clubpenalty=10000
+\raggedbottom
+% Keep the expanded contents on one page without changing body spacing.
+\let\jediTableOfContents\tableofcontents
+\renewcommand{\tableofcontents}{%
+  \begingroup
+  \setlength{\parskip}{0pt}%
+  \fontsize{9}{11}\selectfont
+  \jediTableOfContents
+  \endgroup
+}

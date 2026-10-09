@@ -1,0 +1,77 @@
+fr:
+  database:
+    header: "Gère la base de données"
+    banner: |
+      Gère la base de données
+
+      Usage: jedi database <sous-commande>
+    #
+    # --- dump ---
+    #
+    dump:
+      header: "Génère un jeu de commandes jedi pour reconstituer une base de données"
+      banner: |
+        Description :
+          Génère un jeu de commandes jedi pour reconstituer une base de données
+      usage: |
+        Usage: 
+          jedi database dump [>filename] [options]
+          (la sortie standard est utilisée, généralement redirigée vers un fichier)
+      examples: |
+        Exemple: 
+          jedi database dump >jedidump.txt
+    #
+    # --- load ---
+    #
+    load:
+      header: "Alimente une base de données vide à partir d'un fichier issu de 'dump'"
+      banner: |
+        Description :
+          Alimente une base de données vide à partir d'un fichier
+      usage: |
+        Usage: 
+          jedi database load <filename>
+          (La base de données doit être vide)
+      required_arguments: |
+        Argument requis :
+          <filename>                       Nom du fichier issu de la sous-commande 'database dump' redirigée
+      examples: |
+        Exemple :
+          jedi database load jedidump.txt
+      # load:
+      notempty: "La base de données n'est pas vide"
+      sepcount: "Format de ligne invalide, séparateur(s) de champ manquant(s)"
+      jedi_missing: |
+        Erreur à la ligne '%{linenum}' :
+        Les lignes du fichier de commande doivent commencer par le mot 'jedi'
+      invalid_command: "Commande '%{command}' invalide à la ligne '%{linenum}'"
+      invalid_subcommand: "Sous-commande '%{subcommand}' invalide à la ligne '%{linenum}'"
+      invalid_security_field_count: "Nombre de champs invalide pour le titre à la ligne '%{linenum}' : 6 ou 11 attendus, %{count} trouvés"
+      invalid_quotation_value: "Valeur de cotation '%{value}' invalide pour le champ '%{field}' à la ligne '%{linenum}'"
+      headers: "Titres,barèmes,trades,paramètres,operations,notes"
+      headers_format: "%6s %7s %7s %10s %10s %5s"
+      body_format: "%6d %7d %7d %10d %10d %5d"
+      done: "\nChargement ok"
+      not_exists: "Le fichier '%{filename}' n'existe pas"
+    #
+    # --- schema ---
+    #
+    schema:
+      header: "Affiche le schéma de la base de données, ainsi que son résumé sha256"
+      banner: |
+        Affiche le schéma de la base de données, ainsi que son résumé sha256
+      usage: |
+        Usage: 
+          jedi database schema
+          (la sortie standard est utilisée)
+      examples: |
+        Exemple :
+          jedi database schema
+      #schema:
+      title1: "Schéma de la base de données"
+      title2: "Empreinte sha256"
+    #
+    # --- create ---
+    #
+    create:
+      done: "Base de données créée"

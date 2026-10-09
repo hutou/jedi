@@ -1,0 +1,115 @@
+en:
+  quote:
+    header: "Manages quotes"
+    banner: |-
+      Quote Management
+
+      Usage: jedi quote <subcommand>
+
+      subcommands:
+    #
+    # --- current quotation resolution ---
+    #
+    current:
+      updating: "Updating"
+      no_current_price: "Security '%{name}': no price retrieved, results calculation will be incorrect"
+      old_recorded_price_used: "Security '%{name}': price update failed, using outdated recorded price"
+      last_recorded_price_used: "Security '%{name}': price update failed, using last recorded price"
+    #
+    # --- get ---
+    #
+    get:
+      header: "Displays the current quote for an ISIN"
+      invalid_isin: "The ISIN is invalid."
+      banner: |
+        Description:
+          Displays the current quote for a security identified by its ISIN
+      usage: |
+        Usage:
+          jedi quote get <isin>
+      required_arguments: |-
+        Required arguments:
+          <isin>                           ISIN code (International Securities Identification Number)
+      examples: |
+        Example:
+          jedi quote get FR0000120271
+    #
+    # --- set ---
+    #
+    set:
+      header: "Manually update the security price"
+      banner: |
+        Description:
+          Manually update the security price
+      usage: |
+        Usage: 
+          1st form, with named fields:
+            jedi quote set <id | isin> --price=PRICE [options]
+
+          2nd form, with positional fields;
+            jedi quote set <id | isin> <price> [options]
+      required_arguments: &ident |-
+        Required arguments:
+          <id>                             Security Id in the database
+          <isin>                           ISIN code (International Securities Identification Numbers)
+      price: |
+        The new price to be assigned to the security
+      notes: |
+        Notes:
+          Manual update would also set fields 'website' to 'manual', 'timestamp' to
+          current date and time and 'quotation_variation' to null
+      examples: |
+        Examples:
+          jedi quote set 2 8.97
+      success: "Quote updated to '%{price}' for security %{ref}."
+      price_must_be_positive: "The quote must be finite and greater than zero (received: %{price})."
+    #
+    # --- refresh ---
+    #
+    refresh:
+      header: "Update quotes via data providers"
+      banner: |
+        Description:
+          Update quotes via data providers
+      usage: |
+        Usage: 
+          jedi quote refresh [filters] [options]
+      filters:
+        regex: |2-
+                                             Filterable fields are 'id', 'isin', 'name' and 'ticker'
+      notes: |
+        Notes:
+           By default, only securities related to running trades are updated
+      examples: |
+        Examples:
+          jedi quote refresh "isin=FR000005.*"
+          jedi quote refresh "MEDCL || ALCJ" --force
+      option_mode: &option_mode |-
+        Quotation mode: 'live' or 'eod' (default: 'live')
+          - 'live' mode for Web Scraping
+          - 'eod' (End of Day) mode for direct download
+            (generally not free)
+      option_force: "Force an update of all securities, based on the filter."
+      invalid_mode: &invalid_mode "Invalid mode '%{arg}' for updating quotes."
+      failed_updates: "All updates failed."
+      failed_updates_count: "Update(s) : %{failures} failures(s)."
+      success: "All updates have been completed."
+    #
+    # --- update ---
+    #
+    update:
+      header: "Update a security's quote via data providers"
+      banner: |
+        Description:
+          Update a security's quote via data providers
+      usage: |
+        Usage: 
+          jedi quote update <id | isin> [options]
+      required_arguments: *ident
+      examples: |
+        Examples:
+          jedi quote update 17
+          jedi quote update FR0000050001
+      option_mode: *option_mode
+      invalid_mode: *invalid_mode
+      success: "Price updated to %{price}."

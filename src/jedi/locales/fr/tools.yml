@@ -1,0 +1,934 @@
+fr:
+  tools:
+    header: "La boîte à outils de Jedi"
+    banner: |
+      La boîte à outils de Jedi
+
+      Usage: jedi tools <sous-commande>
+
+      sous-commandes :
+    quote_history:
+      file_not_found: "Fichier de cotations '%{filename}' introuvable."
+      error_no_data: "Le fichier de cotations ne contient aucune donnée exploitable."
+      empty: "L'historique de cotations sélectionné est vide."
+      quotes_parser:
+        parse_error: "Cotation non valide à la ligne %{num} : %{message} (%{line})."
+      security_not_found: "Titre '%{ident}' introuvable dans la base de marché '%{database}'."
+      database_history_empty: "Aucune cotation n'est disponible pour '%{ident}' dans la base de marché '%{database}'."
+      option_date_invalid: "Valeur --date '%{value}' non valide (format attendu : OP:AAAA-MM-JJ)."
+      date_operator_invalid: "Opérateur de date '%{operator}' non valide (valeurs attendues : ge, gt, le ou lt)."
+      date_selection_invalid: "Date '%{date}' non valide (format attendu : AAAA-MM-JJ)."
+      database_security_required: "L'option %{option} est requise avec --database."
+      option_requires_database: "L'option %{option} nécessite --database."
+    #
+    # --- calc ---
+    #
+    calc:
+      header: "Calculatrice Jedi sur barème de type I"
+      banner: |
+        Description :
+          Calculatrice Jedi sur barème de type I
+
+          "Maîtriser les calculs internes de Jedi par la pratique"
+
+          Seuls les barèmes de type I sont supportés. Utiliser la commande 'tools play'
+          pour des simulations complexes, mixant barèmes de type I et type II.
+      usage: |
+        Usage:
+          jedi tools calc <kcb | kcp | ksp | cpe | spe | quantity | price> <params> [options]
+      required_arguments: |
+        Arguments requis : 
+                         --- fonctions ---
+          <kcb>                            Coefficient de capital
+          <kcp>                            Coefficient de prix
+          <ksp>                            Coefficient de quantité
+          <cpe>                            Cours théorique (au palier/échelon)
+          <spe>                            Stock théorique (au palier/échelon)
+          <quantity>                       Quantité de l'ordre (<0 = Vente, >0 = Achat)
+          <price>                          Cours de l'ordre arrondi au pas de cotation
+      params: |2-
+          Selon le calcul demandé, les paramètres à fournir dans <params> sont :
+                         --- arguments ---
+          <scale>                          Barème de type I (nom ou constructeur littéral)
+          <position>                       Position cible
+          <q0>                             Quantité d'achat initial
+          <c0>                             Prix d'achat initial
+          <dir>                            Direction des prix : valeurs 'up' ou 'down'
+          <stock>                          Stock existant
+          <tick>                           Pas de cotation
+      notes: |
+        Notes:
+          Relation entre calcul demandé et paramètres requis :
+          kcb      : scale, position
+          kcp      : scale, position
+          ksp      : scale, position
+          spe      : scale, position, q0
+          cpe      : scale, position, c0
+          quantity : spe, stock
+          price    : cpe, tick, dir
+      examples: |
+        Exemples :
+          jedi tools calc kcb scale=qdt position=1:1:1
+          jedi tools calc cpe scale="vr:20%,np:3,nn:3,ki:20%,kb:1,kd:0.2" position=1:1:0 c0=10 lsp=12 dir=up
+      title: "Calculatrice Jedi"
+      missing_function: "Argument manquant: fonction à calculer."
+      invalid_format: "Format de l'argument '%{arg}' non valide."
+      unknown_parameter: "Paramètre '%{arg}' non valide."
+      missing_scale: "Paramètre 'scale' manquant (nom de barème ou constructeur littéral)."
+      unsupported_scale_type: "Barème de type II non pris en charge."
+      missing_position: "Paramètre 'position' manquant."
+      incompatible_position: "Position '%{position}' incompatible avec le barème."
+      unknown_function: "Fonction '%{key}' inconnue."
+      unused_arguments: "Argument(s) non utilisé(s) :"
+      missing_price_direction: "Paramètre 'direction des prix' manquant."
+      invalid_price_direction: "Argument '%{dir}' non valide pour la direction des prix."
+      missing_tick: "Pas de cotation manquant."
+    #
+    # --- play ---
+    #
+    play:
+      header: "Simule l'application d'un barème en fonction des paramètres fournis"
+      warning: "Après l'opération n° %{operation} : %{warning}"
+      banner: |
+        Description :
+          Simule l'application d'un barème en fonction des paramètres fournis
+      usage: |
+        Usage :
+          1ère forme : à partir de l'environnement d'une opération de production
+            jedi tools play <id> <args>... [options]
+
+          2ème forme : à partir d'un environnement créé
+            jedi tools play <environment> <args>... [options]
+      required_arguments: |
+        Arguments requis :
+          <id>                             Id d'une opération de la base de données à partir de laquelle
+                                           sera défini l'environnement de simulation
+
+          <environnement>                  Une liste de paramètres pour créer l'environnement de simulation
+                                           à partir de zéro, en utilisant les entités concaténées suivantes:
+                                           <scale>, <q0>, <c0>, <tick>, [<money>]
+
+          <args>...                        Liste d'arguments définissant le scénario de simulation, chaque argument
+                                           pouvant prendre l'une des formes suivantes :
+                                           - Un entier, positif ou négatif, indique le nombre d'échelons à franchir à
+                                             la hausse ou à la baisse (le zéro prenant aléatoirement la valeur 1 ou -1)
+                                           - Une liste d'entiers, séparés par des virgules, possiblement précédée
+                                             par un facteur multiplicatif (ex: 3x1,-1,0)
+                                           - Une valeur décimale, définissant un prix cible
+                                           - Une transaction "réelle", sous la forme q@p (q=quantité, p=prix), où la
+                                             variation de prix doit confirmer le signe de la quantité (< 0 = vente,
+                                             > 0 = achat)
+                                           - Un nouveau jeu de paramètres, comprenant mots-clés et valeurs associées
+                                             (scale=?, split=?, sync=?, reinit=?, loss=?, loss_trigger=?)
+                                           - Une nouvelle définition de la gestion du capital avec money=?
+                                           - Un nouveau statut de stop avec stop=?
+                                           - Une marque définissant le début du calcul des résultats financiers de
+                                             la simulation, avec 'mark'
+      option_command: |-
+        Affiche les résultats selon les caractères de commande suivants :
+          t : liste des trades       ) Les listes ci-contre peuvent être personnalisées
+          k : liste des titres       ) en sélectionnant les numéros d'index des colonnes
+          s : liste des barèmes      ) à afficher, selon l'ordre des index, avec la syntaxe :
+          c : liste des paramètres   ) n : numéro de colonne, n-m : intervalle de colonnes..
+          o : liste des opérations   ) Ex: o0,6-9,17,14-13 pour afficher les colonnes 0,6,7,8,9,17,14,13
+
+          r : liste des ordres
+          f : résultats
+          d : deboggage
+      examples: |-
+        Exemples:
+          jedi tools play -c o0,4,6-13,17rf -- scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0.0,q0=100,c0=10.0,tick=0.02 5 \
+                                               money=r:1.5%,o:1,n:2 -5
+          jedi tools play -- 811 3x1,-1 scale=vr:12%,np:3,sr:15%,nn:4,mi:300%,ki:15%,kb:1 2
+      orders:
+        title: "Ordres en attente"
+        oper: "Opér."
+        type: "Type"
+        mode: "Mode"
+        quantity: "Quantité"
+        price: "Cours"
+        position: "Position"
+        spe: "SPE"
+        cpe: "CPE"
+      results:
+        title: "Résultats de la simulation"
+        subtitle: "Résultats depuis l'opération n° %{base}"
+        subtitle_mark: "Résultats depuis l'opération n° %{base}, avec marque à l'opération n° %{mark}"
+        total: "Total"
+        real_initial: "Réel avant\nsimulation"
+        le_mark: "Simulation\njusqu'à la marque"
+        gt_mark: "Simulation\naprès la marque"
+        simulated: "Simulation"
+        gains_losses: "Gains / pertes"
+    #
+    # --- backtest ---
+    #
+    backtest:
+      header: "Simule Jedi sur un historique de cotations"
+      banner: |
+        Description :
+          Simule un ou plusieurs trades sur un historique de cotations.
+          Après une clôture complète par stoploss, un nouveau trade est ouvert
+          à la séance suivante.
+      usage: |
+        Usage :
+          Depuis un fichier :
+            jedi tools backtest <fichier_cotations> --scale=DEF [--money=DEF] [options]
+
+          Depuis une base de marché :
+            jedi tools backtest --database=SOURCE --security=IDENT --scale=DEF [--money=DEF] [options]
+      option_command: |-
+        Sélectionne les sorties :
+          r : rapport synthétique
+          f : résultats financiers par trade et cumulés
+          o : liste des opérations
+          t : liste des trades
+          d : ordres restant actifs en fin de simulation
+          p : graphique en base 1
+        Les variantes T, K et S conservent l'affichage étendu de compatibilité.
+        Valeur par défaut : r en affichage compact, rf en affichage technique.
+      option_display: >-
+        Affichage : compact (synthèse économique, défaut) ou technical (rapport complet avec
+        diagnostics statistiques). -c permet de choisir les sections affichées.
+      #option_date: &opdate "Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)"
+      option_capital: "Définit le capital utilisé pour calculer le montant initial"
+      examples: |
+        Exemples :
+          jedi tools backtest cotations_RNO.txt --scale=Qdt
+          jedi tools backtest cotations_RNO.txt --scale=Qdt --money="r:1.5%,o:1,n:2" --capital=20000
+          jedi tools backtest --database=abcbourse --security=RNO --scale=Qdt
+      positional_arguments: |
+        Arguments positionnels :
+          <fichier_cotations>   Fichier préparé contenant un seul titre
+                                Requis uniquement lorsque --database est absent
+      source_options: "Options de source :"
+      definition_options: "Définition de la simulation :"
+      history_options: "Sélection de l'historique :"
+      sizing_options: "Dimensionnement :"
+      execution_options: "Exécution OHLC :"
+      output_options: "Sorties :"
+      option_database: Charge les cotations depuis la base de marché SOURCE
+      option_universe: "Sélectionne l'univers de marché NAME (défaut : %{universe})"
+      option_security: Sélectionne le titre par ISIN ou ticker
+      option_scale: Définition ou nom du barème (option requise)
+      option_money: Définition optionnelle de la gestion du capital
+      option_minimum_quantity: "Quantité minimale exigée pour chacun des ordres contrôlés (défaut : 2)"
+      option_operability_steps: "Nombre d'échelons haussiers contrôlés pour l'opérabilité (défaut : %{steps})"
+      option_execution: "Politique d'exécution OHLC : conservative (défaut) ou legacy"
+      option_opening_day_orders:
+        "Activation des ordres après l'achat initial : next (séance suivante, défaut) ou same (même
+        séance)"
+      no_trade_opened: "Aucun trade n'a été ouvert pendant la simulation."
+      display:
+        invalid_mode: "tools backtest : affichage '%{value}' invalide (attendu : compact ou technical)"
+      compact:
+        security: "Titre : %{name} (%{ticker}, %{isin})"
+        period: "Historique : %{first} → %{last} (%{days} séances)"
+        scale: "Barème : %{definition}"
+        fixed_amount: "Montant demandé par ouverture : %{amount} €"
+        capital: "Capital de dimensionnement : %{amount} € ; risque %{risk} % ; stop à %{steps} échelons"
+        operability: "Quantité minimale par ordre : %{quantity} ; contrôle sur %{steps} échelons haussiers"
+        execution: "Exécution : %{mode} ; ordres après ouverture : %{opening}"
+        modes:
+          conservative: "prudente (conservative)"
+          legacy: "historique (legacy)"
+        opening_days:
+          next: "séance suivante"
+          same: "même séance"
+        openings: "Ouvertures : %{accepted} ; tentatives non opérables : %{rejected}"
+        first_purchase: "Premier achat : %{date}, %{quantity} titres pour %{amount} €"
+        operations: "Opérations, ouvertures comprises : %{operations}"
+        gross_gain: "Gain brut cumulé : %{value} €"
+        fees: "Frais cumulés : %{value} €"
+        net_gain: "Gain net cumulé : %{value} €"
+        maximum_investment: "Investissement maximal, hors frais : %{value} €"
+        net_return: "Gain net / investissement maximal : %{value} %"
+        holdings: "Titres détenus en fin de test : %{quantity} ; valeur %{value} €"
+        note: >-
+          Le gain inclut la valorisation des titres restants au dernier cours de clôture.
+          L'investissement maximal est le pic des achats moins les ventes, hors frais.
+      plot:
+        title: "Backtest Jedi :"
+        indices_and_ratios: "Indices en base 1 et ratios"
+        net_value_index: "Indice de valeur nette"
+        investment_ratio: "Ratio d'investissement"
+        quotation_index: "Indice de cotation"
+        trading_days: "jours de bourse"
+        regression: "Régression linéaire"
+        normalized_slope: "pente normalisée"
+      table:
+        title: "Synthèse du backtest"
+        headers:
+          ident: "Titre"
+          dates_duration: "Dates et durée"
+          scale: "Barème"
+          operations: "Opérations"
+          linear_regression: "Régression linéaire"
+          sizing: "Dimensionnement"
+          execution: "Exécution"
+          results: "Résultats"
+        cell_ident:
+          daily_volatility: "Volatilité quotidienne ...: %8.2f%%"
+          tick_value: "Pas de cotation ..........: %s"
+        cell_dates:
+          start: "Début"
+          end: "Fin"
+          quotations: "Cotations"
+          operations: "Opérations"
+          days: "Jours de bourse : %d / jours calendaires : %d"
+          days_explained: "Chronologie : un caractère par mois (- = 0, + = 10 ou plus)"
+          quotation_missing: "Attention : la densité des cotations sort de la plage attendue."
+        cell_operations:
+          trades: "Trades .................: %d"
+          count: "Opérations .............: %d"
+          average: "Moyenne mensuelle ......: %.2f"
+          last_months: "48 derniers mois"
+        cell_regression:
+          slope_price: "Pente du cours .........: %.6f"
+          slope_normalized: "Pente normalisée .......: %.4f%%"
+          intercept: "Ordonnée à l'origine ...: %.6f"
+          correlation: "Coefficient de corrélation: %.6f"
+          determination: "Coefficient de détermination: %.6f"
+        cell_sizing:
+          fixed: "Montant fixe ............: %.2f"
+          capital: "Capital dédié ..........: %.2f"
+          risk: "Taux de risque .........: %.2f%% / stop : %d échelons"
+          operability: "Quantité minimale .....: %d / échelons contrôlés : %d"
+          openings: "Ouvertures .............: %d acceptées / %d rejetées"
+          rejection_period: "Période de rejet ......: du %s au %s"
+          first_quantity: "Première ouverture ....: %d titres / %.2f"
+          stop: "Stop initial ...........: %.4f / distance de risque : %.2f%%"
+          projected_investment: "Investissement maximal projeté : %.2f"
+        cell_execution:
+          conservative: "Politique OHLC .........: conservative"
+          legacy: "Politique OHLC .........: legacy"
+          next_session: "Ordres à l'ouverture ..: séance suivante"
+          same_session: "Ordres à l'ouverture ..: même séance"
+          events: "Événements d'exécution .: %d conflits / %d gaps"
+          opening_day_executions: "Exécutions le jour d'ouverture : %d"
+        cell_results:
+          cumulative_gain: "Gain cumulé ............: brut %.2f / net %.2f"
+          return_on_maximum: "Rendement sur maximum .: brut %.2f%% / net %.2f%%"
+          annualized_return: "Rendement annualisé ...: brut %.2f%% / net %.2f%%"
+          investment: "Investissement .........: courant %.2f / maximum %.2f (%.2f%%)"
+          capital_utilization: "Utilisation du capital : %.2f%%"
+          position: "Position finale .........: %s"
+    #
+    # --- candidate ---
+    #
+    candidate:
+      header: "Évalue l'opérabilité Jedi d'un candidat"
+      banner: |
+        Description :
+          Évalue mécaniquement un candidat avec un barème Jedi, sans base de cotations historiques.
+          Le candidat est choisi par l'utilisateur.
+          --price permet l'évaluation même si le titre n'est pas enregistré dans la base Jedi.
+      usage: |
+        Usage :
+          jedi tools candidate <isin> [--price=PRICE] --scale=DEF --amount=AMOUNT [options]
+          jedi tools candidate <isin> [--price=PRICE] --scale=DEF --money=DEF [--capital=AMOUNT] [options]
+      positional_arguments: |
+        Argument positionnel :
+          <isin>                           ISIN du candidat à évaluer
+      definition_options: "Définition et dimensionnement :"
+      output_options: "Sortie :"
+      option_price: "Cours courant du candidat ; remplace toute cotation enregistrée dans Jedi"
+      option_amount: "Montant T choisi par l'utilisateur (incompatible avec --money)"
+      option_money: "Gestion du capital r/o/n ; r et n dimensionnent T à partir de K"
+      option_capital: "Capital portefeuille K utilisé pour la finançabilité et, avec --money, pour dimensionner T (défaut : capital dédié configuré)"
+      option_extended: "Affiche les détails techniques du dimensionnement"
+      examples: |
+        Exemples :
+          jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --amount=10000
+          jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --money="r:1%,o:1,n:2"
+          jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --money="r:1%,o:1,n:2" --capital=100000 --extended
+      invalid_money: "Définition de gestion du capital non valide : '%{money}'."
+      invalid_price: "Cours du candidat non valide : %{price}."
+      invalid_amount: "Montant T non valide : %{amount}."
+      invalid_capital: "Capital K non valide : %{capital}."
+      amount_money_conflict: "--amount et --money sont incompatibles."
+      sizing_required: "Le dimensionnement requiert soit --amount, soit --money."
+      price_required: "Aucun cours exploitable n'est disponible pour l’ISIN %{ref}. Utiliser --price=PRICE ou enregistrer/actualiser la cotation du titre dans Jedi."
+      mode:
+        fixed_amount: "montant T imposé"
+        capital: "gestion du capital"
+      operable:
+        "yes": "OUI"
+        "no": "NON"
+      financeability:
+        not_evaluated: "NON ÉVALUÉE"
+      funding:
+        not_evaluated: "NON ÉVALUÉ"
+      price_sources:
+        explicit: "fourni par --price"
+        stored: "cotation enregistrée dans Jedi"
+        unknown_date: "non renseignée"
+      failure:
+        initial_quantity_zero: "Le montant T ne permet pas d'acheter une unité au cours actuel."
+        insufficient_operability: "La quantité initiale est insuffisante pour maintenir les ordres utiles opérables."
+        capital_sizing: "Le dimensionnement par gestion du capital ne satisfait pas les contraintes risque/capital/opérabilité."
+        risk_quantity_zero: "Le risque accepté ne permet pas d'acheter une unité à ce cours."
+        capital_quantity_zero: "Le capital ne permet pas de financer une unité et les achats prévus jusqu'au stop théorique."
+      report:
+        summary_title: "Candidat Jedi"
+        title: "Évaluation Jedi d'un candidat"
+        opening_title: "Ouverture"
+        funding_status: "Financement"
+        security: "Titre"
+        isin: "ISIN"
+        price: "Cours retenu"
+        price_source: "Origine du cours"
+        price_date: "Date de la cotation enregistrée"
+        scale: "Barème"
+        mode: "Dimensionnement"
+        capital: "Capital K"
+        risk_rate: "Risque r"
+        steps_down: "Échelons de risque n"
+        risk_distance: "Distance de risque d"
+        risk_amount: "Risque monétaire R"
+        target_amount: "Montant T"
+        quantity: "Quantité initiale"
+        opening_amount: "Montant réel d'ouverture"
+        minimum_operable_quantity: "Quantité minimale opérable"
+        operability: "Opérabilité"
+        portfolio_capital: "Capital portefeuille K"
+        running_trades: "Trades ouverts"
+        current_global_investment: "Investissement global courant"
+        existing_trade_reserve: "Réserve des trades ouverts"
+        available_after_reserve: "Capital libre après réserve"
+        candidate_reserve: "Réserve future du candidat"
+        candidate_requirement: "Besoin maximal du candidat"
+        financeability: "Finançabilité"
+        margin_after_candidate: "Marge après candidat"
+        available_before_reserve: "Capital libre avant réserve"
+        funding_steps: "Horizon de réserve candidat"
+        trade_reserves: "Réserve par trade ouvert :"
+        funding_note: "Le besoin maximal du candidat correspond à l'ouverture plus sa réserve future ; la réserve est le pic d'investissement net supplémentaire projeté sur l'horizon opérationnel. Les frais sont exclus."
+        summary_funding_note: "Réserve du candidat calculée sur %{steps} échelons ; financement hors frais."
+        minimum_quantity: "Quantité minimale par ordre"
+        operability_steps: "Échelons contrôlés"
+        scale_type: "Type de barème"
+        stop_price: "Cours théorique à n échelons"
+        maximum_quantity_by_risk: "Quantité max par risque"
+        maximum_quantity_by_capital: "Quantité max par capital (trajet risque)"
+        maximum_projected_investment: "Investissement max sur trajet risque"
+        limiting_constraint: "Contrainte limitante"
+        reason: "Motif"
+        note: "Cette évaluation est mécanique ; elle ne constitue pas un signal d'achat."
+    #
+    # --- score ---
+    #
+    score:
+      header: Recherche et classe des barèmes sur un historique de cotations
+      banner: |
+        Description :
+          Recherche automatiquement les barèmes les plus adaptés à un historique de cotations.
+          Sans constructeur explicite, Jedi explore ses trois familles internes de barèmes.
+      usage: |
+        Usage :
+          Depuis un fichier :
+            jedi tools score <fichier_cotations> [<constructeur>] [options]
+
+          Depuis une base de marché :
+            jedi tools score --database=SOURCE --security=IDENT [<constructeur>] [options]
+
+          Le constructeur est optionnel. P1, P2 et P3 restent acceptés comme sélections
+          expertes d'une seule famille interne.
+      option_database: Charge les cotations depuis la base de marché SOURCE
+      option_universe: "Sélectionne l'univers de marché NAME (défaut : %{universe})"
+      option_security: Sélectionne le titre par ISIN ou ticker
+      option_ranking: >-
+        Classement affiché : raw (résultats bruts, défaut), jedi (préférence, mode expert)
+        ou both (les deux classements)
+      option_search: >-
+        Stratégie de recherche : adaptive (exploration puis raffinement, défaut) ou grid (exhaustive)
+      option_budget: >-
+        Nombre maximal de backtests de recherche avec --search=adaptive (défaut : 500)
+      option_display: >-
+        Affichage : compact (3 métriques de tri + constructeur typé, défaut), study
+        (lecture économique des barèmes) ou technical (diagnostic expert ; influence des paramètres
+        avec --search=adaptive, robustesse avec --ranking=jedi ou both)
+      option_sort: >-
+        Tri : fitness (défaut), activity (opérations/mois) ou investment
+        (investissement maximal) ; 1, 2 et 3 restent acceptés
+      #option_date: *opdate
+      #score:
+      result:
+        to_s: |
+          %+6.3f, %.3f, %.3f, barème ---> "%s"
+          %22sconstructeur -> "%s"
+      run:
+        selection: aucune
+      decode:
+        rate_invalid: "tools score : erreur de décodage de la boucle de taux '%{rate}'"
+        steps_counts: "tools score : nombre invalide d'échelons positifs et négatifs"
+        letter_code_unknown: "tools score : lettre code '%{letter}' inconnue"
+        key_not_found: "tools score : clé '%{predefkey}' non définie"
+        key_not_bound: "tools score : aucun constructeur associé à la clé '%{predefkey}'"
+        score_1: 1 - Canonique - ks optimisé
+        score_2: 2 - Canonique - ks optimisé
+        score_3: 3 - Canonique - ks optimisé
+      list:
+        scales: Barèmes
+        type: "Type : "
+        isin: "ISIN : "
+        ticker: "Ticker : "
+        name: "Nom : "
+        first_date: "Date de début : "
+        last_date: "Date de fin : "
+        selected: "Sélection : "
+        trading_days: "Jours de bourse : "
+        volatility: "Volatilité : "
+        regression_slope: "Pente brute (unité de cours/jour) : "
+        regression_trend: "Tendance relative (% du cours initial/jour) : "
+        scale_builder: "Constructeur de barème : "
+        search: "Recherche : "
+        fields_hdr: |
+          Champs de sortie, séparés par des virgules :
+            1 : Coefficient de gain (>0) ou de perte (<0)
+            2 : Nombre moyen d'opérations par mois
+            3 : Ratio d'investissement maximal
+            4 : Définition du barème
+            5 : Définition du constructeur
+      invalid_builder: "tools score : constructeur de barème '%{scale_builder}' invalide"
+      invalid_sort: "tools score : tri '%{value}' invalide (attendu : fitness, activity ou investment)"
+      context:
+        security: "Titre : %{name} (%{ticker}, %{isin})"
+        period: "Historique : %{first} → %{last} (%{days} séances)"
+        opening_amount: "Montant demandé à l'ouverture : %{amount} €"
+        search: "Recherche %{strategy} : %{evaluated} backtests, %{available} candidats disponibles"
+        budget: " (budget : %{budget})"
+        partial_search: "Recherche partielle : le classement porte sur les barèmes évalués."
+        ranking: "Classement : %{ranking}"
+        rankings:
+          raw: "brut transparent (raw)"
+          jedi: "préférence Jedi (mode expert)"
+          both: "brut transparent, puis préférence Jedi (mode expert)"
+        raw_order: "Tri brut (à 3 décimales) : %{order}"
+        search_order: "Objectif de recherche (à 3 décimales) : %{order}"
+        orders:
+          fitness: "Fitness décroissante, puis Op/mois décroissant, puis Inv.max croissant"
+          activity: "Op/mois décroissant, puis Fitness décroissante, puis Inv.max croissant"
+          investment: "Inv.max croissant, puis Op/mois décroissant, puis Fitness décroissante"
+      compact:
+        title: "Barèmes recommandés"
+        raw_title: "Résultats bruts"
+        columns: " Fitness  Op/mois  Inv.max  Constructeur typé"
+        empty: "Aucun barème admissible."
+        ratios_note: >-
+          Fitness = gain brut / premier achat ; Inv.max = investissement maximal / premier achat,
+          hors frais. Exemple : Fitness 0.500 = gain brut de 50 % du premier achat ;
+          Inv.max 1.500 = investissement maximal de 1,5 fois ce premier achat.
+        activity_note: >-
+          Op/mois = toutes les opérations, ouvertures comprises, ramenées à 21 séances à partir de la première opération.
+      study:
+        title: "Étude économique des barèmes recommandés"
+        raw_title: "Étude économique des résultats bruts"
+        evaluated_title: "Meilleurs candidats évalués avant filtrage Jedi"
+        columns: "Rang  Fit.br Fit.net  Rnet%  Rann%  Op/an  Ops Inv.max€ Frais€   Vr%  Fam  Constructeur typé"
+        empty: "Aucun barème admissible à étudier."
+        note: >-
+          Fit.br/Net = gain brut/net rapporté à l'achat initial ; Rnet% = rendement net sur
+          l'investissement maximal ; Rann% = rendement net annualisé sur l'investissement maximal ;
+          Op/an = opérations générées par le barème par an, hors ouvertures ; Ops = toutes les opérations.
+      display:
+        invalid_mode: "tools score : affichage '%{value}' invalide (attendu : compact, study ou technical)"
+      search:
+        title: "Recherche adaptative"
+        strategy: "Stratégie : "
+        available: "Candidats disponibles : "
+        evaluated: "Backtests de recherche évalués : "
+        exploration: "Exploration : "
+        refinement: "Raffinement : "
+        reduction: "Réduction des backtests : "
+        influence_title: "Influence indicative des paramètres (critère principal du tri)"
+        influence_note: >-
+          Estimation descriptive calculée uniquement sur l'échantillon d'exploration ;
+          elle mesure la variation des médianes du critère principal de --sort et ne constitue pas une
+          mesure causale indépendante des interactions.
+        invalid_strategy: "tools score : stratégie de recherche '%{value}' invalide (attendu : grid ou adaptive)"
+        invalid_budget: "tools score : budget de recherche '%{value}' invalide (entier strictement positif attendu)"
+      preference:
+        title: "Préférence Jedi parmi les résultats voisins"
+        explanation: >-
+          Le classement Jedi mesure d'abord la robustesse locale dans chaque famille
+          de recherche, puis regroupe globalement les barèmes ayant exactement le
+          même comportement historique, écarte les états terminaux non opérables,
+          les activités historiques trop faibles ou trop concentrées, et les étendues
+          insuffisamment testées. Entre résultats économiquement voisins, il préfère
+          ensuite la stabilité temporelle, une activité régulière, un plateau local,
+          une couverture significative, un investissement modéré et une structure simple.
+        columns: >-
+          Jdi Brut Grp  Fitness  Op/mois Inv.max Act/mois  Moy12    σ12  0-12m Inact Méd.loc Disp.loc Méd.temp Min.temp      Couverture Inut. Éq Compl.  Fam  Configuration de recherche
+        preferred: "Configuration préférée :"
+        redundant_removed: "%{count} barème(s) comportementalement redondant(s) masqué(s)."
+        insignificant_removed: "%{count} barème(s) insuffisamment testé(s) écarté(s)."
+        inoperable_removed: "%{count} barème(s) écarté(s) : état terminal non opérable."
+        inactive_removed: "%{count} barème(s) écarté(s) : activité historique insuffisante ou trop concentrée."
+        invalid_ranking: "tools score : classement '%{value}' invalide (attendu : raw, jedi ou both)"
+        reasons:
+          temporal_stability: "résultats réguliers sur les sous-périodes"
+          temporal_caution: "stabilité temporelle à surveiller"
+          regular_activity: "activité du barème régulièrement répartie"
+          local_plateau: "plateau local de bons résultats"
+          ideal_coverage: "marge extérieure idéale d'un échelon"
+          significant_coverage: "étendue suffisamment sollicitée"
+          canonical_representative: "représentant canonique de %{count} barèmes équivalents"
+          central: "configuration éloignée des limites de recherche"
+          moderate_investment: "investissement maximal pris en compte"
+    #
+    # --- plot ---
+    #
+    plot:
+      header: Trace les cotations et leur régression linéaire
+      banner: |
+        Description :
+          Trace la courbe d'un historique de cotations et sa régression linéaire.
+      usage: |
+        Usage :
+          Depuis un fichier :
+            jedi tools plot <fichier_cotations> [options]
+
+          Depuis une base de marché :
+            jedi tools plot --database=SOURCE --security=IDENT [options]
+      positional_arguments: |
+        Arguments positionnels :
+          <fichier_cotations>   Fichier préparé contenant un seul titre
+                                Requis uniquement lorsque --database est absent
+      source_options: "Options de source :"
+      history_options: "Sélection de l'historique :"
+      display_options: "Affichage :"
+      option_database: Charge les cotations depuis la base de marché SOURCE
+      option_universe: "Sélectionne l'univers de marché NAME (défaut : %{universe})"
+      option_security: Sélectionne le titre par ISIN ou ticker
+      option_legend: "Position de la légende : tl, tr, bl ou br (défaut : automatique)"
+      relative_slope: "pente relative"
+      percent_per_day: "% par jour de bourse"
+      title: "Historique de cotations"
+      prices: "Cours"
+      quotes: "Cotations"
+      trading_days: "jours de bourse"
+      regression: "Régression linéaire"
+      #option_date: *opdate
+      examples: |
+        Exemples :
+          jedi tools plot cotations_RNO.txt
+          jedi tools plot cotations_RNO.txt --legend=br --date=ge:2024-01-01
+          jedi tools plot --database=abcbourse --security=RNO --select=250
+    #
+    # --- stats ---
+    #
+    stats:
+      header: Calcule les statistiques d'un historique de cotations
+      banner: |
+        Description :
+          Calcule les principaux indicateurs statistiques d'un historique de cotations.
+      usage: |
+        Usage :
+          Depuis un fichier :
+            jedi tools stats <fichier_cotations> [options]
+
+          Depuis une base de marché :
+            jedi tools stats --database=SOURCE --security=IDENT [options]
+      positional_arguments: |
+        Arguments positionnels :
+          <fichier_cotations>   Fichier préparé contenant un seul titre
+                                Requis uniquement lorsque --database est absent
+      source_options: "Options de source :"
+      history_options: "Sélection de l'historique :"
+      option_database: Charge les cotations depuis la base de marché SOURCE
+      option_universe: "Sélectionne l'univers de marché NAME (défaut : %{universe})"
+      option_security: Sélectionne le titre par ISIN ou ticker
+      #option_date: *opdate
+      examples: |
+        Exemples :
+          jedi tools stats cotations_RNO.txt
+          jedi tools stats cotations_RNO.txt --date=ge:2024-01-01
+          jedi tools stats --database=abcbourse --security=RNO --select=500
+    statistics:
+      volatility: "Volatilité quotidienne : "
+      regression_slope: "Pente de la régression : "
+      relative_regression_slope: "Pente relative de la régression : "
+      regression_intercept: "Ordonnée à l'origine : "
+      correlation_coefficient: "Coefficient de corrélation : "
+      determination_coefficient: "Coefficient de détermination : "
+    #
+    # --- profile ---
+    #
+    profile:
+      header: Évaluer l'aptitude d'un ou plusieurs titres à la méthode Jedi
+      banner: Profil Jedi détaillé ou synthétique
+      usage: |
+        Usage :
+          Profil détaillé depuis un fichier :
+            jedi tools profile [options] <fichier_cotations>
+
+          Profil détaillé depuis SQLite :
+            jedi tools profile [options] --database=SOURCE --security=IDENT
+
+          Sélection d'un dataset :
+            jedi tools profile [options] --database=SOURCE --dataset=CODE
+
+          Sélection d'un groupe nommé :
+            jedi tools profile [options] --database=SOURCE --group=CODE
+
+          Sélection explicite de plusieurs titres :
+            jedi tools profile [options] --database=SOURCE \
+              --security=IDENT --security=IDENT [...]
+      positional_arguments: |
+        Argument positionnel :
+          <fichier_cotations>               Fichier préparé contenant un seul titre
+                                            (mode fichier uniquement)
+      source_options: "Source et périmètre :"
+      selection_options: "Filtrage de la sélection :"
+      history_options: "Sélection de l'historique :"
+      output_options: "Présentation :"
+      option_database: Charge les cotations depuis la base de marché SOURCE
+      option_universe: "Sélectionne l'univers NAME (défaut : %{universe})"
+      option_security: Sélectionne un titre par ISIN ou ticker ; option répétable
+      option_dataset: Sélectionne tous les titres du dataset CODE
+      option_group: Ne conserve que les titres membres du groupe CODE
+      option_include_rejected: Inclut les candidats écartés
+      option_sort: Trie selon KEY ; les valeurs de KEY sont toujours en anglais (voir Notes)
+      option_rank_criteria: Utilise les N premiers critères dans le total global (1 à 7 ; défaut 7)
+      option_limit: Limite le résultat affiché aux COUNT premiers titres
+      #option_date: *opdate
+      notes: |
+        Notes :
+          Par défaut, une sélection en base est classée par rang global.
+          Le rang global additionne, sans pondération, les rangs obtenus sur les N premiers critères dans cet ordre :
+          tendance, liquidité, volatilité, oscillation, drawdown, gap et pas.
+          N est choisi avec --rank-criteria=N (1 à 7, défaut 7).
+          Les critères placés après N restent affichés à titre informatif mais n'influencent ni le total ni les égalités.
+          Deux valeurs identiques pour un critère reçoivent le même rang.
+          Le total le plus faible est classé en premier. En cas d'égalité, seuls les rangs retenus sont
+          départagés dans cet ordre, puis par ticker.
+          Les valeurs de --sort ne sont jamais traduites et doivent toujours être saisies en anglais :
+          global, ticker, trend, liquidity, volatility, oscillation, drawdown, gap, step.
+          Le rang global est relatif à la sélection courante : modifier la sélection peut modifier les rangs.
+          Les titres écartés n'entrent jamais dans le classement global ; --include-rejected les affiche avec "-"
+          pour Total/Rangs sans modifier les rangs des candidats retenus.
+          Les critères tendance, liquidité, oscillation, drawdown, gaps et pas utilisent les 252 dernières séances ;
+          l’ATR utilise les 20 dernières séances. La profondeur historique minimale reste un contrôle de qualité séparé.
+          La fraîcheur est évaluée en séances de marché par rapport à la date de fraîcheur globale du dataset :
+          la dernière date atteinte par au moins 95 % de ses titres, recalculée après chaque import ou mise à jour.
+          Elle n'est pas évaluée avec un fichier, une sélection historique (--date/--select), un dataset sans
+          fraîcheur validée, ou lorsqu'un titre appartient à plusieurs datasets sans qu'un --dataset explicite
+          ne lève l'ambiguïté.
+
+        Colonnes du tableau :
+          Total     Somme non pondérée des N premiers rangs choisis par --rank-criteria ; plus petit = mieux.
+          Rangs     Sept rangs par importance ; "|" sépare les rangs retenus des rangs seulement informatifs.
+          Ticker    Code du titre.
+          Nom       Nom du titre.
+          Ans       Profondeur de l'historique en années.
+          Ret.      Retard en séances par rapport à la fraîcheur globale du dataset (95 %) ; '-' si indisponible.
+          Tend%/a   Tendance annualisée sur 252 séances ; --sort=trend, plus élevée = mieux.
+          Val.méd   Montant quotidien médian échangé sur 252 séances ; --sort=liquidity, plus élevé = mieux.
+          ATR%      ATR(20) en pourcentage ; contribue à --sort=volatility.
+          Range%    Amplitude sur 252 séances ; contribue à l'appréciation d'oscillation.
+          Sw5/a     Oscillations d'au moins 5 % annualisées depuis les 252 dernières séances ; contribue à --sort=oscillation.
+          DD%       Drawdown maximal sur 252 séances ; --sort=drawdown, plus faible = mieux.
+          Gap%      Fréquence des gaps d'au moins 3 % sur 252 séances ; --sort=gap, plus faible = mieux.
+          Pas%      Pas de barème suggéré ; --sort=step, plus faible = mieux.
+          Mouv/a    Mouvements annuels estimés avec le pas suggéré ; information, pas un tri séparé.
+          Statut    retenu, vigilance ou écarté.
+          Aler.     Nombre de points de vigilance.
+
+        Valeurs de --sort :
+          global      Total des N premiers rangs choisis par --rank-criteria, croissant.
+          ticker      Ticker, ordre alphabétique neutre.
+          trend       Tend%/a, décroissant.
+          liquidity   Val.méd, décroissant.
+          volatility  Classe de volatilité, puis ATR% croissant à classe égale.
+          oscillation Classe d'oscillation (Sw5/a + Range%), puis Sw5/a décroissant à classe égale.
+          drawdown    DD%, croissant.
+          gap         Gap%, croissant.
+          step        Pas%, croissant.
+
+        Seuils de vigilance utilisés par le Statut :
+          Sw5/a < 4,0 par an, Gap% > 3,0 %, DD% > 45,0 %.
+        Classes utilisées pour le tri volatilité :
+          bonne 2,0-5,0 % ; correcte 1,5-<2,0 % ou >5,0-6,0 % ; faible >6,0-8,0 % ; mauvaise >8,0 %.
+          Un ATR(20) inférieur à 1,5 % est éliminé avant classement.
+        Classes utilisées pour le tri oscillation :
+          excellente : Sw5/a >= 8 et Range% 40-100 ; bonne : Sw5/a >= 4 et Range% 40-100 ;
+          correcte : Sw5/a >= 3 et Range% 30-120 ; faible : Sw5/a >= 1 ; mauvaise : Sw5/a < 1.
+      examples: |
+        Exemples :
+          jedi tools profile cotations_RNO.txt
+          jedi tools profile --database=abcbourse --security=RNO
+          jedi tools profile --database=abcbourse --dataset=Euronext_A --group=PEA
+          jedi tools profile --database=abcbourse --group=PEA
+          jedi tools profile --database=abcbourse --group=PEA --rank-criteria=4
+          jedi tools profile --database=abcbourse --dataset=Euronext_A \
+            --group=PEA --date=ge:2020-01-01 --sort=liquidity --limit=20
+          jedi tools profile --database=abcbourse \
+            --security=RNO --security=AI --security=BNP --include-rejected
+      title: Profil Jedi du titre-support
+      unavailable: non disponible
+      sections:
+        history: Qualité de l'historique
+        liquidity: Liquidité
+        potential: Volatilité et oscillation
+        risk: Risques
+        trend: Tendance
+        summary: Synthèse opérationnelle
+        rejection_reasons: Motifs d'élimination
+        warnings: Points de vigilance
+      labels:
+        security: "Titre-support :"
+        source: "Source :"
+        period: "Période :"
+        quotations: "Cotations :"
+        history_quality: "Qualité historique :"
+        history_years: "Profondeur :"
+        trading_days_per_year: "Séances par an :"
+        invalid_ohlc: "Cotations OHLC invalides :"
+        zero_volume: "Séances sans volume :"
+        flat_close: "Clôtures inchangées :"
+        minimum_history_years: "Profondeur minimale :"
+        minimum_trading_days_per_year: "Séances/an minimales :"
+        maximum_invalid_ohlc: "OHLC invalides maximaux :"
+        maximum_zero_volume: "Séances sans volume max. :"
+        maximum_flat_close: "Clôtures inchangées max. :"
+        freshness: "Fraîcheur :"
+        last_quote_date: "Dernière cotation :"
+        market_reference_date: "Fraîcheur globale du dataset (95 %) :"
+        quote_lag_sessions: "Retard (séances) :"
+        maximum_quote_lag_sessions: "Retard maximal admis (séances) :"
+        liquidity: "Appréciation :"
+        analysis_period: "Fenêtre d’analyse :"
+        median_traded_value: "Valeur médiane échangée :"
+        minimum_median_traded_value: "Seuil d’élimination médian :"
+        low_liquidity_ratio: "Séances sous ce seuil :"
+        maximum_low_liquidity_ratio: "Seuil de vigilance :"
+        volatility: "Volatilité :"
+        atr20: "ATR(20) :"
+        minimum_atr20: "Seuil minimal ATR(20) :"
+        high_atr_warning_threshold: "Seuil de vigilance ATR(20) :"
+        oscillation: "Oscillation :"
+        annual_range: "Amplitude sur 252 séances :"
+        swings5: "Oscillations à 5 % :"
+        minimum_swings5_warning: "Vigilance en dessous de :"
+        swings8: "Oscillations à 8 % :"
+        gap_risk: "Risque de gap :"
+        large_gap_ratio: "Gaps d'au moins 3 % :"
+        maximum_large_gap_warning: "Vigilance au-dessus de :"
+        drawdown_risk: "Risque de drawdown :"
+        max_drawdown: "Drawdown maximal :"
+        maximum_drawdown_warning: "Vigilance au-dessus de :"
+        trend: "Orientation :"
+        trend_rate: "Tendance annualisée :"
+        downtrend_rejection_threshold: "Seuil d’élimination baissier :"
+        trend_r2: "R² de tendance :"
+        suggested_step: "Écart de barème suggéré :"
+        estimated_moves: "Mouvements estimés :"
+        status: "Statut :"
+      units:
+        years: ans
+        percent: "%"
+        per_year: par an
+        percent_per_year: "% par an"
+        currency: €
+      levels:
+        excellent: excellente
+        good: bonne
+        acceptable: correcte
+        weak: faible
+        poor: mauvaise
+        unknown: indéterminée
+      trends:
+        strongly_negative: fortement négative
+        negative: négative
+        slightly_negative: légèrement négative
+        flat: neutre
+        slightly_positive: légèrement positive
+        positive: positive
+        strongly_positive: fortement positive
+        unknown: indéterminée
+      analysis_period_value: "%{count} dernières séances (%{start} → %{end})"
+      freshness:
+        unavailable: non évaluée (fichier, historique filtré, dataset ambigu ou fraîcheur indisponible)
+      statuses:
+        retained: retenu
+        warning: vigilance
+        rejected: écarté
+      issues:
+        short_history: historique inférieur à trois ans
+        sparse_history: densité annuelle de cotations insuffisante
+        invalid_ohlc: présence de cotations OHLC invalides
+        zero_volume: plus de 5 % des séances sans volume
+        flat_close: plus de 30 % des clôtures sont inchangées
+        low_liquidity: valeur médiane échangée inférieure au seuil d’élimination
+        frequent_low_liquidity: trop de séances sous le seuil de liquidité
+        low_volatility: volatilité inférieure au seuil minimal ATR(20)
+        excessive_volatility: volatilité supérieure au seuil de vigilance ATR(20)
+        weak_oscillation: moins de quatre oscillations annuelles à 5 %
+        frequent_large_gaps: gaps importants trop fréquents
+        high_drawdown: drawdown historique supérieur à 45 %
+        prolonged_downtrend: tendance baissière prolongée au-delà du seuil d’élimination
+        delayed_quotation: dernière cotation en retard sur la fraîcheur globale du dataset
+        stale_quotation: dernière cotation trop ancienne par rapport à la fraîcheur globale du dataset
+        missing_metric: indicateur indispensable non calculable
+      collection:
+        title: Profils Jedi — sélection de titres
+        invalid_sort: "Critère de tri de profile invalide : '%{value}'"
+        invalid_rank_criteria: "Le nombre de critères du classement profile doit être compris entre 1 et 7 : '%{value}'"
+        invalid_limit: "La limite de profile doit être un entier strictement positif : '%{value}'"
+        option_requires_database: L'option %{option} exige une source SQLite
+        option_requires_collection: L'option %{option} est réservée à un dataset ou à plusieurs titres
+        dataset_security_conflict: Les options --dataset et --security ne peuvent pas être utilisées ensemble
+        selection_required: Avec --database, indiquez un --dataset, au moins un --security ou --group
+        dataset_selection: dataset %{dataset}
+        all_selection: ensemble des titres de la base
+        security_selection: "%{count} titres explicitement sélectionnés"
+        group_selection: "%{selection} + groupe %{group}"
+        empty: Aucun candidat ne correspond aux critères d'affichage.
+        failure_section: "Titres ignorés faute d'historique exploitable :"
+        labels:
+          source: "Base :"
+          selection: "Sélection :"
+          group: "Groupe :"
+          selected: "Titres sélectionnés :"
+          analyzed: "Profils calculés :"
+          retained: "Candidats retenus :"
+          rejected: "Candidats éliminés :"
+          failures: "Historiques ignorés :"
+          displayed: "Lignes affichées :"
+          ranking_criteria: "Critères du classement global :"
+          freshness_reference: "Référence fraîcheur :"
+          freshness_rule: "Règle de fraîcheur :"
+          analysis_period: "Critères calculés sur :"
+          liquidity_rule: "Règle de liquidité :"
+        ranking_criteria_value: "%{used} premiers sur 7 (trend → liquidity → volatility → oscillation → drawdown → gap → step)"
+        freshness_reference_value: "date atteinte par au moins 95 % des titres de chaque dataset"
+        freshness_rule_value: "vigilance dès 1 séance de retard ; élimination au-delà de %{count} séances"
+        freshness_unavailable: "non évaluée (historique filtré, dataset ambigu ou fraîcheur indisponible)"
+        analysis_period_value: "%{count} dernières séances de chaque titre (ATR sur 20 séances)"
+        liquidity_rule_value: "médiane ≥ %{amount} ; vigilance si > %{ratio} % des séances sont sous ce seuil"
+        columns:
+          global_rank: Total
+          criterion_ranks: Rangs
+          ticker: Ticker
+          name: Nom
+          years: Ans
+          lag: Ret.
+          trend: Tend%/a
+          traded_value: Val.méd
+          atr: ATR%
+          range: Range%
+          swings: Sw5/a
+          drawdown: DD%
+          gaps: Gap%
+          step: Pas%
+          moves: Mouv/a
+          status: Statut
+          warnings: Aler.
+        boolean:
+          "yes": "oui"
+          "no": "non"
+        eligibility:
+          "yes": "O"
+          "no": "N"
+          unknown: "?"

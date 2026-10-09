@@ -1,0 +1,156 @@
+fr:
+  operation:
+    header: "Gère les opérations"
+    banner: |
+      Gère les opérations
+
+      Usage: jedi operation <sous-commande>
+
+      sous-commandes :
+    #
+    # --- create ---
+    #
+    create:
+      header: "Crée une nouvelle opération"
+      banner: |
+        Description :
+          Crée une nouvelle opération sur un trade existant
+      usage: |
+        Usage: 
+          1ère forme, avec champs nommés :
+            jedi operation create <id | nom> --date=DATE --time=TIME --type=TYPE \
+                                             --mode=MODE --quantity=QUANTITY \
+                                             --price=PRICE [--fees=FEES] [options]
+
+          2ème forme, avec champs positionnels :  
+            jedi operation create <id | nom> <date> <time> <type> <mode> <quantity> \
+                                  <price> [fees] [options]
+      notes: |
+        Notes :
+          La syntaxe recommandée utilise un argument positionnel pour l'identifiant du trade
+          et des champs nommés pour les autres paramètres.  
+          La syntaxe positionnelle est un raccourci équivalent, sur champs requis uniquement.
+          Un prix nul est réservé à une opération Sell qui solde intégralement le stock,
+          par exemple après la liquidation du titre.
+          ** Ne pas mélanger les syntaxes **
+      required_arguments: |
+        Arguments requis :
+          <id>                             Id du trade dans la base de données             
+          <nom>                            Nom du trade
+      examples: |
+        Exemples :
+          jedi operation create g22 --date 2026-04-15 --time 15:00:00 --type Buy --mode Limit \
+                                    --quantity 100 --price 10.0
+          jedi operation create 22 2026-04-15 15:00:00 Buy Limit 100 10.0
+      required_date: "Date de la transaction (format ISO 8601: YYYY-MM-DD)"
+      required_time: "Heure de la transaction (format ISO 8601: HH:MM:SS)"
+      required_type: "Type de transaction : Buy ou Sell"
+      required_mode: "Mode d'exécution : Market, Limit, Stop ou StopLoss"
+      required_quantity: "Quantité exécutée"
+      required_price: |-
+        Prix d'exécution
+        (utiliser la syntaxe +PRICE pour passer le contrôle du pas  
+         de cotation)
+      optional_fees: |-
+        Frais de transaction 
+        (à défaut, calculés selon les paramètres de configuration)
+      # from operation_creator:
+      trade_is_closed: "Le trade %{ref} est clôturé (stock = 0)."
+      no_settings: "Le trade %{ref} n'est pas encore paramétré."
+      success: "Opération %{ref} créée."
+      date_exceeded_last_operation: "Date %{date} dépassée (par la dernière opération)."
+      date_exceeded_last_settings: "Date %{date} dépassée (par le dernier paramétrage)."
+      tick_control: "Prix non valide en raison du pas de cotation '%{tick}'."
+      buy_required: "Opération de type Buy exigée (mode Limit ou Market)."
+      missing_reinit_option: "Option 'reinit' manquante."
+      short_selling_forbidden: "Vente à découvert non autorisée."
+      type_mode_invalid: "Type et mode d'opération invalide."
+      quantity_must_be_positive: "La quantité de l'opération doit être strictement positive (valeur reçue : %{quantity})."
+      price_must_be_positive: "Le prix de l'opération doit être fini et strictement positif (valeur reçue : %{price})."
+      zero_price_requires_full_liquidation: "Un prix nul n'est autorisé que pour une opération Sell soldant intégralement la position."
+      invalid_fees: "Les frais de l'opération doivent être finis et positifs ou nuls (valeur reçue : %{fees})."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Supprime la dernière opération créée"
+      banner: |
+        Description :
+          Supprime la dernière opération créée
+      usage: |
+        Usage: 
+          jedi operation delete [options]
+      notes: |
+        Condition : 
+          Pas de paramétrage plus récent
+      examples: |
+        Exemple:
+          jedi operation delete
+      # from operationdeleter:
+      nothing: "Rien à supprimer."
+      recent_settings: "Un paramétrage plus récent existe, supprimez-le d'abord."
+      confirm: "Ok pour supprimer l'opération %{ref} %{detail} : (o/N)? "
+      success: "Opération %{ref} supprimée."
+    #
+    # --- list ---
+    #
+    list:
+      header: "Liste les operations"
+      banner: |
+        Description :
+          Liste les opérations
+      usage: |
+        Usage : 
+          jedi operation list [filters] [options]
+      filters:
+        regex: |2-
+                                             Les champs filtrables sont 'id', 'timestamp', 'type' et 
+                                             'mode' de la table 'operation', ainsi que le champ 'name'
+                                             des tables 'trade', 'security' et 'scale' (si l'option --csv est
+                                             utilisée, l'option --extended doit également être
+                                             utilisée pour étendre le filtrage à ces 3 derniers champs).
+      notes: |
+        Notes:
+          Le filtrage est réalisé dans l'ordre suivant :
+            1. Trades en cours
+            2. regex (Expression régulière)
+            3. Sélection d'enregistrements
+      examples: |
+        Exemple:
+          jedi operation list "Market && scale=qdt"
+      option_group: "Groupe les opérations par nom de trade"
+      option_extended: |-
+        Avec l'option CSV, ajoute les noms de trade, 
+        de titre et de barème
+      # from operationlister:
+      option_group_records: "Avec l'option --group, l'option --select n'accepte que les n premiers ou n derniers enregistrements"
+      option_group_missing: "L'option --running est requise en présence de l'option --group"
+      option_csv_missing: "L'option --csv est requise en présence des options --headers ou --extended"
+      table:
+        title:
+          all: "Liste des opérations"
+          one: "Opération sélectionnée"
+          some: "Liste des opérations sélectionnées"
+        id: "\nId"
+        trade_name: "Nom\nTrade"
+        security_name: "Nom\nTitre"
+        sg: "SG\nId"
+        scale_name: "Nom\nBarème"
+        dateonly: "\nDate"
+        timestamp: "Horodatage\nOpération"
+        type: "\nType"
+        mode: "\nMode"
+        quantity: "\nQuantité"
+        price: "\nPrix"
+        position: "\nPosition"
+        buy: "\nAchat"
+        sell: "\nVente"
+        gains_losses: "Gains\nPertes"
+        trade_invest: "Invest.\nTrade"
+        global_invest: "Invest.\nGlobal"
+        fees: "\nFrais"
+        stock_held: "Stock\ndétenu"
+        ksp: "\nksp"
+        kcp: "\nkcp"
+    #operation:
+    query_failed: "Opération %{ref} non trouvée."

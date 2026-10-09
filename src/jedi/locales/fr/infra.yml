@@ -1,0 +1,178 @@
+fr:
+  infra:
+    cancelled: "Commande annulée."
+    no_chars: "Nn"
+    no_match: "Pas de correspondance trouvée"
+    incompatible_options: "Les options '%{opt1}' et '%{opt2}' ne sont pas compatibles."
+    field_required: "La valeur du champ '%{field}' n'est pas valide."
+    required_fields: "Champs requis :"
+    options: "Options :"
+    positional_arguments: "Nombre d'arguments positionnels requis : %{count}."
+    filters: "Filtres :"
+    optional_fields: "Champs optionnels :"
+    database_required: "Une base de données est nécessaire."
+    "yes": "Oui"
+    "no": "Non"
+    record_ref:
+      id: "n°%{id}"
+      name: "'%{name}'"
+    invalid_regex: "'%{regex}' n'est pas une expression régulière valide."  
+    failed: "Échec"
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    invalid_lang_format: "Format de LANG '%{lang}' invalide"
+    see_logfile: "Voir le fichier log '%{logfile}'"
+    yes_chars: "Oo"
+    # common words in yaml => double quotes required
+    # from Core::Conversion module
+    nil_or_empty_value: "La valeur est nulle ou vide."
+    nil_or_empty_value_for_name: "La valeur de '%{name}' est nulle ou vide"
+    invalid_datetime: "Date '%{date}' ou heure '%{time}' invalide."
+    invalid_date: "Date '%{date}' invalide (format attendu : AAAA-MM-JJ)"
+    invalid_operation_type: "Le type d'opération '%{type}' n'est pas valide."
+    invalid_operation_mode: "Mode d'opération '%{mode}' invalide"
+    invalid_decimal_value_for_name: "Valeur décimale '%{value}' invalide pour '%{name}'"
+    invalid_decimal_value: "Valeur décimale '%{value}' invalide"
+    invalid_integer_value_for_name: "Valeur entière '%{value}' invalide pour '%{name}'"
+    invalid_integer_value: "Valeur entière '%{value}' invalide"
+    invalid_table_id: "Id de table n° %{id} invalide"
+    # from Core::Validation
+    invalid_string_size: "La longueur du contenu doit être comprise entre %{min} et %{max}"
+    invalid_string_size_for_name: "La longueur du contenu de '%{name}' doit être comprise entre %{min} et %{max}"
+    invalid_column_index: "L'index de colonne '%{col}' est invalide"
+    invalid_money: "Champ 'money' (='%{money}') : erreur de syntaxe ou valeurs invalides."
+    #invalid_money: &invalid_money "Erreur lors de la lecture du champ 'money' (='%{money}')."
+    #
+    # date_nil_or_empty: "Date not provided"
+    # time_nil_or_empty: "Time not provided"
+    # type_nil_or_empty: "Missing operation type"
+    # mode_nil_or_empty: "Missing operation mode"
+    # price_nil_or_empty: "Missing price"
+    # invalid_decimal_price: "Invalid decimal price '%{price}'"
+    # quantity_nil_or_empty: "Missing quantity"
+    # invalid_integer_quantity: "Invalid integer quantity '%{quantity}'"
+    #
+    option_distance: "Définit le coefficient de distance au stop"
+    #
+    ## validation needed for keys below
+    #
+    arg_check_error: "Incohérence dans le nombre d'arguments."
+    incompatible_args: "L'option --edit exclut l'utilisation des champs."
+    record_query_failed: "Pas d'enregistrement trouvé pour '%{entity}' avec '%{key}=%{ident}'."
+    internal_error: "Une erreur est survenue lors du traitement de la commande."
+    field_invalid: "Champ %{field}='%{value}' invalide pour %{entity} id=%{id}."
+    #field_required: "Champ '%{field}' valide requis."
+    field_not_set: "Le champ '%{field}' doit être renseigné."
+    invalid_date_format: "Le format de la date n'est pas valide ; le format attendu est 'aaaa-mm-jj'."
+    invalid_time_format: "Le format de l'heure n'est pas valide ; le format attendu est 'hh:mm:ss'."
+    #field_required: "Champ '%{field}' exigé pour %{entity} #%{id}."
+    #valid_field_required_for: "Champ '%{field}' valide exigé pour %{entity} #%{id}."
+    no_argument: "Aucun argument requis"
+    extra_arguments: "Argument(s) excédentaire(s) : '%{args}'"
+    unexpected_arguments: "Argument(s) '%{args}' non attendu(s)"
+    unused_arguments: "Argument(s) '%{args}' non utilisé(s)"
+    corrupted_data: |-
+      Champ %{field}='%{value}' pour %{entity} id=%{id} : données corrompues.
+      Cette anomalie nécessite une correction à l'aide d'un outil externe, car Jedi ne peut pas modifier cette donnée.
+    global_options: "Options globales :"
+    preset_border_expected: "Un style d'encadrement est attendu après l'option -b | --border"
+    unknown_option: "Option '%{option}' inconnue"
+    options_not_allowed_here: "Option %{option} non permise ici."
+    unknown_command: "Commande '%{command}' inconnue."
+    jedi_help: "Exécutez la commande '%{cmd}' pour afficher la page d'aide."
+    #jedi_help: "Exécutez la commande 'jedi' seule pour obtenir une page d'aide."
+    trade_help: "Exécutez la commande 'jedi trade' seule pour obtenir une page d'aide."
+    scale_help: "Exécutez la commande 'jedi scale' seule pour obtenir une page d'aide."
+    unknown_subcommand: "Sous-commande '%{subcommand}' inconnue."
+    argc_check: "Arguments invalides, manquants ou excédentaires"
+    options_error: "Options manquantes, inattendues ou incompatibles"
+    na: ""
+    noconfirm: "Exécute la commande sans demander de confirmation."
+    verbose: "Active le mode verbeux"
+    invalid_field_as_key: "Le champ '%{field}', utilisé comme clé d'accès, ne peut pas être modifié"
+    invalid_option: "Option '%{option}' invalide"
+    missing_option: "Argument attendu pour l'option '%{option}'."
+    integer_value_expected: "Une valeur entière est attendue pour l'option '%{option}'"
+    contents_missing: "Le champ '%{field}' ne peut être ni vide ni nul"
+    option_invalid_argument: "Argument '%{arg}' invalide pour l'option '%{option}'"
+    invalid_argument: "Format de l'argument '%{arg}' invalide ('-' ou '--' non autorisé)."
+    ambiguous_command: "Commande '%{command}' ambigüe"
+    ambiguous_subcommand: "Sous-commande '%{subcommand}' ambigüe"
+    invalid_preset_border: "Style d'encadrement invalide '%{preset}'"
+    border_preset: |-
+      Selectionne le style d'encadrement, parmi les valeurs suivantes :
+        - ascii         - modern         - markdown   - empty 
+        - reducedascii  - reducedmodern  - fancy      - blank
+    help: "Affiche cette page d'aide"
+    #
+    # Generic options, independent from call site
+    #
+    option_records: |-
+      Sélectionne uniquement les enregistrements définis 
+      dans RECORDS, une liste d'éléments séparés par des 
+      virgules, avec la syntaxe suivante :
+      - la lettre F ou L (insensible à la casse), suivie 
+        d'un entier, pour désigner respectivement les premiers 
+        ou les derniers enregistrements à sélectionner
+      - un nombre entier positif (ou négatif pour l'indexation 
+        en fin de tableau)
+      - une plage composée de deux entiers, positifs ou négatifs, 
+        séparés par deux points
+      Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                enregistrements et les 12 derniers.
+    option_regex: |-
+      Filtre regex, insensible à la casse, appliqué à 
+      la concaténation des champs filtrables. 
+      && = ET, || = OU, avec priorité de && sur ||.
+      Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+      Chaque terme est une regex indépendante. L’ordre des champs
+      n’a pas d’importance. Parenthèses non prises en charge.
+    option_columns: |-
+      Sélectionne les index de colonne à afficher à l'aide d'une
+      liste d'entiers ou d'une plage d'entiers, par exemple :
+      1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+      l'ordre des index, et les plages peuvent être inversées 
+      (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+      (Non compatible avec l'option --csv)
+    option_reinit: |-
+      Réinitialise le trade avec VALUE = 'reset,<price>' ou 'merge,<price>' :
+      - le résultat financier des transactions passées est conservé
+      - l'historique des paramétrages précédents est oublié
+      - Selon les paramètres passés à l'option, la base de calcul (q0 et c0) 
+        est redéfinie comme suit:
+        - Avec 'reset, <price>' : q0 prend la valeur du stock existant, 
+          c0 prend la valeur du paramètre <price>
+        - Avec merge, <price>, q0 et c0 résultent d'un calcul pondéré 
+          prenant en compte leurs valeurs présentes et celles de la 
+          transaction à suivre, achat ou vente, à l'initiative de l'utilisateur. 
+          Cela permet d'augmenter ou de réduire le montant investi sur le trade.
+    option_split: |-
+      Effectue un fractionnement ou un regroupement d'actions, selon le ratio
+      défini par les valeurs 'NEW' et 'OLD', c'est-à-dire 'NEW' actions
+      nouvelles pour 'OLD' actions anciennes.
+    option_sync: |-
+      Après un 'gap' important ou un abandon temporaire du trade, resynchronise 
+      la position au niveau d'un cours théorique :
+      - immédiatement inférieur au prix courant en cas de hausse,
+      - immédiatement supérieur au prix courant en cas de baisse.
+      ** Cette option n'est applicable qu'aux barèmes de Type I **
+    option_csv: "Exporte les enregistrements au format CSV"
+    option_headers: "Inclut les entêtes lorsque l'option --csv est activée"
+    option_running: "Trades en cours seulement"
+    option_update_now: "Force la mise à jour des cotations"
+    option_layout: |-
+      Affiche le tableau selon différentes dispositions :
+        0 = colonnes les plus utiles (défaut)
+        1 = toutes les colonnes
+        2, 3 = colonnes réduites (pour la documentation)
+    option_date: "Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)"
+    command_options: "Options de commande :"
+    exclusive_options: "Les options '%{opt1}' et '%{opt2}' sont mutuellement exclusives"
+    system_exception: "Exception système : %{ex_message}"
+    io_error: "Erreur d'entrée-sortie : %{ex_message}"

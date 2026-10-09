@@ -1,0 +1,336 @@
+en:
+  market:
+    header: "Manages market quotation databases"
+    banner: |
+      Market quotation databases
+
+      Usage: jedi market <subcommand>
+    options:
+      universe: "General universe used in the database name (default: %{universe})"
+      date_order: "Date order: auto, ymd, dmy or mdy (default: auto)"
+      year_pivot: "Two-digit year pivot from 0 to 99 (default: 70)"
+      from: "First quotation date retained, in YYYY-MM-DD format"
+      allow_gap: "Explicitly accepts a history gap larger than 7 calendar days"
+      as_of: "Group membership reference date in YYYY-MM-DD format"
+      reference_source: "Reference source for group membership"
+      group_add: "Add the security to the group"
+      group_remove: "Remove the security from the group"
+      dataset: "Limits the report to the specified dataset"
+      last_quote: "Add the date and closing price of the last quote"
+      date: "Selects quotes by date (ge, gt, le, or lt), in the format OP:YYYY-MM-DD"
+    init:
+      header: "Creates an empty market database"
+      banner: |
+        Description:
+          Creates an empty database for one source and general universe.
+          Datasets are then added with the import subcommand.
+      usage: |
+        Usage:
+          jedi market init <source> [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Logical source name used in the database filename
+      examples: |
+        Example:
+          jedi market init abcbourse
+    import:
+      header: "Imports a new dataset"
+      banner: |
+        Description:
+          Adds a set of securities and quotations to an existing database.
+          ISINs without labels are skipped and listed in the report.
+      usage: |
+        Usage:
+          jedi market import <source> <dataset> <quotes> <labels> [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+          <dataset>                        Free dataset code, for example Euronext_A
+          <quotes>                         Quotation file
+          <labels>                         ISIN;Name;Ticker labels file
+      examples: |
+        Examples:
+          jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt
+          jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01
+    replace:
+      header: "Replaces an existing dataset"
+      banner: |
+        Description:
+          Replaces one dataset transactionally. Data shared with other datasets
+          is preserved.
+      usage: |
+        Usage:
+          jedi market replace <source> <dataset> <quotes> <labels> [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+          <dataset>                        Dataset code to replace
+          <quotes>                         New quotation file
+          <labels>                         ISIN;Name;Ticker labels file
+      examples: |
+        Examples:
+          jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt
+          jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01 --noconfirm
+      confirm: "Replace dataset '%{dataset}' in database '%{database}'? "
+    update:
+      header: "Updates an existing dataset"
+      banner: |
+        Description:
+          Non-destructively merges securities and quotations into an existing
+          dataset. Equivalent duplicates are ignored; a conflicting quotation
+          is reported and skipped. An extension more than 7 calendar days
+          after the current dataset end is rejected unless --allow-gap is used.
+      usage: |
+        Usage:
+          jedi market update <source> <dataset> <quotes> <labels> [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+          <dataset>                        Dataset code to update
+          <quotes>                         Quotation update file
+          <labels>                         ISIN;Name;Ticker labels file
+      examples: |
+        Examples:
+          jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt
+          jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt --allow-gap
+    sync_group:
+      header: "Synchronizes a market group"
+      banner: |
+        Description:
+          Transactionally replaces the membership of a named group from a
+          simple file containing an ISIN or ticker at the beginning of each
+          line. A label may follow after whitespace, ';' or ':'. Blank lines
+          and lines beginning with # are ignored. Existing members absent from
+          the file are removed from the group.
+      usage: |
+        Usage:
+          jedi market sync-group <source> <group> <references_file> [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+          <group>                          Free group code, for example PEA
+          <references_file>                File containing an ISIN or ticker at line start
+      examples: |
+        Example:
+          jedi market sync-group abcbourse PEA pea.txt --reference-source=prorealtime --as-of=2026-09-24
+    group:
+      header: "Updates a market group manually"
+      banner: |
+        Description:
+          Adds one security to an existing group or removes it.
+      usage: |
+        Usage:
+          jedi market group <source> <group> <ISIN> (--add | --remove) [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+          <group>                          Existing group code
+          <ISIN>                           Security ISIN
+      examples: |
+        Examples:
+          jedi market group abcbourse PEA FR0000031122 --add
+          jedi market group abcbourse PEA FR0000031122 --remove
+      one_action_required: "Specify exactly one of --add or --remove."
+      updated: "%{ticker} (%{isin}) is now %{membership} group %{group}."
+      member: "a member of"
+      not_member: "absent from"
+    info:
+      header: "Displays market database contents"
+      banner: |
+        Description:
+          Displays a global database summary, details for each dataset and
+          several integrity checks.
+      usage: |
+        Usage:
+          jedi market info <source> [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+      examples: |
+        Examples:
+          jedi market info abcbourse
+          jedi market info abcbourse --dataset=Euronext_A
+      title: "Market database information"
+      source: "Source"
+      universe: "Universe"
+      database: "File"
+      schema_version: "Schema version"
+      file_size: "Size"
+      created_at: "Created at"
+      updated_at: "Last modified"
+      dataset_count: "Datasets"
+      security_count: "Distinct securities"
+      quote_count: "Distinct quotations"
+      period: "Quotation period"
+      group_count: "Groups"
+      groups: "Groups"
+      no_group: "No group"
+      group_member_count: "Members"
+      group_reference_source: "Reference source"
+      group_reference_date: "Reference date"
+      group_synchronized_at: "Last synchronization"
+      datasets: "Datasets"
+      no_dataset: "No dataset"
+      dataset_totals_note: "A security or quotation may belong to several datasets; per-dataset totals are therefore not necessarily additive."
+      dataset_security_count: "Securities"
+      dataset_quote_count: "Quotations"
+      dataset_groups: "Members by group"
+      dataset_history_from: "Requested minimum date"
+      dataset_quotes_file: "Quotation file"
+      dataset_labels_file: "Labels file"
+      dataset_imported_at: "Last full import"
+      dataset_import_period: "Last full import period"
+      dataset_current_period: "Currently available period"
+      dataset_freshness_date_last: "Global freshness date (95%)"
+      freshness_unavailable: "unavailable"
+      not_available: "not available before the next full import"
+      integrity:
+        title: "Checks"
+        securities_without_dataset: "Securities without dataset"
+        datasets_without_security: "Datasets without security"
+        securities_without_quote: "Securities without quotation"
+        quotes_without_dataset: "Quotations without dataset"
+        dataset_stats_mismatches: "Inconsistent dataset statistics"
+        foreign_key_violations: "Foreign-key violations"
+        result: "Result"
+        ok: "OK"
+        failed: "ANOMALIES DETECTED"
+    list:
+      header: "List securities in a market database"
+      banner: |
+        Description:
+          Lists securities stored in the market database. --dataset can restrict
+          the list to one dataset. An optional regex filter can target all fields
+          or a named field.
+      usage: |
+        Usage:
+          jedi market list <source> [regex] [options]
+      required_arguments: |
+        Required arguments:
+          <source>                         Database source
+      filters:
+        regex: |2-
+                                             Filterable fields are: isin, ticker, name, group, dataset.
+      # filters: |
+      #   Filters:
+      #     [regex]    Regular expression applied to all fields.
+      #                Filterable fields are: isin, ticker, name, group, dataset.
+      #                && and || operators are supported; && has precedence.
+      examples: |
+        Examples:
+          jedi market list abcbourse
+          jedi market list abcbourse air
+          jedi market list abcbourse 'group=PEA && name=air'
+          jedi market list abcbourse --dataset=Euronext_Growth
+          jedi market list abcbourse 'ticker=^AL' --dataset=Euronext_A
+          jedi market list abcbourse --last-quote
+      table:
+        title:
+          all: "Securities in market database"
+          one: "Selected security in market database"
+          some: "Selected securities in market database"
+          dataset_all: "Securities in dataset '%{dataset}'"
+          dataset_one: "Selected security in dataset '%{dataset}'"
+          dataset_some: "Selected securities in dataset '%{dataset}'"
+        isin: "ISIN"
+        ticker: "Ticker"
+        name: "Name"
+        groups: "Group(s)"
+        datasets: "Dataset(s)"
+        date: "Date"
+        close: "Close"
+    quote:
+      header: "Displays quotation history for one security"
+      banner: |
+        Description:
+          Displays the complete OHLCV history of one market security. Date
+          selection is applied before record selection.
+      usage: |
+        Usage:
+          jedi market quote <source> <ISIN> [options]
+      required_arguments: |
+        Required arguments:
+          <source>   Database source
+          <ISIN>     Security ISIN
+      examples: |
+        Examples:
+          jedi market quote abcbourse FR0000120073
+          jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01
+          jedi market quote abcbourse FR0000120073 --select=20
+          jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01 --select=l20
+      table:
+        title: "Quotation history for %{ticker} (%{isin}) — %{name}"
+        date: "Date"
+        open: "Open"
+        high: "High"
+        low: "Low"
+        close: "Close"
+        volume: "Volume"
+    operations:
+      init: "initialization"
+      import: "dataset import"
+      replace: "dataset replacement"
+      update: "dataset update"
+      sync_group: "group synchronization"
+      info: "information display"
+      list: "security listing"
+      quote: "quotation history display"
+    operation_failed: "The '%{operation}' operation failed on market database '%{database}'. See the log for technical details."
+    database_already_exists: "Market database '%{database}' already exists."
+    dataset_already_exists: "Dataset '%{dataset}' already exists in market database '%{database}'."
+    dataset_not_found: "Dataset '%{dataset}' does not exist in market database '%{database}'."
+    dataset_gap: "Updating dataset '%{dataset}' would create a gap between %{last_date} and %{first_date} (%{gap_days} days; maximum allowed: %{max_gap_days}). Use --allow-gap to accept it explicitly."
+    invalid_date_order: "Invalid date order '%{value}' (expected: auto, ymd, dmy or mdy)"
+    invalid_year_pivot: "Invalid two-digit year pivot '%{value}' (expected: 0 to 99)"
+    invalid_from: "Invalid start date '%{value}' (expected: YYYY-MM-DD)"
+    group_not_found: "Group '%{group}' does not exist in the market database."
+    invalid_group: "Invalid group code '%{group}'."
+    invalid_as_of: "Invalid group reference date '%{value}' (expected: YYYY-MM-DD)"
+    report:
+      title: "Market database operation report"
+      operation: "Operation"
+      source: "Source"
+      universe: "Universe"
+      database: "Database"
+      source_filename: "Source file"
+      datasets: "Datasets"
+      isin: "ISIN"
+      ticker: "Ticker"
+      name: "Name"
+      dataset: "Dataset"
+      group: "Group"
+      labels_read: "Labels read"
+      securities_read: "Securities retained"
+      securities_inserted: "New securities"
+      securities_linked: "Securities linked to dataset"
+      securities_removed: "Securities removed"
+      quotes_read: "Quotations read"
+      quotes_inserted: "New quotations"
+      quotes_linked: "Quotations linked to dataset"
+      quotes_removed: "Quotations removed"
+      quotes_skipped_before_start: "Earlier quotations skipped"
+      quotes_skipped_without_label: "Unlabelled quotations skipped"
+      quotes_skipped_invalid: "Invalid OHLCV quotations skipped"
+      quotes_skipped_conflicting: "Conflicting quotations skipped"
+      invalid_quote_isins_count: "Securities with OHLCV anomalies"
+      identical_duplicates: "Identical duplicates"
+      period: "Quotation period"
+      update_period: "Update file quotation period"
+      dataset_date_last_before: "Dataset previous last date"
+      extension_date_first: "First extending quotation"
+      accepted_gap: "Accepted history gap"
+      accepted_gap_value: "%{days} days"
+      group_rows_read: "Group reference rows read"
+      group_references_read: "Distinct group references"
+      group_matched: "Matched securities"
+      unknown_isins_count: "Unknown references"
+      group_added_count: "Members added"
+      group_removed_count: "Members removed"
+      isins_without_label: "ISINs skipped because no label exists"
+      invalid_quotes: "Skipped OHLCV quotations"
+      conflicting_quotes: "Conflicting quotations skipped"
+      unknown_group_references: "Unknown group references"
+      group_added: "ISINs added to the group"
+      group_removed: "ISINs removed from the group"
+      warnings: "Warnings"
+      remaining_items: "… and %{count} more"

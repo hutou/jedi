@@ -1,0 +1,7 @@
+require "./app/types.cr"
+require "./app/exception.cr"
+require "./app/helpers.cr"
+require "./app/log_entry.cr"
+require "./app/logger.cr"
+require "./app/message.cr"
+require "./app/application.cr"

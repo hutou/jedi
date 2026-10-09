@@ -1,0 +1,176 @@
+en:
+  infra:
+    cancelled: "Command cancelled"
+    no_chars: "Nn"
+    no_match: "No match found"
+    incompatible_options: "Options '%{opt1}' and '%{opt2}' are not compatible."
+    field_required: "The value of the ‘%{field}' field is invalid."
+    required_fields: "Required fields:"
+    options: "Options:"
+    positional_arguments: "Number of positional arguments required: %{count}."
+    filters: "Filters:"
+    optional_fields: "Optional fields:"
+    database_required: "A database is required."
+    "yes": "Yes"
+    "no": "No"
+    record_ref:
+      id: "#%{id}"
+      name: "'%{name}'"
+    invalid_regex: "'%{regex}' is not a valid regular expression."  
+    failed: "Failed"
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    invalid_lang_format: "Invalid LANG format '%{lang}'"
+    see_logfile: "See logfile '%{logfile}'"
+    yes_chars: "Yy"
+    # common words in yaml => double quotes required
+    # from Core::Conversion module
+    nil_or_empty_value: "Value is nil or empty."
+    nil_or_empty_value_for_name: "Value for '%{name}' is nil or empty"
+    invalid_datetime: "Invalid date '%{date}' or time '%{time}'."
+    invalid_date: "Invalid date '%{date}' (required format: YYYY-MM-DD)"
+    invalid_operation_type: "The operation type '%{type}' is invalid."
+    invalid_operation_mode: "Invalid operation mode '%{mode}'"
+    invalid_decimal_value_for_name: "Invalid decimal value '%{value}' for '%{name}'"
+    invalid_decimal_value: "Invalid decimal value '%{value}'"
+    invalid_integer_value_for_name: "Invalid integer value '%{value}' for '%{name}'"
+    invalid_integer_value: "Invalid integer value '%{value}'"
+    invalid_table_id: "Invalid table Id #%{id}"
+    # from Core::Validation
+    invalid_string_size: "Contents length must be in range (%{min}..%{max})"
+    invalid_string_size_for_name: "Contents length for '%{name}' must be in range (%{min}..%{max})"
+    invalid_column_index: "Column index '%{col}' is invalid"
+    invalid_money: "'money' field (='%{money}'): syntax error or invalid values."
+    #invalid_money: &invalid_money "Error reading 'money' field (='%{money}')."
+    #
+    # date_nil_or_empty: "Date not provided"
+    # time_nil_or_empty: "Time not provided"
+    # type_nil_or_empty: "Missing operation type"
+    # mode_nil_or_empty: "Missing operation mode"
+    # price_nil_or_empty: "Missing price"
+    # invalid_decimal_price: "Invalid decimal price '%{price}'"
+    # quantity_nil_or_empty: "Missing quantity"
+    # invalid_integer_quantity: "Invalid integer quantity '%{quantity}'"
+    #
+    option_distance: "Defines the ‘distance to stop’ coefficient"
+    #
+    ## validation needed for keys below
+    #
+    #
+    arg_check_error: "Inconsistency in the number of arguments."
+    incompatible_args: "The --edit option disables the use of fields."
+    record_query_failed: "No record found for '%{entity}' with '%{key}=%{ident}'."
+    internal_error: "An error occurred while processing the command."
+    field_invalid: "Field %{field}='%{value}' invalid for %{entity} #%{id}."
+    field_not_set: "The '%{field}' field must be filled in."
+    invalid_date_format: "The date format is invalid; the expected format is ‘yyyy-mm-dd’."
+    invalid_time_format: "The time format is invalid; the expected format is ‘hh:mm:ss'."
+    #field_required: "Field '%{field}' required for %{entity} #%{id}."
+    #valid_field_required_for: "Valid field '%{field}' required for %{entity} #%{id}."
+    no_argument: "No argument required"
+    extra_arguments: "Extra argument(s): '%{args}'"
+    unexpected_arguments: "unexpected argument(s) '%{args}'."
+    unused_arguments: "Unused argument(s) '%{args}'."
+    #unexpected_error: "Error requiring analysis : see logfile '%{logfile}'."
+    corrupted_data: |-
+      Field %{field}='%{value}' for %{entity} #%{id}: corrupted data.
+      This error must be corrected using an external tool, as Jedi cannot modify this data.
+    global_options: "Global options:"
+    preset_border_expected: "A border style is expected after -b | --border option"
+    unknown_option: "Unknown option '%{option}'"
+    options_not_allowed_here: "Option %{option} not allowed here."
+    unknown_command: "Unknown command '%{command}'."
+    jedi_help: "Run the '%{cmd}' command to display the help page."
+    #jedi_help: "Run the 'jedi' command alone to view the help page."
+    trade_help: "Run the 'jedi trade' command alone to view the help page."
+    scale_help: "Run the 'jedi scale' command alone to view the help page."
+    unknown_subcommand: "Unknown subcommand '%{subcommand}'."
+    argc_check: "Invalid, missing, or excess arguments"
+    options_error: "Missing, unexpected or incompatible options"
+    na: ""
+    noconfirm: "Execute command without asking for confirmation."
+    verbose: "Set verbose mode"
+    invalid_field_as_key: "Field '%{field}' used as access key, cannot update"
+    invalid_option: "Invalid '%{option}' option"
+    missing_option: "Expected argument for option '%{option}'."
+    integer_value_expected: "Integer value expected for option '%{option}'"
+    contents_missing: "'%{field}' cannot be empty or null"
+    option_invalid_argument: "Argument '%{arg}' is invalid for option '%{option}'"
+    invalid_argument: "Invalid format for the ‘%{arg}’ argument (‘-’ or ‘--’ not allowed)."
+    ambiguous_command: "Ambiguous command '%{command}'"
+    ambiguous_subcommand: "Ambiguous subcommand '%{subcommand}'"
+    invalid_preset_border: "Invalid border style '%{preset}'"
+    border_preset: |-
+      Select border style, among following values:
+        - ascii         - modern         - markdown   - empty 
+        - reducedascii  - reducedmodern  - fancy      - blank
+    help: "Show this help"
+    #
+    # Generic options, independent from call site
+    #
+    option_records: |-
+      Selects the records defined in RECORDS, a comma-separated 
+      list of elements, with the following syntax:
+      - The letter F or L (case insensitive), followed by an 
+        integer, to designate the first or last records to be 
+        selected, respectively
+      - A positive or (negative integer for end-of-array indexing)
+      - A range of two integers, positive or negative, separated 
+        by a colon.
+      Example: "f10,-12:-1" for selecting the first 10 records 
+               and the last 12 ones
+    option_regex: |-
+      Regex filter, case insensitive, on the concatenation 
+      of all filterable fields.
+      && = AND, || = OR, with && before ||.
+      Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+      Each term is an independent regex. Field order does not 
+      matter. No parentheses support.
+    option_columns: |-
+      Select column indexes to display, using a list of integers
+      or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+      be displayed in the order of indexes, and ranges can be 
+      inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+      (not compatible with option --csv)
+    option_reinit: |-
+      Reset the trade with VALUE = 'reset,<price>' or 'merge,<price>': 
+      - The financial results of past transactions are retained
+      - The history of previous settings is cleared
+      - Depending on the parameters passed to the option, the calculation 
+        basis (q0 and c0) is redefined as follows:
+        - With ‘reset, <price>’: q0 takes the value of the existing position, 
+          and c0 takes the value of the <price> parameter
+        - With ‘merge, <price>’, q0 and c0 are calculated using a weighted average 
+          that takes into account their current values and those of the upcoming 
+          transaction—a buy or sell—initiated by the user. This allows the user 
+          to increase or decrease the amount invested in the trade.
+    option_split: |-
+      Performs a stock split or reverse stock split, based on the ratio
+      established by the values of ‘NEW’ and ‘OLD’, i.e., ‘NEW’ new shares
+      for ‘OLD’ old shares.
+    option_sync: |-
+      After a significant 'gap' or a temporary exit from the trade, resynchronize
+      the position at a theoretical price:
+      - immediately below the current price in the event of an uptrend,
+      - immediately above the current price in the event of a downtrend.
+      ** This option applies only to Type I scales **
+    option_csv: "Exports records in CSV format"
+    option_headers: "Includes headers when CSV selected"
+    option_running: "Running trades only"
+    option_update_now: "Force updating quotes"
+    option_layout: |-
+      Displays the table in different layouts, suitable for:
+        0 = most useful columns (default)
+        1 = All columns
+        2, 3 = (reduced columns, for doc)
+    option_date: "Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)"
+    command_options: "Command options:"
+    exclusive_options: "Options '%{opt1}' and '%{opt2}' are mutually exclusive"
+    system_exception: "System Exception: %{ex_message}"
+    io_error: "IO Error: %{ex_message}"

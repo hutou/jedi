@@ -1,0 +1,9 @@
+fr:
+  core:
+    conversion:
+      kv_decode_error: "Erreur de décodage de la liste d'arguments '%{args}'"
+    collection:
+      invalid_selection: "Sélection '%{selection}' non valide"
+    external_editor:
+      not_configured: "Aucun éditeur externe n'est configuré"
+      failed: "L'éditeur externe a échoué"

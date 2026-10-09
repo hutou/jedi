@@ -1,0 +1,1983 @@
+Jedi 1.0 — Aides des commandes
+
+===== database dump =====
+
+Description :
+  Génère un jeu de commandes jedi pour reconstituer une base de données
+
+Usage: 
+  jedi database dump [>filename] [options]
+  (la sortie standard est utilisée, généralement redirigée vers un fichier)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple: 
+  jedi database dump >jedidump.txt
+
+===== database load =====
+
+Description :
+  Alimente une base de données vide à partir d'un fichier
+
+Usage: 
+  jedi database load <filename>
+  (La base de données doit être vide)
+
+Argument requis :
+  <filename>                       Nom du fichier issu de la sous-commande 'database dump' redirigée
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi database load jedidump.txt
+
+===== database schema =====
+
+Affiche le schéma de la base de données, ainsi que son résumé sha256
+
+Usage: 
+  jedi database schema
+  (la sortie standard est utilisée)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi database schema
+
+===== main =====
+
+jedi, version 1.0.0
+
+L'application jedi est utilisable en mode 'ligne de commande' uniquement
+et répond à la syntaxe suivante : 
+
+jedi [options globales] commande sous-commande arguments [options]
+
+La saisie d'une commande seule permet d'afficher la liste des
+sous-commandes disponibles pour cette commande.
+
+- Arguments et options ne s'appliquent qu'à la sous-commande qui
+  les précède.
+  A ce niveau sont définis :
+  . le caractère obligatoire ou non des arguments
+  . la disponibilité d'options
+- Si aucun argument n'est requis, la sous-commande est immédiatement
+  exécutée.
+- Toutes les sous-commandes disposent d'une page d'aide avec l'option -h ou --help.
+
+Un double tiret "--" doit être utilisé pour séparer les options et
+les arguments positionnels (obligatoire si ceux-ci commencent par
+un simple tiret, comme les nombres négatifs). Attention donc au placement
+des options dans ce cas; elles doivent toujours précéder le double-tiret.
+
+Lorsqu'une option ou un argument positionnel attend une liste,
+les éléments de cette liste doivent être séparés par une virgule,
+sans espace intermédiaire (sauf si entourés de double quotes).
+
+Commandes :
+  security                         Gère les titres cotés (titres, ETF, fonds…)
+  quote                            Gère les cotations
+  trade                            Gère les trades (create, update, ...)
+  scale                            Gère les barèmes (Type I et type II)
+  settings                         Gère les paramétrages (barème, split, etc.)
+  operation                        Gère les opérations
+  note                             Gère les notes
+  database                         Gère la base de données
+  market                           Gère les bases de cotations de marché
+  tools                            La boîte à outils de Jedi
+
+  version                          Affiche des informations détaillées sur la version
+  config                           Affiche les données de configuration
+                                   (Utiliser l'option --paths pour n'afficher que les fichiers utilisés)
+                                   
+Notes:
+  Les commandes et sous-commandes peuvent être abrégées jusqu'au préfixe non ambigu le plus court.
+
+Options globales :
+  -b, --border=PRESET              Selectionne le style d'encadrement, parmi les valeurs suivantes :
+                                     - ascii         - modern         - markdown   - empty 
+                                     - reducedascii  - reducedmodern  - fancy      - blank
+
+===== market group =====
+
+Description :
+  Ajoute un titre à un groupe existant ou l'en retire.
+
+Usage :
+  jedi market group <source> <groupe> <ISIN> (--add | --remove) [options]
+
+Arguments requis :
+  <source>                         Source de la base
+  <groupe>                         Code du groupe existant
+  <ISIN>                           Code ISIN du titre
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --add                        Ajoute le titre au groupe
+      --remove                     Retire le titre du groupe
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market group abcbourse PEA FR0000031122 --add
+  jedi market group abcbourse PEA FR0000031122 --remove
+
+===== market import =====
+
+Description :
+  Ajoute un ensemble de titres et de cotations dans une base existante.
+  Les ISIN sans libellé sont ignorés et recensés dans le rapport.
+
+Usage :
+  jedi market import <source> <dataset> <quotes> <labels> [options]
+
+Arguments requis :
+  <source>                         Source de la base
+  <dataset>                        Code libre du dataset, par exemple Euronext_A
+  <quotes>                         Fichier de cotations
+  <labels>                         Fichier de libellés ISIN;Name;Ticker
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --date-order=ORDER           Ordre de date : auto, ymd, dmy ou mdy (défaut : auto)
+      --year-pivot=NN              Pivot des années sur deux chiffres, de 0 à 99 (défaut : 70)
+      --from=DATE                  Première date de cotation conservée, au format AAAA-MM-JJ
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt
+  jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01
+
+===== market info =====
+
+Description :
+  Affiche un rapport global sur la base, le détail de chaque dataset et
+  quelques contrôles d'intégrité.
+
+Usage :
+  jedi market info <source> [options]
+
+Arguments requis :
+  <source>                         Source de la base
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --dataset=CODE               Limite le rapport au dataset indiqué
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market info abcbourse
+  jedi market info abcbourse --dataset=Euronext_A
+
+===== market init =====
+
+Description :
+  Crée une base vide pour une source et un univers général. Les datasets
+  sont ensuite ajoutés avec la sous-commande import.
+
+Usage :
+  jedi market init <source> [options]
+
+Arguments requis :
+  <source>                         Nom logique de la source utilisé dans le nom de la base
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi market init abcbourse
+
+===== market list =====
+
+Description :
+  Liste les titres présents dans la base de marché. L'option --dataset
+  permet de limiter la liste à un dataset. Un filtre regex facultatif peut
+  porter sur l'ensemble des champs ou sur un champ nommé.
+
+Usage :
+  jedi market list <source> [regex] [options]
+
+Arguments requis :
+  <source>                         Source de la base
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont : isin, ticker, name, group, dataset.
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --dataset=CODE               Limite le rapport au dataset indiqué
+      --last-quote                 Ajoute la date et la clôture de la dernière cotation
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market list abcbourse
+  jedi market list abcbourse air
+  jedi market list abcbourse 'group=PEA && name=air'
+  jedi market list abcbourse --dataset=Euronext_Growth
+  jedi market list abcbourse 'ticker=^AL' --dataset=Euronext_A
+  jedi market list abcbourse --last-quote
+
+===== market quote =====
+
+Description :
+  Affiche l’historique OHLCV complet d’un titre de la base de marché.
+  La sélection par date est appliquée avant la sélection d’enregistrements.
+
+Usage :
+  jedi market quote <source> <ISIN> [options]
+
+Arguments requis :
+  <source>   Source de la base
+  <ISIN>     Code ISIN du titre
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+      --date=OP:DATE               Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market quote abcbourse FR0000120073
+  jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01
+  jedi market quote abcbourse FR0000120073 --select=20
+  jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01 --select=l20
+
+===== market replace =====
+
+Description :
+  Remplace transactionnellement un dataset. Les données partagées avec
+  d'autres datasets sont conservées.
+
+Usage :
+  jedi market replace <source> <dataset> <quotes> <labels> [options]
+
+Arguments requis :
+  <source>                         Source de la base
+  <dataset>                        Code du dataset à remplacer
+  <quotes>                         Nouveau fichier de cotations
+  <labels>                         Fichier de libellés ISIN;Name;Ticker
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --date-order=ORDER           Ordre de date : auto, ymd, dmy ou mdy (défaut : auto)
+      --year-pivot=NN              Pivot des années sur deux chiffres, de 0 à 99 (défaut : 70)
+      --from=DATE                  Première date de cotation conservée, au format AAAA-MM-JJ
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt
+  jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01 --noconfirm
+
+===== market sync-group =====
+
+Description :
+  Remplace transactionnellement la composition d'un groupe nommé à
+  partir d'un fichier simple contenant un ISIN ou un ticker en début
+  de ligne. Un libellé peut suivre après un espace, ';' ou ':'. Les
+  lignes vides et celles commençant par # sont ignorées. Les membres
+  absents du fichier sont retirés du groupe.
+
+Usage :
+  jedi market sync-group <source> <groupe> <fichier_references> [options]
+
+Arguments requis :
+  <source>                         Source de la base
+  <groupe>                         Code libre du groupe, par exemple PEA
+  <fichier_references>             Fichier contenant un ISIN ou ticker en début de ligne
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --as-of=DATE                 Date de référence de la composition du groupe, au format AAAA-MM-JJ
+      --reference-source=NAME      Source de référence de la composition du groupe
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi market sync-group abcbourse PEA pea.txt --reference-source=prorealtime --as-of=2026-09-24
+
+===== market update =====
+
+Description :
+  Fusionne sans suppression les titres et cotations dans un dataset
+  existant. Les doublons équivalents sont ignorés ; une cotation
+  conflictuelle est signalée et ignorée. Une extension située à plus de
+  7 jours calendaires de la fin actuelle du dataset est refusée, sauf
+  avec --allow-gap.
+
+Usage :
+  jedi market update <source> <dataset> <quotes> <labels> [options]
+
+Arguments requis :
+  <source>                         Source de la base
+  <dataset>                        Code du dataset à mettre à jour
+  <quotes>                         Fichier de cotations de mise à jour
+  <labels>                         Fichier de libellés ISIN;Name;Ticker
+
+Options :
+      --universe=NAME              Univers général utilisé dans le nom de la base (défaut : france)
+      --date-order=ORDER           Ordre de date : auto, ymd, dmy ou mdy (défaut : auto)
+      --year-pivot=NN              Pivot des années sur deux chiffres, de 0 à 99 (défaut : 70)
+      --from=DATE                  Première date de cotation conservée, au format AAAA-MM-JJ
+      --allow-gap                  Accepte explicitement une lacune historique supérieure à 7 jours calendaires
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt
+  jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt --allow-gap
+
+===== note create =====
+
+Description :
+  Crée une nouvelle note
+
+Usage :
+  1ère forme, avec un éditeur externe :
+    jedi note create --edit [options]
+
+  2nde forme, avec champs nommés :
+    jedi note create --date=DATE --summary=SUMMARY --contents=TEXT [options]
+    
+  3ème forme, avec champs positionnels :
+    jedi note create <date> <summary> <contents> [options]
+
+Notes :
+  Il est recommandé d'utiliser l'option --edit pour permettre l'édition complète du texte 
+  à l'aide de l'éditeur par défaut défini par les variables d'environnement EDITOR ou VISUAL.
+  L'utilisation de champs nommés ou champs positionnels reste possible, mais peu commode. 
+  ** Ne pas mélanger les syntaxes **
+
+Champs requis :
+      --date=DATE                  Date de création de la note
+      --summary=SUMMARY            Résumé de la note
+      --contents=TEXT              Contenu de la note
+
+Options :
+      --edit                       Crée la note à l'aide d'un éditeur externe
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi note create --edit
+  jedi note create --date 2026-05-28 --summary "Renault\nsummary" --contents "Renault\ncontents"
+  jedi note create 2026-05-28 "Renault\nsummary" "Renault\ncontents"
+
+===== note delete =====
+
+Description :
+  Supprime une note
+
+Usage : 
+  jedi note delete <id> [options]
+
+Arguments requis :
+  <id>                             Id de la note dans la base de données
+
+Options :
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi note delete 17
+
+===== note list =====
+
+Description :
+  Liste les notes
+
+Usage : 
+  jedi note list [filters] [options]
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id', 'date', 'summary' 
+                                   et 'contents'
+
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+Options :
+  -c, --column-indexes=INDEXES     Sélectionne les index de colonne à afficher à l'aide d'une
+                                   liste d'entiers ou d'une plage d'entiers, par exemple :
+                                   1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+                                   l'ordre des index, et les plages peuvent être inversées 
+                                   (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+                                   (Non compatible avec l'option --csv)
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi note list renault
+
+===== note show =====
+
+Description :
+  Affiche le contenu d'une note
+
+Usage : 
+  jedi note show <id> [options]
+
+Arguments requis :
+  <id>                             Id de la note dans la base de données
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi note show 42
+
+===== note update =====
+
+Description :
+  Met à jour une note
+
+Usage: 
+  1ère forme, avec un éditeur externe :
+    jedi note update <id> --edit [options]
+
+  2nde forme, avec champs nommés :
+    jedi note  update <id> --date=DATE --summary=SUMMARY --contents=TEXT [options]
+
+Notes :
+  Il est recommandé d'utiliser l'option --edit pour permettre l'édition complète du texte 
+  à l'aide de l'éditeur par défaut défini par les variables d'environnement EDITOR ou VISUAL.
+  L'utilisation de champs nommés reste possible, mais peu commode.
+  ** Ne pas mélanger les syntaxes **
+
+Arguments requis :
+  <id>                             Id de la note dans la base de données
+
+Champs requis :
+      --date=DATE                  Date de création de la note
+      --summary=SUMMARY            Résumé de la note
+      --contents=TEXT              Contenu de la note
+
+Options :
+      --edit                       Modifie la note à l'aide d'un éditeur externe
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi note update 42 --edit
+  jedi note update 42 --date 2026-05-28 --summary Summary\nexample
+
+===== operation create =====
+
+Description :
+  Crée une nouvelle opération sur un trade existant
+
+Usage: 
+  1ère forme, avec champs nommés :
+    jedi operation create <id | nom> --date=DATE --time=TIME --type=TYPE \
+                                     --mode=MODE --quantity=QUANTITY \
+                                     --price=PRICE [--fees=FEES] [options]
+
+  2ème forme, avec champs positionnels :  
+    jedi operation create <id | nom> <date> <time> <type> <mode> <quantity> \
+                          <price> [fees] [options]
+
+Notes :
+  La syntaxe recommandée utilise un argument positionnel pour l'identifiant du trade
+  et des champs nommés pour les autres paramètres.  
+  La syntaxe positionnelle est un raccourci équivalent, sur champs requis uniquement.
+  Un prix nul est réservé à une opération Sell qui solde intégralement le stock,
+  par exemple après la liquidation du titre.
+  ** Ne pas mélanger les syntaxes **
+
+Arguments requis :
+  <id>                             Id du trade dans la base de données             
+  <nom>                            Nom du trade
+
+Champs requis :
+      --date=DATE                  Date de la transaction (format ISO 8601: YYYY-MM-DD)
+      --time=TIME                  Heure de la transaction (format ISO 8601: HH:MM:SS)
+      --type=TYPE                  Type de transaction : Buy ou Sell
+      --mode=MODE                  Mode d'exécution : Market, Limit, Stop ou StopLoss
+      --quantity=QTY               Quantité exécutée
+      --price=PRICE                Prix d'exécution
+                                   (utiliser la syntaxe +PRICE pour passer le contrôle du pas  
+                                    de cotation)
+
+Champs optionnels :
+      --fees=FEES                  Frais de transaction 
+                                   (à défaut, calculés selon les paramètres de configuration)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi operation create g22 --date 2026-04-15 --time 15:00:00 --type Buy --mode Limit \
+                            --quantity 100 --price 10.0
+  jedi operation create 22 2026-04-15 15:00:00 Buy Limit 100 10.0
+
+===== operation delete =====
+
+Description :
+  Supprime la dernière opération créée
+
+Usage: 
+  jedi operation delete [options]
+
+Condition : 
+  Pas de paramétrage plus récent
+
+Options :
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi operation delete
+
+===== operation list =====
+
+Description :
+  Liste les opérations
+
+Usage : 
+  jedi operation list [filters] [options]
+
+Filtres :
+  -r, --running                    Trades en cours seulement
+
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id', 'timestamp', 'type' et 
+                                   'mode' de la table 'operation', ainsi que le champ 'name'
+                                   des tables 'trade', 'security' et 'scale' (si l'option --csv est
+                                   utilisée, l'option --extended doit également être
+                                   utilisée pour étendre le filtrage à ces 3 derniers champs).
+
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+Notes:
+  Le filtrage est réalisé dans l'ordre suivant :
+    1. Trades en cours
+    2. regex (Expression régulière)
+    3. Sélection d'enregistrements
+
+Options :
+  -g, --group                      Groupe les opérations par nom de trade
+  -c, --column-indexes=INDEXES     Sélectionne les index de colonne à afficher à l'aide d'une
+                                   liste d'entiers ou d'une plage d'entiers, par exemple :
+                                   1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+                                   l'ordre des index, et les plages peuvent être inversées 
+                                   (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+                                   (Non compatible avec l'option --csv)
+      --csv                        Exporte les enregistrements au format CSV
+      --headers                    Inclut les entêtes lorsque l'option --csv est activée
+  -x, --extended                   Avec l'option CSV, ajoute les noms de trade, 
+                                   de titre et de barème
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi operation list "Market && scale=qdt"
+
+===== quote get =====
+
+Description :
+  Affiche la cotation courante d'un titre identifié par son code ISIN
+
+Usage :
+  jedi quote get <isin>
+
+Arguments requis :
+  <isin>                           Code ISIN (International Securities Identification Number)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi quote get FR0000120271
+
+===== quote refresh =====
+
+Description :
+  Met à jour les cotations via les fournisseurs de données
+
+Usage: 
+  jedi quote refresh [filters] [options]
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id', 'isin', 'name' et 'ticker'
+Notes :
+  Par défaut, seuls les titres liés aux trades en cours sont mis à jour
+
+Options :
+  -m, --mode=MODE                  Mode de cotation: 'live' ou 'eod' (défaut: 'live')
+                                     - 'live' : mode pour l'extraction de données sur le Web 
+                                     - 'eod' (End of Day) : mode pour le téléchargement direct
+                                       (généralement non gratuit)
+      --force                      Force la mise à jour de tous les titres, selon filtrage.
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi quote refresh "isin=FR000005.*"
+  jedi quote refresh "MEDCL || ALCJ" --force
+
+===== quote set =====
+
+Description :
+  Met à jour manuellement le cours du titre
+
+usage :
+  1ère forme, avec champs nommés :
+    jedi quote set <id | isin> --price=PRICE [options]
+                     
+  2nde forme, avec champs positionnels :
+    jedi quote set <id | isin> <price> [options]
+
+Notes :
+  La mise à jour manuelle du cours va également forcer les champs 'website' à 'manual',
+  'timestamp' à date et heure courantes et 'quotation_variation' à null
+
+Arguments requis:
+  <id>                             Id du titre dans la base de données
+  <isin>                           Code ISIN (International Securities Identification Numbers)
+
+Options :
+      --price=PRICE                Le nouveau cours qui sera attribué au titre
+                                   
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi quote set 2 8.97
+
+===== quote update =====
+
+Description :
+  Met à jour les cotations d'un titre via les fournisseurs de données
+
+Usage: 
+  jedi quote update <id | isin> [options]
+
+Arguments requis:
+  <id>                             Id du titre dans la base de données
+  <isin>                           Code ISIN (International Securities Identification Numbers)
+
+Options :
+  -m, --mode=MODE                  Mode de cotation: 'live' ou 'eod' (défaut: 'live')
+                                     - 'live' : mode pour l'extraction de données sur le Web 
+                                     - 'eod' (End of Day) : mode pour le téléchargement direct
+                                       (généralement non gratuit)
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi quote update 17
+  jedi quote update FR0000050001
+
+===== scale create =====
+
+Description :
+  Crée un nouveau barème
+
+Usage :
+  1ère forme, avec champs nommés :
+    jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
+  2ème forme, avec champs positionnels :
+    jedi scale create <name> <comment> <builder> [options]
+
+Notes:
+  La syntaxe recommandée est d'utiliser les options nommées pour tous les paramètres.
+  La syntaxe positionnelle est un raccourci équivalent.
+  ** Ne pas mélanger les syntaxes **
+
+Champs requis :
+      --name=NAME                  Nom du barème :
+                                     - Doit commencer par une lettre,
+                                     - Suivie d'au moins un caractère alphanumérique.
+      --comment=COMMENT            Commentaire (forme libre)
+      --builder=BUILDER            Jeux de mots-clés des constructeurs de barème valides :
+                                     - {kc,ks,ki,kb}           : Type I, format canonique
+                                     - {kc,ki,kb,kd}           : Type I, optimisé sur 'ks'
+                                     - {vr,ks,ki,kb}           : Type II, format canonique
+                                     - {vr,np,nn,ki,kb,kd}     : Type II, optimisé sur 'ks'
+                                     - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+                                    Chaque mot-clé attend un ou plusieurs paramètres :
+                                     - np, nn, mi, kb : une seule valeur entière (par exemple, np:3)
+                                     - kc, ks : une liste de valeurs décimales, séparées par des virgules 
+                                       (par exemple, kc:1,45;1,30; 1,15, …)
+                                     - vr, sr, ki, kd : une seule valeur décimale (qui peut être exprimée 
+                                       en pourcentage, sauf pour kd)
+                                       (par exemple, vr:15 % ou vr:0.15)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi scale create --name sc01 --comment "scale 01" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+  jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+
+===== scale delete =====
+
+Description :
+  Supprime un barème
+
+Usage :
+  jedi scale delete <id | name> [options]
+
+Condition : 
+  Suppression non autorisée si le barème est (ou a été) utilisé
+
+Arguments requis :
+  <id>                             Id du barème dans la base de données
+  <name>                           Nom du barème
+
+Options :
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi scale delete 13
+  jedi scale delete sc01
+
+===== scale list =====
+
+Description :
+  Liste les barèmes
+
+Usage :
+  jedi scale list [filters] [options]
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id', 'name', 'comment', 
+                                   'status', 'type', 'optimized' (ainsi que 'definition' 
+                                   avec l'option --extended)
+
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+      --in-use                     Affiche seulement les barèmes en cours d'utilisation
+
+Notes:
+  Le filtrage est réalisé dans l'ordre suivant :
+    1. Barèmes en cours d'utilisation
+    2. regex (Expression régulière)
+    3. Sélection d'enregistrements
+
+Options :
+  -x, --extended                   Affiche aussi la définition du barème (forme canonique)
+      --csv                        Exporte les enregistrements au format CSV
+      --headers                    Inclut les entêtes lorsque l'option --csv est activée
+  -c, --column-indexes=INDEXES     Sélectionne les index de colonne à afficher à l'aide d'une
+                                   liste d'entiers ou d'une plage d'entiers, par exemple :
+                                   1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+                                   l'ordre des index, et les plages peuvent être inversées 
+                                   (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+                                   (Non compatible avec l'option --csv)
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi scale list --in-use -sl1
+  jedi scale list -x --csv --headers
+
+===== scale show =====
+
+Description :
+  Affiche les détails d'un barème
+
+Usage :
+  jedi scale show <id | name | ="literal"> [options]
+
+Arguments requis :
+  <id>                             Id du barème dans la base de données
+  <name>                           Nom du barème
+  "literal"                        Constructeur littéral d'un barème, 
+                                   introduit par le caractère '='
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi scale show qdt
+  jedi scale show ="vr:10.0%, ks:0.8,1.2, ki:0.0%, kb:0"
+
+===== scale update =====
+
+Description :
+  Met à jour un barème
+
+Usage :
+  jedi scale update <id | name> --name=NAME --comment=COMMENT --builder=BUILDER [options]
+
+Notes :
+  Plusieurs champs peuvent être mis à jour simultanément
+
+Arguments requis :
+  <id>                             Id du barème dans la base de données
+  <name>                           Nom du barème
+
+Champs optionnels :
+      --name=NAME                  Nom du barème :
+                                     - Doit commencer par une lettre,
+                                     - Suivie d'au moins un caractère alphanumérique.
+      --comment=COMMENT            Commentaire (forme libre)
+      --builder=BUILDER            Jeux de mots-clés des constructeurs de barème valides :
+                                     - {kc,ks,ki,kb}           : Type I, format canonique
+                                     - {kc,ki,kb,kd}           : Type I, optimisé sur 'ks'
+                                     - {vr,ks,ki,kb}           : Type II, format canonique
+                                     - {vr,np,nn,ki,kb,kd}     : Type II, optimisé sur 'ks'
+                                     - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+                                    Chaque mot-clé attend un ou plusieurs paramètres :
+                                     - np, nn, mi, kb : une seule valeur entière (par exemple, np:3)
+                                     - kc, ks : une liste de valeurs décimales, séparées par des virgules 
+                                       (par exemple, kc:1,45;1,30; 1,15, …)
+                                     - vr, sr, ki, kd : une seule valeur décimale (qui peut être exprimée 
+                                       en pourcentage, sauf pour kd)
+                                       (par exemple, vr:15 % ou vr:0.15)
+
+Options :
+      --force                      Force la mise à jour d'un barème utilisé
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi scale update 14 --builder "vr:10%, np:3, nn:3, ki:10%, kb:1, kd:0.3" --comment "barème sc01 v2"
+
+===== security create =====
+
+Description :
+  Crée un nouveau titre
+
+Usage : 
+  1ère forme, avec champs nommés :
+    jedi security create --isin=ISIN --name=NAME --ticker=TICKER \
+                        [--tick-buy=TICK_BUY] [--tick-sell=TICK_SELL] \
+                        [--tax-rate=TAX_RATE] [options]
+
+  2nde forme, avec champs positionnels :
+    jedi security create <isin> <name> <ticker> \
+                        [--tick-buy=TICK_BUY] [--tick-sell=TICK_SELL] \
+                        [--tax-rate=TAX_RATE] [options]
+
+Notes:
+  La syntaxe recommandée est d'utiliser les champs nommés pour tous les paramètres.
+  La syntaxe positionnelle est un raccourci équivalent, sur les champs requis uniquement.
+  ** Ne pas mélanger les syntaxes **
+
+Champs requis :
+      --isin=ISIN                  Identifiant ISIN  
+                                   (International Securities Identification Numbers)
+      --name=NAME                  Nom du titre
+      --ticker=TICKER              Code Ticker
+
+Champs optionnels :
+      --tick-buy=TICK_BUY          Valeur du pas de cotation à l'achat 
+                                   (défaut: 0.0001)
+      --tick-sell=TICK_SELL        Valeur du pas de cotation à la vente 
+                                   (défaut: 0.0001)
+      --tax-rate=TAX_RATE          Taxe financière à l'achat sur certaines valeurs 
+                                   (défaut: 0.0%)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi security create --isin FR0000131906 --name Renault --ticker RNO
+  jedi security create FR0000131906 Renault RNO --tick-buy 0.01 --tick-sell 0.01 --tax-rate 0.0
+
+===== security delete =====
+
+Description :
+  Supprime un titre
+
+Usage: 
+  jedi security delete <id | isin> [options]
+
+Condition: 
+  La suppression n'est pas autorisée si le titre est (ou a été) utilisé
+
+Arguments requis:
+  <id>                             Id du titre dans la base de données
+  <isin>                           Code ISIN (International Securities Identification Numbers)
+
+Options :
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi security delete FR0000131906
+
+===== security list =====
+
+Description :
+  Liste les titres
+
+Usage : 
+  jedi security list [filters] [options]
+
+Filtres :
+  -r, --running                    Trades en cours seulement
+
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id', 'isin', 'name' et 'ticker',
+                                   ainsi que les champs 'date', 'website' et 'mode' des données
+                                   de cotation si l'option --extended est activée.
+
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+Notes:
+  Le filtrage est effectué dans l'ordre suivant :
+    1. Titres liés aux trades en cours
+    2. regex (Expression régulière)
+    3. Sélection d'enregistrements
+
+Options :
+  -x, --extended                   Inclus les données de cotation
+      --csv                        Exporte les enregistrements au format CSV
+      --headers                    Inclut les entêtes lorsque l'option --csv est activée
+  -c, --column-indexes=INDEXES     Sélectionne les index de colonne à afficher à l'aide d'une
+                                   liste d'entiers ou d'une plage d'entiers, par exemple :
+                                   1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+                                   l'ordre des index, et les plages peuvent être inversées 
+                                   (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+                                   (Non compatible avec l'option --csv)
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi security list abiv
+
+===== security show =====
+
+Description :
+  Affiche les détails du titre
+
+Usage : 
+  jedi security show <id | isin> [options]
+
+Arguments requis:
+  <id>                             Id du titre dans la base de données
+  <isin>                           Code ISIN (International Securities Identification Numbers)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi security show FR0000131906
+
+===== security update =====
+
+Description :
+  Met à jour les détails du titre
+
+Usage : 
+  jedi security update <id | isin> [--isin=ISIN] [--name=NAME] [--ticker=TICKER] \
+                                   [--tick-buy=TICK_BUY]  [--tick-sell=TICK_SELL] \
+                                   [--tax-rate=TAX_RATE] [options]
+
+Arguments requis:
+  <id>                             Id du titre dans la base de données
+  <isin>                           Code ISIN (International Securities Identification Numbers)
+
+Champs optionnels :
+      --isin=ISIN                  Identifiant ISIN  
+                                   (International Securities Identification Numbers)
+      --name=NAME                  Nom du titre
+      --ticker=TICKER              Code Ticker
+      --tick-buy=TICK_BUY          Valeur du pas de cotation à l'achat 
+                                   (défaut: 0.0001)
+      --tick-sell=TICK_SELL        Valeur du pas de cotation à la vente 
+                                   (défaut: 0.0001)
+      --tax-rate=TAX_RATE          Taxe financière à l'achat sur certaines valeurs 
+                                   (défaut: 0.0%)
+
+Notes :
+  Plusieurs champs peuvent être mis à jour simultanément
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi security update FR0000131906 --name Renault --tick-buy 0.02
+  jedi security update 3 --tick-sell 0.05
+
+===== settings create =====
+
+Description :
+  crée un nouveau paramétrage de trade
+
+Usage : 
+  1ère forme, avec champs nommés :
+    jedi settings create <Trade: id | name> --scale <id | name> --date=DATE --time=TIME \
+                         [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+
+  2ème forme, avec champs positionnels :
+    jedi settings create <Trade: id | name> <Scale: id | name> <date> <time> \
+                         [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+
+Notes:
+  La syntaxe recommandée utilise un argument positionnel pour l'identifiant du trade
+  et des champs nommés pour les autres paramètres.  
+  La syntaxe positionnelle est un raccourci équivalent, sur les champs requis uniquement
+  ** Ne pas mélanger les syntaxes **
+
+Arguments requis:
+  <id>                             Id du trade dans la base de données             
+  <name>                           Nom du trade
+
+Champs requis :
+      --scale=ID                   Identifiant de barème par son Id dans la table 'scale'
+      --scale=NAME                 Identifiant de barème par son nom
+      --date=DATE                  Date de prise d'effet (format ISO 8601: YYYY-MM-DD)
+      --time=TIME                  Heure de prise d'effet (format ISO 8601: HH:MM:SS)
+
+Options :
+      --sync=POSITION              Après un 'gap' important ou un abandon temporaire du trade, resynchronise 
+                                   la position au niveau d'un cours théorique :
+                                   - immédiatement inférieur au prix courant en cas de hausse,
+                                   - immédiatement supérieur au prix courant en cas de baisse.
+                                   ** Cette option n'est applicable qu'aux barèmes de Type I **
+
+      --split=NEW:OLD              Effectue un fractionnement ou un regroupement d'actions, selon le ratio
+                                   défini par les valeurs 'NEW' et 'OLD', c'est-à-dire 'NEW' actions
+                                   nouvelles pour 'OLD' actions anciennes.
+
+      --reinit=VALUE               Réinitialise le trade avec VALUE = 'reset,<price>' ou 'merge,<price>' :
+                                   - le résultat financier des transactions passées est conservé
+                                   - l'historique des paramétrages précédents est oublié
+                                   - Selon les paramètres passés à l'option, la base de calcul (q0 et c0) 
+                                     est redéfinie comme suit:
+                                     - Avec 'reset, <price>' : q0 prend la valeur du stock existant, 
+                                       c0 prend la valeur du paramètre <price>
+                                     - Avec merge, <price>, q0 et c0 résultent d'un calcul pondéré 
+                                       prenant en compte leurs valeurs présentes et celles de la 
+                                       transaction à suivre, achat ou vente, à l'initiative de l'utilisateur. 
+                                       Cela permet d'augmenter ou de réduire le montant investi sur le trade.
+
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi settings create g22 --scale=qdt --date 2026-04-15 --time 15:00:00
+  jedi settings create 22 qdt 2026-04-15 15:00:00
+
+===== settings delete =====
+
+Description :
+  Supprime le dernier paramétrage créé
+
+Usage: 
+  jedi settings delete [options]
+
+Condition : 
+  Aucune opération ne doit être rattachée à ce paramétrage
+
+Options :
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi settings delete
+
+===== settings list =====
+
+Description :
+  Liste les paramétrages
+
+Usage : 
+  jedi settings list [filters] [options]
+
+Filtres :
+  -r, --running                    Trades en cours seulement
+
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id' et 'timestamp' dans la table
+                                   'settings', ainsi que le champ 'name' dans les tables 'trade',
+                                   'security' et 'scale'
+
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+Notes:
+  Le filtrage est réalisé dans l'ordre suivant :
+    1. Trades en cours
+    2. regex (Expression régulière)
+    3. Sélection d'enregistrements
+
+Options :
+  -g, --group                      Groupe les paramétrages par trade
+  -c, --column-indexes=INDEXES     Sélectionne les index de colonne à afficher à l'aide d'une
+                                   liste d'entiers ou d'une plage d'entiers, par exemple :
+                                   1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+                                   l'ordre des index, et les plages peuvent être inversées 
+                                   (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+                                   (Non compatible avec l'option --csv)
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi settings list "2018-" -gr
+  jedi settings list -sl3 -r
+
+===== settings show =====
+
+Description :
+  Affiche les détails d'un paramétrage
+
+Usage : 
+  jedi settings show <id> [options]
+
+Arguments requis : 
+  <id>                             Id du paramétrage dans la base de données
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi settings show 12
+
+===== tools backtest =====
+
+Description :
+  Simule un ou plusieurs trades sur un historique de cotations.
+  Après une clôture complète par stoploss, un nouveau trade est ouvert
+  à la séance suivante.
+
+Usage :
+  Depuis un fichier :
+    jedi tools backtest <fichier_cotations> --scale=DEF [--money=DEF] [options]
+
+  Depuis une base de marché :
+    jedi tools backtest --database=SOURCE --security=IDENT --scale=DEF [--money=DEF] [options]
+
+Arguments positionnels :
+  <fichier_cotations>   Fichier préparé contenant un seul titre
+                        Requis uniquement lorsque --database est absent
+
+
+Options de source :
+      --database=SOURCE            Charge les cotations depuis la base de marché SOURCE
+      --universe=NAME              Sélectionne l'univers de marché NAME (défaut : france)
+      --security=IDENT             Sélectionne le titre par ISIN ou ticker
+
+Définition de la simulation :
+      --scale=DEF                  Définition ou nom du barème (option requise)
+  -m, --money=DEFSTR               Définition optionnelle de la gestion du capital
+
+Sélection de l'historique :
+      --date=OP:DATE               Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+Dimensionnement :
+      --capital=AMOUNT             Définit le capital utilisé pour calculer le montant initial
+      --distance=COEFFICIENT       Définit le coefficient de distance au stop
+      --minimum-quantity=COUNT     Quantité minimale exigée pour chacun des ordres contrôlés (défaut : 2)
+      --operability-steps=COUNT    Nombre d'échelons haussiers contrôlés pour l'opérabilité (défaut : 3)
+
+Exécution OHLC :
+      --execution=MODE             Politique d'exécution OHLC : conservative (défaut) ou legacy
+      --opening-day-orders=WHEN    Activation des ordres après l'achat initial : next (séance suivante, défaut) ou same (même séance)
+
+Sorties :
+      --display=MODE               Affichage : compact (synthèse économique, défaut) ou technical (rapport complet avec diagnostics statistiques). -c permet de choisir les sections affichées.
+  -c, --command=COMMANDS           Sélectionne les sorties :
+                                     r : rapport synthétique
+                                     f : résultats financiers par trade et cumulés
+                                     o : liste des opérations
+                                     t : liste des trades
+                                     d : ordres restant actifs en fin de simulation
+                                     p : graphique en base 1
+                                   Les variantes T, K et S conservent l'affichage étendu de compatibilité.
+                                   Valeur par défaut : r en affichage compact, rf en affichage technique.
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi tools backtest cotations_RNO.txt --scale=Qdt
+  jedi tools backtest cotations_RNO.txt --scale=Qdt --money="r:1.5%,o:1,n:2" --capital=20000
+  jedi tools backtest --database=abcbourse --security=RNO --scale=Qdt
+
+===== tools calc =====
+
+Description :
+  Calculatrice Jedi sur barème de type I
+
+  "Maîtriser les calculs internes de Jedi par la pratique"
+
+  Seuls les barèmes de type I sont supportés. Utiliser la commande 'tools play'
+  pour des simulations complexes, mixant barèmes de type I et type II.
+
+Usage:
+  jedi tools calc <kcb | kcp | ksp | cpe | spe | quantity | price> <params> [options]
+
+Arguments requis : 
+                 --- fonctions ---
+  <kcb>                            Coefficient de capital
+  <kcp>                            Coefficient de prix
+  <ksp>                            Coefficient de quantité
+  <cpe>                            Cours théorique (au palier/échelon)
+  <spe>                            Stock théorique (au palier/échelon)
+  <quantity>                       Quantité de l'ordre (<0 = Vente, >0 = Achat)
+  <price>                          Cours de l'ordre arrondi au pas de cotation
+
+  Selon le calcul demandé, les paramètres à fournir dans <params> sont :
+                 --- arguments ---
+  <scale>                          Barème de type I (nom ou constructeur littéral)
+  <position>                       Position cible
+  <q0>                             Quantité d'achat initial
+  <c0>                             Prix d'achat initial
+  <dir>                            Direction des prix : valeurs 'up' ou 'down'
+  <stock>                          Stock existant
+  <tick>                           Pas de cotation
+
+Notes:
+  Relation entre calcul demandé et paramètres requis :
+  kcb      : scale, position
+  kcp      : scale, position
+  ksp      : scale, position
+  spe      : scale, position, q0
+  cpe      : scale, position, c0
+  quantity : spe, stock
+  price    : cpe, tick, dir
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi tools calc kcb scale=qdt position=1:1:1
+  jedi tools calc cpe scale="vr:20%,np:3,nn:3,ki:20%,kb:1,kd:0.2" position=1:1:0 c0=10 lsp=12 dir=up
+
+===== tools candidate =====
+
+Description :
+  Évalue mécaniquement un candidat avec un barème Jedi, sans base de cotations historiques.
+  Le candidat est choisi par l'utilisateur.
+  --price permet l'évaluation même si le titre n'est pas enregistré dans la base Jedi.
+
+Usage :
+  jedi tools candidate <isin> [--price=PRICE] --scale=DEF --amount=AMOUNT [options]
+  jedi tools candidate <isin> [--price=PRICE] --scale=DEF --money=DEF [--capital=AMOUNT] [options]
+
+Argument positionnel :
+  <isin>                           ISIN du candidat à évaluer
+
+
+Définition et dimensionnement :
+      --scale=DEF                  Définition ou nom du barème (option requise)
+      --price=PRICE                Cours courant du candidat ; remplace toute cotation enregistrée dans Jedi
+      --amount=AMOUNT              Montant T choisi par l'utilisateur (incompatible avec --money)
+  -m, --money=DEFSTR               Gestion du capital r/o/n ; r et n dimensionnent T à partir de K
+      --capital=AMOUNT             Capital portefeuille K utilisé pour la finançabilité et, avec --money, pour dimensionner T (défaut : capital dédié configuré)
+      --minimum-quantity=COUNT     Quantité minimale exigée pour chacun des ordres contrôlés (défaut : 2)
+      --operability-steps=COUNT    Nombre d'échelons haussiers contrôlés pour l'opérabilité (défaut : 3)
+
+Sortie :
+  -x, --extended                   Affiche les détails techniques du dimensionnement
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --amount=10000
+  jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --money="r:1%,o:1,n:2"
+  jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --money="r:1%,o:1,n:2" --capital=100000 --extended
+
+===== tools play =====
+
+Description :
+  Simule l'application d'un barème en fonction des paramètres fournis
+
+Usage :
+  1ère forme : à partir de l'environnement d'une opération de production
+    jedi tools play <id> <args>... [options]
+
+  2ème forme : à partir d'un environnement créé
+    jedi tools play <environment> <args>... [options]
+
+Arguments requis :
+  <id>                             Id d'une opération de la base de données à partir de laquelle
+                                   sera défini l'environnement de simulation
+
+  <environnement>                  Une liste de paramètres pour créer l'environnement de simulation
+                                   à partir de zéro, en utilisant les entités concaténées suivantes:
+                                   <scale>, <q0>, <c0>, <tick>, [<money>]
+
+  <args>...                        Liste d'arguments définissant le scénario de simulation, chaque argument
+                                   pouvant prendre l'une des formes suivantes :
+                                   - Un entier, positif ou négatif, indique le nombre d'échelons à franchir à
+                                     la hausse ou à la baisse (le zéro prenant aléatoirement la valeur 1 ou -1)
+                                   - Une liste d'entiers, séparés par des virgules, possiblement précédée
+                                     par un facteur multiplicatif (ex: 3x1,-1,0)
+                                   - Une valeur décimale, définissant un prix cible
+                                   - Une transaction "réelle", sous la forme q@p (q=quantité, p=prix), où la
+                                     variation de prix doit confirmer le signe de la quantité (< 0 = vente,
+                                     > 0 = achat)
+                                   - Un nouveau jeu de paramètres, comprenant mots-clés et valeurs associées
+                                     (scale=?, split=?, sync=?, reinit=?, loss=?, loss_trigger=?)
+                                   - Une nouvelle définition de la gestion du capital avec money=?
+                                   - Un nouveau statut de stop avec stop=?
+                                   - Une marque définissant le début du calcul des résultats financiers de
+                                     la simulation, avec 'mark'
+
+
+  -c, --command=COMMANDS           Affiche les résultats selon les caractères de commande suivants :
+                                     t : liste des trades       ) Les listes ci-contre peuvent être personnalisées
+                                     k : liste des titres       ) en sélectionnant les numéros d'index des colonnes
+                                     s : liste des barèmes      ) à afficher, selon l'ordre des index, avec la syntaxe :
+                                     c : liste des paramètres   ) n : numéro de colonne, n-m : intervalle de colonnes..
+                                     o : liste des opérations   ) Ex: o0,6-9,17,14-13 pour afficher les colonnes 0,6,7,8,9,17,14,13
+                                   
+                                     r : liste des ordres
+                                     f : résultats
+                                     d : deboggage
+Options :
+  -v, --verbose                    Active le mode verbeux
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi tools play -c o0,4,6-13,17rf -- scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0.0,q0=100,c0=10.0,tick=0.02 5 \
+                                       money=r:1.5%,o:1,n:2 -5
+  jedi tools play -- 811 3x1,-1 scale=vr:12%,np:3,sr:15%,nn:4,mi:300%,ki:15%,kb:1 2
+
+===== tools plot =====
+
+Description :
+  Trace la courbe d'un historique de cotations et sa régression linéaire.
+
+Usage :
+  Depuis un fichier :
+    jedi tools plot <fichier_cotations> [options]
+
+  Depuis une base de marché :
+    jedi tools plot --database=SOURCE --security=IDENT [options]
+
+Arguments positionnels :
+  <fichier_cotations>   Fichier préparé contenant un seul titre
+                        Requis uniquement lorsque --database est absent
+
+
+Options de source :
+      --database=SOURCE            Charge les cotations depuis la base de marché SOURCE
+      --universe=NAME              Sélectionne l'univers de marché NAME (défaut : france)
+      --security=IDENT             Sélectionne le titre par ISIN ou ticker
+
+Sélection de l'historique :
+      --date=OP:DATE               Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+Affichage :
+      --legend=POSITION            Position de la légende : tl, tr, bl ou br (défaut : automatique)
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi tools plot cotations_RNO.txt
+  jedi tools plot cotations_RNO.txt --legend=br --date=ge:2024-01-01
+  jedi tools plot --database=abcbourse --security=RNO --select=250
+
+===== tools profile =====
+
+Profil Jedi détaillé ou synthétique
+Usage :
+  Profil détaillé depuis un fichier :
+    jedi tools profile [options] <fichier_cotations>
+
+  Profil détaillé depuis SQLite :
+    jedi tools profile [options] --database=SOURCE --security=IDENT
+
+  Sélection d'un dataset :
+    jedi tools profile [options] --database=SOURCE --dataset=CODE
+
+  Sélection d'un groupe nommé :
+    jedi tools profile [options] --database=SOURCE --group=CODE
+
+  Sélection explicite de plusieurs titres :
+    jedi tools profile [options] --database=SOURCE \
+      --security=IDENT --security=IDENT [...]
+
+Argument positionnel :
+  <fichier_cotations>               Fichier préparé contenant un seul titre
+                                    (mode fichier uniquement)
+
+
+Source et périmètre :
+      --database=SOURCE            Charge les cotations depuis la base de marché SOURCE
+      --universe=NAME              Sélectionne l'univers NAME (défaut : france)
+      --security=IDENT             Sélectionne un titre par ISIN ou ticker ; option répétable
+      --dataset=CODE               Sélectionne tous les titres du dataset CODE
+
+Filtrage de la sélection :
+      --group=CODE                 Ne conserve que les titres membres du groupe CODE
+      --include-rejected           Inclut les candidats écartés
+
+Sélection de l'historique :
+      --date=OP:DATE               Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+Présentation :
+      --sort=KEY                   Trie selon KEY ; les valeurs de KEY sont toujours en anglais (voir Notes)
+      --rank-criteria=N            Utilise les N premiers critères dans le total global (1 à 7 ; défaut 7)
+      --limit=COUNT                Limite le résultat affiché aux COUNT premiers titres
+
+Notes :
+  Par défaut, une sélection en base est classée par rang global.
+  Le rang global additionne, sans pondération, les rangs obtenus sur les N premiers critères dans cet ordre :
+  tendance, liquidité, volatilité, oscillation, drawdown, gap et pas.
+  N est choisi avec --rank-criteria=N (1 à 7, défaut 7).
+  Les critères placés après N restent affichés à titre informatif mais n'influencent ni le total ni les égalités.
+  Deux valeurs identiques pour un critère reçoivent le même rang.
+  Le total le plus faible est classé en premier. En cas d'égalité, seuls les rangs retenus sont
+  départagés dans cet ordre, puis par ticker.
+  Les valeurs de --sort ne sont jamais traduites et doivent toujours être saisies en anglais :
+  global, ticker, trend, liquidity, volatility, oscillation, drawdown, gap, step.
+  Le rang global est relatif à la sélection courante : modifier la sélection peut modifier les rangs.
+  Les titres écartés n'entrent jamais dans le classement global ; --include-rejected les affiche avec "-"
+  pour Total/Rangs sans modifier les rangs des candidats retenus.
+  Les critères tendance, liquidité, oscillation, drawdown, gaps et pas utilisent les 252 dernières séances ;
+  l’ATR utilise les 20 dernières séances. La profondeur historique minimale reste un contrôle de qualité séparé.
+  La fraîcheur est évaluée en séances de marché par rapport à la date de fraîcheur globale du dataset :
+  la dernière date atteinte par au moins 95 % de ses titres, recalculée après chaque import ou mise à jour.
+  Elle n'est pas évaluée avec un fichier, une sélection historique (--date/--select), un dataset sans
+  fraîcheur validée, ou lorsqu'un titre appartient à plusieurs datasets sans qu'un --dataset explicite
+  ne lève l'ambiguïté.
+
+Colonnes du tableau :
+  Total     Somme non pondérée des N premiers rangs choisis par --rank-criteria ; plus petit = mieux.
+  Rangs     Sept rangs par importance ; "|" sépare les rangs retenus des rangs seulement informatifs.
+  Ticker    Code du titre.
+  Nom       Nom du titre.
+  Ans       Profondeur de l'historique en années.
+  Ret.      Retard en séances par rapport à la fraîcheur globale du dataset (95 %) ; '-' si indisponible.
+  Tend%/a   Tendance annualisée sur 252 séances ; --sort=trend, plus élevée = mieux.
+  Val.méd   Montant quotidien médian échangé sur 252 séances ; --sort=liquidity, plus élevé = mieux.
+  ATR%      ATR(20) en pourcentage ; contribue à --sort=volatility.
+  Range%    Amplitude sur 252 séances ; contribue à l'appréciation d'oscillation.
+  Sw5/a     Oscillations d'au moins 5 % annualisées depuis les 252 dernières séances ; contribue à --sort=oscillation.
+  DD%       Drawdown maximal sur 252 séances ; --sort=drawdown, plus faible = mieux.
+  Gap%      Fréquence des gaps d'au moins 3 % sur 252 séances ; --sort=gap, plus faible = mieux.
+  Pas%      Pas de barème suggéré ; --sort=step, plus faible = mieux.
+  Mouv/a    Mouvements annuels estimés avec le pas suggéré ; information, pas un tri séparé.
+  Statut    retenu, vigilance ou écarté.
+  Aler.     Nombre de points de vigilance.
+
+Valeurs de --sort :
+  global      Total des N premiers rangs choisis par --rank-criteria, croissant.
+  ticker      Ticker, ordre alphabétique neutre.
+  trend       Tend%/a, décroissant.
+  liquidity   Val.méd, décroissant.
+  volatility  Classe de volatilité, puis ATR% croissant à classe égale.
+  oscillation Classe d'oscillation (Sw5/a + Range%), puis Sw5/a décroissant à classe égale.
+  drawdown    DD%, croissant.
+  gap         Gap%, croissant.
+  step        Pas%, croissant.
+
+Seuils de vigilance utilisés par le Statut :
+  Sw5/a < 4,0 par an, Gap% > 3,0 %, DD% > 45,0 %.
+Classes utilisées pour le tri volatilité :
+  bonne 2,0-5,0 % ; correcte 1,5-<2,0 % ou >5,0-6,0 % ; faible >6,0-8,0 % ; mauvaise >8,0 %.
+  Un ATR(20) inférieur à 1,5 % est éliminé avant classement.
+Classes utilisées pour le tri oscillation :
+  excellente : Sw5/a >= 8 et Range% 40-100 ; bonne : Sw5/a >= 4 et Range% 40-100 ;
+  correcte : Sw5/a >= 3 et Range% 30-120 ; faible : Sw5/a >= 1 ; mauvaise : Sw5/a < 1.
+
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi tools profile cotations_RNO.txt
+  jedi tools profile --database=abcbourse --security=RNO
+  jedi tools profile --database=abcbourse --dataset=Euronext_A --group=PEA
+  jedi tools profile --database=abcbourse --group=PEA
+  jedi tools profile --database=abcbourse --group=PEA --rank-criteria=4
+  jedi tools profile --database=abcbourse --dataset=Euronext_A \
+    --group=PEA --date=ge:2020-01-01 --sort=liquidity --limit=20
+  jedi tools profile --database=abcbourse \
+    --security=RNO --security=AI --security=BNP --include-rejected
+
+===== tools score =====
+
+Description :
+  Recherche automatiquement les barèmes les plus adaptés à un historique de cotations.
+  Sans constructeur explicite, Jedi explore ses trois familles internes de barèmes.
+
+Usage :
+  Depuis un fichier :
+    jedi tools score <fichier_cotations> [<constructeur>] [options]
+
+  Depuis une base de marché :
+    jedi tools score --database=SOURCE --security=IDENT [<constructeur>] [options]
+
+  Le constructeur est optionnel. P1, P2 et P3 restent acceptés comme sélections
+  expertes d'une seule famille interne.
+
+      --date=OP:DATE               Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+      --database=SOURCE            Charge les cotations depuis la base de marché SOURCE
+      --universe=NAME              Sélectionne l'univers de marché NAME (défaut : france)
+      --security=IDENT             Sélectionne le titre par ISIN ou ticker
+      --sort=KEY                   Tri : fitness (défaut), activity (opérations/mois) ou investment (investissement maximal) ; 1, 2 et 3 restent acceptés
+      --ranking=MODE               Classement affiché : raw (résultats bruts, défaut), jedi (préférence, mode expert) ou both (les deux classements)
+      --search=MODE                Stratégie de recherche : adaptive (exploration puis raffinement, défaut) ou grid (exhaustive)
+      --budget=COUNT               Nombre maximal de backtests de recherche avec --search=adaptive (défaut : 500)
+      --display=MODE               Affichage : compact (3 métriques de tri + constructeur typé, défaut), study (lecture économique des barèmes) ou technical (diagnostic expert ; influence des paramètres avec --search=adaptive, robustesse avec --ranking=jedi ou both)
+  -h, --help                       Affiche cette page d'aide
+
+===== tools stats =====
+
+Description :
+  Calcule les principaux indicateurs statistiques d'un historique de cotations.
+
+Usage :
+  Depuis un fichier :
+    jedi tools stats <fichier_cotations> [options]
+
+  Depuis une base de marché :
+    jedi tools stats --database=SOURCE --security=IDENT [options]
+
+Arguments positionnels :
+  <fichier_cotations>   Fichier préparé contenant un seul titre
+                        Requis uniquement lorsque --database est absent
+
+
+Options de source :
+      --database=SOURCE            Charge les cotations depuis la base de marché SOURCE
+      --universe=NAME              Sélectionne l'univers de marché NAME (défaut : france)
+      --security=IDENT             Sélectionne le titre par ISIN ou ticker
+
+Sélection de l'historique :
+      --date=OP:DATE               Sélectionne une période avec OP:AAAA-MM-JJ (ge, gt, le ou lt)
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi tools stats cotations_RNO.txt
+  jedi tools stats cotations_RNO.txt --date=ge:2024-01-01
+  jedi tools stats --database=abcbourse --security=RNO --select=500
+
+===== trade create =====
+
+Description :
+  Crée un nouveau trade
+
+Usage :
+  1ère forme, avec champs nommés :
+    jedi trade create --name NAME --security <ID | ISIN> [--money MONEY] [options]
+                     
+  2nde forme, avec champs positionnels :
+    jedi trade create <name> <Security: id | isin> [--money=MONEY] [options]
+
+Notes:
+  La syntaxe recommandée est d'utiliser les champs nommés pour tous les paramètres.
+  La syntaxe positionnelle est un raccourci équivalent, sur les champs requis uniquement.
+  Ne pas mélanger les deux syntaxes.
+
+Champs requis :
+      --name=NAME                  Nom du trade :
+                                     - Doit commencer par une lettre
+                                     - Suivie d'au moins une lettre, un chiffre ou un souligné.
+      --security=ID                Id du titre dans la base de données
+      --security=ISIN              Code ISIN du titre
+
+Champs optionnels :
+      --money=MONEY                Définition de money:
+                                     Une liste de trois paramètres, séparés par des virgules. 
+                                     Chaque paramètre est défini ainsi <k>:<v>, où <k> est
+                                     l'un des caractères 'r', 'o' ou 'n' et <v> sa valeur 
+                                     associée :
+                                       r:<v>  Taux de risque maximum appliqué sur le capital 
+                                              total (K) dédié au trading
+                                       o:<v>  Coefficient d'objectif financier 
+                                              (appliqué sur R = r × K)
+                                       n:<v>  Marge de fonctionnement de Jedi, en nombre 
+                                              d'échelons
+                                   
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemples :
+  jedi trade create --name G13 --security FR0000066722
+  jedi trade create g13 FR0000066722 --money r:1.5%,o:1,n:2
+
+===== trade delete =====
+
+Description:
+  Supprime un trade.
+
+Usage:
+  jedi trade delete <id | name> [options]
+
+Condition:
+  La suppression n'est pas autorisée si le trade est en cours ou clôturé
+
+Arguments requis :
+  <id>                             Id du trade dans la base de données
+  <name>                           Nom du trade
+
+Options :
+      --noconfirm                  Exécute la commande sans demander de confirmation.
+  -h, --help                       Affiche cette page d'aide
+
+Exemples:
+  jedi trade delete 22
+  jedi trade delete g13 --noconfirm
+
+===== trade list =====
+
+Description:
+  Liste les trades
+
+Usage:
+  jedi trade list [filters] [options]
+
+Filtres :
+  -r, --running                    Trades en cours seulement
+
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   Les champs filtrables sont 'id', 'name', 'money' et 'stop' de
+                                   la table 'trade', ainsi que 'id', 'isin' et 'nom' de la
+                                   table 'security' lorsque l'option --extended est activée.
+
+  -s, --select=RECORDS             Sélectionne uniquement les enregistrements définis 
+                                   dans RECORDS, une liste d'éléments séparés par des 
+                                   virgules, avec la syntaxe suivante :
+                                   - la lettre F ou L (insensible à la casse), suivie 
+                                     d'un entier, pour désigner respectivement les premiers 
+                                     ou les derniers enregistrements à sélectionner
+                                   - un nombre entier positif (ou négatif pour l'indexation 
+                                     en fin de tableau)
+                                   - une plage composée de deux entiers, positifs ou négatifs, 
+                                     séparés par deux points
+                                   Exemple : "f10,-12:-1" pour sélectionner les 10 premiers 
+                                             enregistrements et les 12 derniers.
+Notes:
+  Le filtrage est effectué dans l'ordre suivant :
+    1. Trades en cours
+    2. Expression régulière
+    3. Sélection d'enregistrements
+
+Options :
+      --csv                        Exporte les enregistrements au format CSV
+      --headers                    Inclut les entêtes lorsque l'option --csv est activée
+  -x, --extended                   Inclut les champs 'id', 'isin' et 'name' du titre
+  -c, --column-indexes=INDEXES     Sélectionne les index de colonne à afficher à l'aide d'une
+                                   liste d'entiers ou d'une plage d'entiers, par exemple :
+                                   1,2,5-8,10,13-16. Les colonnes seront affichées dans 
+                                   l'ordre des index, et les plages peuvent être inversées 
+                                   (ex. : l'ordre 2,1,8-5,15,10 donnera 2,1,8,7,6,5,15,10)
+                                   (Non compatible avec l'option --csv)
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi trade list "g1 "
+
+===== trade orders =====
+
+Description :
+  Calcule et affiche les prochains ordres de bourse à passer
+
+Usage :
+  jedi trade orders [filters] [options]
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   les champs filtrables sont 'name' de la table 'trade' et 
+                                   'name' de la table 'security'
+
+Options :
+      --tick-buy=TICK_VALUE        Définit la valeur du pas de cotation à l'achat pour le titre 
+                                   sous-jacent (uniquement si un seul trade a été sélectionné)
+      --tick-sell=TICK_VALUE       Définit la valeur du pas de cotation à la vente pour le titre
+                                   sous-jacent (uniquement si un seul trade a été sélectionné)
+      --net-stop                   Le cas échéant, indique la quantité du stop-loss déduction 
+                                   faite de l'ordre de vente à cours limité
+      --update-now                 Force la mise à jour des cotations
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi trade orders g12
+
+===== trade plot =====
+
+Description :
+  Affiche sous forme graphique gains et pertes en bourse et investissements 
+  associés, à l'aide de données centrées et réduites
+
+Usage :
+  jedi trade plot <id | name> [options]
+
+Arguments requis :
+  <id>                             Id du trade dans la base de données
+  <name>                           Nom du trade
+
+Options :
+  -l, --legend=LEGEND              Emplacement de la légende :
+                                     - tl: en haut à gauche
+                                     - tr: en haut à droite
+                                     - bl: en bas à gauche (par défaut)
+                                     - br: en bas à droite
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi trade plot G13 -l tr
+
+===== trade results =====
+
+Description:
+  Affiche les résultats financiers
+
+Usage:
+  jedi trade results [filters] [options]
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   les champs filtrables sont 'name' de la table 'trade' et 
+                                   'name' de la table 'security'
+
+  -r, --running                    Trades en cours seulement
+
+Options :
+      --update-now                 Force la mise à jour des cotations
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi trade results --running
+
+===== trade show =====
+
+Description :
+  Affiche les détails d'un trade
+
+Usage : 
+  jedi trade show <id | name> [options]
+
+Arguments requis : 
+  <id>                             Id du paramétrage dans la base de données
+  <name>                           Nom du trade
+
+Options :
+  -h, --help                       Affiche cette page d'aide
+
+Exemple :
+  jedi trade show 12
+
+===== trade status =====
+
+Description:
+  Affiche l'état des trades en cours
+
+Usage:
+  jedi trade status [filters] [options]
+
+Filtres :
+  [regex]                          Filtre regex, insensible à la casse, appliqué à 
+                                   la concaténation des champs filtrables. 
+                                   && = ET, || = OU, avec priorité de && sur ||.
+                                   Exemples : abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Chaque terme est une regex indépendante. L’ordre des champs
+                                   n’a pas d’importance. Parenthèses non prises en charge.
+
+                                   les champs filtrables sont 'name' de la table 'trade' et 
+                                   'name' de la table 'security'
+
+Options :
+      --update-now                 Force la mise à jour des cotations
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi trade status g12
+
+===== trade update =====
+
+Description :
+  Met à jour un ou plusieurs champs d'un trade
+
+Usage :
+  jedi trade update <id | name> [options]
+
+Arguments requis:
+  <id>                             Id du trade dans la base de données
+  <name>                           Nom du trade
+
+Champs optionnels :
+      --name=NAME                  Nom du trade :
+                                     - Doit commencer par une lettre
+                                     - Suivie d'au moins une lettre, un chiffre ou un souligné.
+      --money=MONEY                Nouvelle définition de la gestion du capital, acceptée 
+                                   seulement si le champ 'stop' est 'null' ou si l'option 
+                                   --reset-stop est activée.
+                                   (Voir la commande 'trade create' pour la syntaxe à utiliser)
+
+Options :
+      --reset-stop                 Réinitialise le champ 'stop' à 'null', effaçant les données 
+                                   d'un stoploss existant
+  -h, --help                       Affiche cette page d'aide
+
+Exemple:
+  jedi trade update G01 --name "XG01"

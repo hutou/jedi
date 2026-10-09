@@ -1,0 +1,153 @@
+en:
+  note:
+    header: "Manage notes"
+    banner: |-
+      Notes management
+
+      Usage: jedi note <subcommand>
+    #
+    # --- create ---
+    #
+    create:
+      header: "Create a new  note"
+      banner: |
+        Description:
+          Create a new note
+      usage: |
+        Usage:
+          1st form, with an external editor:
+            jedi note create --edit [options]
+
+          2nd form, with named fields:
+            jedi note create --date=DATE --summary=SUMMARY --contents=TEXT [options]
+
+          3rd form, with positional fields;
+            jedi note create <date> <summary> <contents> [options]
+      notes: |
+        Notes:
+          It is recommended to use the --edit option to enable full text editing using
+          the default editor specified by the EDITOR or VISUAL environment variables
+          It is still possible to use named fields or positional fields, but this is not 
+          very convenient. 
+          ** Do not mix syntaxes **
+      date: &date "Note creation date"
+      summary: &summary "Note summary"
+      contents: &contents "Note contents"
+      edit: "Create the note with an external editor"
+      examples: |
+        Examples:
+          jedi note create --edit
+          jedi note create --date 2026-05-28 --summary "Renault\nsummary" --contents "Renault\ncontents"
+          jedi note create 2026-05-28 "Renault\nsummary" "Renault\ncontents"
+      # from note_creator:
+      success: "Note %{ref} created."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Delete a note"
+      banner: |
+        Description:
+          Delete a note
+      usage: |
+        Usage: 
+          jedi note delete <id> [options]
+      required_arguments: &required_arguments |
+        Required arguments:
+          <id>                             Note Id in the database
+      examples: |
+        Example:
+          jedi note delete 17
+      # from note_deleter:
+      confirm: "Ok to delete note %{ref} (y/N)? "
+      success: "Note %{ref} deleted."
+    # from note_helpers:
+    helpers:
+      invalid_contents: "The order of fields is incorrect for the external editor."
+    #
+    # --- list ---
+    #
+    list:
+      header: "List notes"
+      banner: |
+        Description:
+          List notes
+      usage: |
+        Usage: 
+          jedi note list [filters] [options]
+      filters:
+        regex: |2-
+                                             The filterable fields are 'id', 'date', 'summary' 
+                                             and 'contents'
+      examples: |
+        Example:
+          jedi note list renault
+      # from note_lister:
+      table:
+        title:
+          all: "List of notes"
+          one: "Selected note"
+          some: "List of selected notes"
+        id: "Id"
+        date: "Date"
+        summary: "Summary"
+        contents: "Contents"
+    #
+    # --- show ---
+    #
+    show:
+      header: "Show note contents"
+      banner: |
+        Description:
+          Show note contents
+      usage: |
+        Usage: 
+          jedi note show <id> [options]
+      required_arguments: *required_arguments
+      examples: |
+        Example:
+          jedi note show 42
+      # from note_presenter:
+      title: "Note %{ref}"
+      id: "Id"
+      date: "Date"
+      summary: "Summary"
+      contents: "Contents"
+      transpose:
+        fields: "Field names"
+        contents: "Contents"
+    #
+    # --- update ---
+    #
+    update:
+      header: "Update a note"
+      banner: |
+        Description:
+          Update a note
+      usage: |
+        Usage: 
+          1st form, with an external editor:
+            jedi note update <id> --edit [command options]
+
+          2nd form, with named fields:
+            jedi note update <id> --date=DATE --summary=SUMMARY --contents=TEXT [options]
+      required_arguments: *required_arguments
+      notes: |
+        Notes:
+          It is recommended to use the --edit option to enable full text editing using
+          the default editor specified by the EDITOR or VISUAL environment variables
+          It is still possible to use named fields, but this is not very convenient.
+          ** Do not mix syntaxes **
+      date: *date
+      summary: *summary
+      contents: *contents
+      edit: "Modify the note with an external editor"
+      examples: |
+        Examples:
+          jedi note update 42 --edit
+          jedi note update 42 --date 2026-05-28 --summary Summary\nexample
+      # from note_updater:
+      success: "Note %{ref} updated."
+      unchanged: "Note %{ref} unchanged."
+    #note:
+    query_failed: "Note %{ref} not found."

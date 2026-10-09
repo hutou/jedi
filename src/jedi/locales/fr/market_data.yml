@@ -1,0 +1,337 @@
+fr:
+  market:
+    header: "Gère les bases de cotations de marché"
+    banner: |
+      Bases de cotations de marché
+
+      Usage : jedi market <sous-commande>
+    options:
+      universe: "Univers général utilisé dans le nom de la base (défaut : %{universe})"
+      date_order: "Ordre de date : auto, ymd, dmy ou mdy (défaut : auto)"
+      year_pivot: "Pivot des années sur deux chiffres, de 0 à 99 (défaut : 70)"
+      from: "Première date de cotation conservée, au format AAAA-MM-JJ"
+      allow_gap: "Accepte explicitement une lacune historique supérieure à 7 jours calendaires"
+      as_of: "Date de référence de la composition du groupe, au format AAAA-MM-JJ"
+      reference_source: "Source de référence de la composition du groupe"
+      group_add: "Ajoute le titre au groupe"
+      group_remove: "Retire le titre du groupe"
+      dataset: "Limite le rapport au dataset indiqué"
+      last_quote: "Ajoute la date et la clôture de la dernière cotation"
+      date: "Sélectionne les cotations par date (ge, gt, le ou lt), format OP:AAAA-MM-JJ"
+    init:
+      header: "Crée une base de marché vide"
+      banner: |
+        Description :
+          Crée une base vide pour une source et un univers général. Les datasets
+          sont ensuite ajoutés avec la sous-commande import.
+      usage: |
+        Usage :
+          jedi market init <source> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Nom logique de la source utilisé dans le nom de la base
+      examples: |
+        Exemple :
+          jedi market init abcbourse
+    import:
+      header: "Importe un nouveau dataset"
+      banner: |
+        Description :
+          Ajoute un ensemble de titres et de cotations dans une base existante.
+          Les ISIN sans libellé sont ignorés et recensés dans le rapport.
+      usage: |
+        Usage :
+          jedi market import <source> <dataset> <quotes> <labels> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+          <dataset>                        Code libre du dataset, par exemple Euronext_A
+          <quotes>                         Fichier de cotations
+          <labels>                         Fichier de libellés ISIN;Name;Ticker
+      examples: |
+        Exemples :
+          jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt
+          jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01
+    replace:
+      header: "Remplace un dataset existant"
+      banner: |
+        Description :
+          Remplace transactionnellement un dataset. Les données partagées avec
+          d'autres datasets sont conservées.
+      usage: |
+        Usage :
+          jedi market replace <source> <dataset> <quotes> <labels> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+          <dataset>                        Code du dataset à remplacer
+          <quotes>                         Nouveau fichier de cotations
+          <labels>                         Fichier de libellés ISIN;Name;Ticker
+      examples: |
+        Exemples :
+          jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt
+          jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01 --noconfirm
+      confirm: "Remplacer le dataset '%{dataset}' dans la base '%{database}' ? "
+    update:
+      header: "Met à jour un dataset existant"
+      banner: |
+        Description :
+          Fusionne sans suppression les titres et cotations dans un dataset
+          existant. Les doublons équivalents sont ignorés ; une cotation
+          conflictuelle est signalée et ignorée. Une extension située à plus de
+          7 jours calendaires de la fin actuelle du dataset est refusée, sauf
+          avec --allow-gap.
+      usage: |
+        Usage :
+          jedi market update <source> <dataset> <quotes> <labels> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+          <dataset>                        Code du dataset à mettre à jour
+          <quotes>                         Fichier de cotations de mise à jour
+          <labels>                         Fichier de libellés ISIN;Name;Ticker
+      examples: |
+        Exemples :
+          jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt
+          jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt --allow-gap
+    sync_group:
+      header: "Synchronise un groupe de marché"
+      banner: |
+        Description :
+          Remplace transactionnellement la composition d'un groupe nommé à
+          partir d'un fichier simple contenant un ISIN ou un ticker en début
+          de ligne. Un libellé peut suivre après un espace, ';' ou ':'. Les
+          lignes vides et celles commençant par # sont ignorées. Les membres
+          absents du fichier sont retirés du groupe.
+      usage: |
+        Usage :
+          jedi market sync-group <source> <groupe> <fichier_references> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+          <groupe>                         Code libre du groupe, par exemple PEA
+          <fichier_references>             Fichier contenant un ISIN ou ticker en début de ligne
+      examples: |
+        Exemple :
+          jedi market sync-group abcbourse PEA pea.txt --reference-source=prorealtime --as-of=2026-09-24
+    group:
+      header: "Modifie manuellement un groupe de marché"
+      banner: |
+        Description :
+          Ajoute un titre à un groupe existant ou l'en retire.
+      usage: |
+        Usage :
+          jedi market group <source> <groupe> <ISIN> (--add | --remove) [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+          <groupe>                         Code du groupe existant
+          <ISIN>                           Code ISIN du titre
+      examples: |
+        Exemples :
+          jedi market group abcbourse PEA FR0000031122 --add
+          jedi market group abcbourse PEA FR0000031122 --remove
+      one_action_required: "Indiquez exactement une des options --add ou --remove."
+      updated: "%{ticker} (%{isin}) est maintenant %{membership} du groupe %{group}."
+      member: "membre"
+      not_member: "absent"
+    info:
+      header: "Affiche le contenu d'une base de marché"
+      banner: |
+        Description :
+          Affiche un rapport global sur la base, le détail de chaque dataset et
+          quelques contrôles d'intégrité.
+      usage: |
+        Usage :
+          jedi market info <source> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+      examples: |
+        Exemples :
+          jedi market info abcbourse
+          jedi market info abcbourse --dataset=Euronext_A
+      title: "Informations sur la base de marché"
+      source: "Source"
+      universe: "Univers"
+      database: "Fichier"
+      schema_version: "Version du schéma"
+      file_size: "Taille"
+      created_at: "Créée le"
+      updated_at: "Dernière modification"
+      dataset_count: "Datasets"
+      security_count: "Titres distincts"
+      quote_count: "Cotations distinctes"
+      period: "Période de cotation"
+      group_count: "Groupes"
+      groups: "Groupes"
+      no_group: "Aucun groupe"
+      group_member_count: "Membres"
+      group_reference_source: "Source de référence"
+      group_reference_date: "Date de référence"
+      group_synchronized_at: "Dernière synchronisation"
+      datasets: "Datasets"
+      no_dataset: "Aucun dataset"
+      dataset_totals_note: "Un titre ou une cotation peut appartenir à plusieurs datasets ; les totaux par dataset ne sont donc pas nécessairement additifs."
+      dataset_security_count: "Titres"
+      dataset_quote_count: "Cotations"
+      dataset_groups: "Membres par groupe"
+      dataset_history_from: "Date minimale demandée"
+      dataset_quotes_file: "Fichier de cotations"
+      dataset_labels_file: "Fichier de libellés"
+      dataset_imported_at: "Dernier import complet"
+      dataset_import_period: "Période du dernier import complet"
+      dataset_current_period: "Période actuellement disponible"
+      dataset_freshness_date_last: "Date de fraîcheur globale (95 %)"
+      freshness_unavailable: "non disponible"
+      not_available: "non disponible avant le prochain import complet"
+      integrity:
+        title: "Contrôles"
+        securities_without_dataset: "Titres sans dataset"
+        datasets_without_security: "Datasets sans titre"
+        securities_without_quote: "Titres sans cotation"
+        quotes_without_dataset: "Cotations sans dataset"
+        dataset_stats_mismatches: "Statistiques de dataset incohérentes"
+        foreign_key_violations: "Violations de clés étrangères"
+        result: "Résultat"
+        ok: "OK"
+        failed: "ANOMALIES DÉTECTÉES"
+    list:
+      header: "Liste les titres d'une base de marché"
+      banner: |
+        Description :
+          Liste les titres présents dans la base de marché. L'option --dataset
+          permet de limiter la liste à un dataset. Un filtre regex facultatif peut
+          porter sur l'ensemble des champs ou sur un champ nommé.
+      usage: |
+        Usage :
+          jedi market list <source> [regex] [options]
+      required_arguments: |
+        Arguments requis :
+          <source>                         Source de la base
+      filters:
+        regex: |2-
+                                             Les champs filtrables sont : isin, ticker, name, group, dataset.
+      # filters: |
+      #   Filtres :
+      #     [regex]    Expression régulière appliquée à tous les champs.
+      #                Champs nommés : isin, ticker, name, group, dataset.
+      #                Les opérateurs && et || sont disponibles ; && est prioritaire.
+      examples: |
+        Exemples :
+          jedi market list abcbourse
+          jedi market list abcbourse air
+          jedi market list abcbourse 'group=PEA && name=air'
+          jedi market list abcbourse --dataset=Euronext_Growth
+          jedi market list abcbourse 'ticker=^AL' --dataset=Euronext_A
+          jedi market list abcbourse --last-quote
+      table:
+        title:
+          all: "Titres de la base de marché"
+          one: "Titre sélectionné dans la base de marché"
+          some: "Titres sélectionnés dans la base de marché"
+          dataset_all: "Titres du dataset '%{dataset}'"
+          dataset_one: "Titre sélectionné dans le dataset '%{dataset}'"
+          dataset_some: "Titres sélectionnés dans le dataset '%{dataset}'"
+        isin: "ISIN"
+        ticker: "Ticker"
+        name: "Nom"
+        groups: "Groupe(s)"
+        datasets: "Dataset(s)"
+        date: "Date"
+        close: "Clôture"
+    quote:
+      header: "Affiche l’historique des cotations d’un titre"
+      banner: |
+        Description :
+          Affiche l’historique OHLCV complet d’un titre de la base de marché.
+          La sélection par date est appliquée avant la sélection d’enregistrements.
+      usage: |
+        Usage :
+          jedi market quote <source> <ISIN> [options]
+      required_arguments: |
+        Arguments requis :
+          <source>   Source de la base
+          <ISIN>     Code ISIN du titre
+      examples: |
+        Exemples :
+          jedi market quote abcbourse FR0000120073
+          jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01
+          jedi market quote abcbourse FR0000120073 --select=20
+          jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01 --select=l20
+      table:
+        title: "Historique des cotations de %{ticker} (%{isin}) — %{name}"
+        date: "Date"
+        open: "Ouverture"
+        high: "Plus haut"
+        low: "Plus bas"
+        close: "Clôture"
+        volume: "Volume"
+    operations:
+      init: "initialisation"
+      import: "import d'un dataset"
+      replace: "remplacement d'un dataset"
+      update: "mise à jour d'un dataset"
+      sync_group: "synchronisation d'un groupe"
+      info: "consultation des informations"
+      list: "liste des titres"
+      quote: "consultation de l’historique des cotations"
+    operation_failed: "Échec de l'opération « %{operation} » sur la base de marché '%{database}'. Consultez le journal pour les détails techniques."
+    database_already_exists: "La base de marché '%{database}' existe déjà."
+    dataset_already_exists: "Le dataset '%{dataset}' existe déjà dans la base de marché '%{database}'."
+    dataset_not_found: "Le dataset '%{dataset}' n'existe pas dans la base de marché '%{database}'."
+    dataset_gap: "La mise à jour du dataset '%{dataset}' créerait une lacune entre %{last_date} et %{first_date} (%{gap_days} jours ; maximum autorisé : %{max_gap_days}). Utilisez --allow-gap pour l'accepter explicitement."
+    invalid_date_order: "Ordre de date invalide '%{value}' (attendu : auto, ymd, dmy ou mdy)"
+    invalid_year_pivot: "Pivot d'année sur deux chiffres invalide '%{value}' (attendu : 0 à 99)"
+    invalid_from: "Date de début invalide '%{value}' (attendu : AAAA-MM-JJ)"
+    group_not_found: "Le groupe '%{group}' n'existe pas dans la base de marché."
+    invalid_group: "Code de groupe invalide '%{group}'."
+    invalid_as_of: "Date de référence du groupe invalide '%{value}' (attendu : AAAA-MM-JJ)"
+    report:
+      title: "Rapport d'opération sur la base de marché"
+      operation: "Opération"
+      source: "Source"
+      universe: "Univers"
+      database: "Base"
+      source_filename: "Fichier source"
+      datasets: "Datasets"
+      isin: "ISIN"
+      ticker: "Ticker"
+      name: "Nom"
+      dataset: "Dataset"
+      group: "Groupe"
+      labels_read: "Libellés lus"
+      securities_read: "Titres retenus"
+      securities_inserted: "Nouveaux titres"
+      securities_linked: "Titres liés au dataset"
+      securities_removed: "Titres supprimés"
+      quotes_read: "Cotations lues"
+      quotes_inserted: "Nouvelles cotations"
+      quotes_linked: "Cotations liées au dataset"
+      quotes_removed: "Cotations supprimées"
+      quotes_skipped_before_start: "Cotations antérieures ignorées"
+      quotes_skipped_without_label: "Cotations sans libellé ignorées"
+      quotes_skipped_invalid: "Cotations OHLCV invalides ignorées"
+      quotes_skipped_conflicting: "Cotations conflictuelles ignorées"
+      invalid_quote_isins_count: "Titres avec anomalies OHLCV"
+      identical_duplicates: "Doublons identiques"
+      period: "Période de cotation"
+      update_period: "Période du fichier de mise à jour"
+      dataset_date_last_before: "Dernière date précédente du dataset"
+      extension_date_first: "Première cotation d’extension"
+      accepted_gap: "Lacune historique acceptée"
+      accepted_gap_value: "%{days} jours"
+      group_rows_read: "Lignes de références du groupe lues"
+      group_references_read: "Références distinctes du groupe"
+      group_matched: "Titres reconnus"
+      unknown_isins_count: "Références inconnues"
+      group_added_count: "Membres ajoutés"
+      group_removed_count: "Membres retirés"
+      isins_without_label: "ISIN ignorés faute de libellé"
+      invalid_quotes: "Cotations OHLCV ignorées"
+      conflicting_quotes: "Cotations conflictuelles ignorées"
+      unknown_group_references: "Références du groupe inconnues"
+      group_added: "ISIN ajoutés au groupe"
+      group_removed: "ISIN retirés du groupe"
+      warnings: "Avertissements"
+      remaining_items: "… et %{count} autres"

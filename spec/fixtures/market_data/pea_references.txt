@@ -1,0 +1,5 @@
+# Liste PEA ad hoc
+ALP Alpha SA
+FR0000000002; Beta SA
+UNKNOWN: titre absent
+ALP ; doublon documenté

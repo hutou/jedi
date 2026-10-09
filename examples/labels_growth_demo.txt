@@ -1,0 +1,3 @@
+FR4487601001;Growth fictif A;EXA
+FR4487601019;Growth fictif B;EXB
+FR4487601027;Growth fictif C;EXC

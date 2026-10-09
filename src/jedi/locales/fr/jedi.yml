@@ -1,0 +1,47 @@
+fr:
+  jedi:
+    banner: |-
+      jedi, version %{version}
+
+      L'application jedi est utilisable en mode 'ligne de commande' uniquement
+      et répond à la syntaxe suivante : 
+
+      jedi [options globales] commande sous-commande arguments [options]
+
+      La saisie d'une commande seule permet d'afficher la liste des
+      sous-commandes disponibles pour cette commande.
+
+      - Arguments et options ne s'appliquent qu'à la sous-commande qui
+        les précède.
+        A ce niveau sont définis :
+        . le caractère obligatoire ou non des arguments
+        . la disponibilité d'options
+      - Si aucun argument n'est requis, la sous-commande est immédiatement
+        exécutée.
+      - Toutes les sous-commandes disposent d'une page d'aide avec l'option -h ou --help.
+
+      Un double tiret "--" doit être utilisé pour séparer les options et
+      les arguments positionnels (obligatoire si ceux-ci commencent par
+      un simple tiret, comme les nombres négatifs). Attention donc au placement
+      des options dans ce cas; elles doivent toujours précéder le double-tiret.
+
+      Lorsqu'une option ou un argument positionnel attend une liste,
+      les éléments de cette liste doivent être séparés par une virgule,
+      sans espace intermédiaire (sauf si entourés de double quotes).
+
+      Commandes :
+    notes: |
+      Notes:
+        Les commandes et sous-commandes peuvent être abrégées jusqu'au préfixe non ambigu le plus court.
+    config:
+      header: |
+        Affiche les données de configuration
+        (Utiliser l'option --paths pour n'afficher que les fichiers utilisés)
+    version:
+      header: "Affiche des informations détaillées sur la version"
+      details: |
+        Application %{appname}, du projet Jedi v%{version}
+        (Utilisant la bibliothèque Tablo v%{tablo})
+
+        Infos de compilation:
+        %{compile}

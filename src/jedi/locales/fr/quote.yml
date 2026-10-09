@@ -1,0 +1,115 @@
+fr:
+  quote:
+    header: "Gère les cotations"
+    banner: |-
+      Gestion des cotations
+
+      Usage: jedi quote <sous-commande>
+
+      sous-commandes:
+    #
+    # --- résolution de la cotation courante ---
+    #
+    current:
+      updating: "Mise à jour de"
+      no_current_price: "Titre '%{name}': aucun prix récupéré, le calcul des résultats sera incorrect"
+      old_recorded_price_used: "Titre '%{name}': la mise à jour du cours a échoué, cours obsolète enregistré retenu"
+      last_recorded_price_used: "Titre '%{name}': la mise à jour du cours a échoué, dernier cours enregistré retenu"
+    #
+    # --- get ---
+    #
+    get:
+      header: "Affiche la cotation courante d'un ISIN"
+      invalid_isin: "Le code ISIN n'est pas valide."
+      banner: |
+        Description :
+          Affiche la cotation courante d'un titre identifié par son code ISIN
+      usage: |
+        Usage :
+          jedi quote get <isin>
+      required_arguments: |-
+        Arguments requis :
+          <isin>                           Code ISIN (International Securities Identification Number)
+      examples: |
+        Exemple :
+          jedi quote get FR0000120271
+    #
+    # --- set ---
+    #
+    set:
+      header: "Met à jour manuellement le cours du titre"
+      banner: |
+        Description :
+          Met à jour manuellement le cours du titre
+      usage: |
+        usage :
+          1ère forme, avec champs nommés :
+            jedi quote set <id | isin> --price=PRICE [options]
+                             
+          2nde forme, avec champs positionnels :
+            jedi quote set <id | isin> <price> [options]
+      required_arguments: &ident |-
+        Arguments requis:
+          <id>                             Id du titre dans la base de données
+          <isin>                           Code ISIN (International Securities Identification Numbers)
+      price: |
+        Le nouveau cours qui sera attribué au titre
+      notes: |
+        Notes :
+          La mise à jour manuelle du cours va également forcer les champs 'website' à 'manual',
+          'timestamp' à date et heure courantes et 'quotation_variation' à null
+      examples: |
+        Exemples :
+          jedi quote set 2 8.97
+      success: "Cotation mise à jour à '%{price}' pour le titre %{ref}."
+      price_must_be_positive: "La cotation doit être finie et strictement positive (valeur reçue : %{price})."
+    #
+    # --- refresh ---
+    #
+    refresh:
+      header: "Met à jour les cotations via les fournisseurs de données"
+      banner: |
+        Description :
+          Met à jour les cotations via les fournisseurs de données
+      usage: |
+        Usage: 
+          jedi quote refresh [filters] [options]
+      filters:
+        regex: |2-
+                                             Les champs filtrables sont 'id', 'isin', 'name' et 'ticker'
+      notes: |
+        Notes :
+          Par défaut, seuls les titres liés aux trades en cours sont mis à jour
+      examples: |
+        Exemples:
+          jedi quote refresh "isin=FR000005.*"
+          jedi quote refresh "MEDCL || ALCJ" --force
+      option_mode: &option_mode |-
+        Mode de cotation: 'live' ou 'eod' (défaut: 'live')
+          - 'live' : mode pour l'extraction de données sur le Web 
+          - 'eod' (End of Day) : mode pour le téléchargement direct
+            (généralement non gratuit)
+      option_force: "Force la mise à jour de tous les titres, selon filtrage."
+      invalid_mode: &invalid_mode "Mode '%{arg}' non valide pour la mise à jour des cotations."
+      failed_updates: "Toutes les mises à jour ont échoué."
+      failed_updates_count: "Mise(s) à jour : %{failures} échec(s)."
+      success: "Toutes les mises à jour ont été effectuées."
+    #
+    # --- update ---
+    #
+    update:
+      header: "Met à jour la cotation d'un titre via les fournisseurs de données"
+      banner: |
+        Description :
+          Met à jour les cotations d'un titre via les fournisseurs de données
+      usage: |
+        Usage: 
+          jedi quote update <id | isin> [options]
+      required_arguments: *ident
+      examples: |
+        Exemples:
+          jedi quote update 17
+          jedi quote update FR0000050001
+      option_mode: *option_mode
+      invalid_mode: *invalid_mode
+      success: "Cours mis à jour à %{price}."

@@ -1,0 +1,72 @@
+# Pandoc defaults: run from the archive root.
+from: markdown
+to: pdf
+standalone: true
+input-files:
+- documentation/nouveaux/00_avant_propos.md
+- documentation/nouveaux/philosophie_de_jedi.md
+- documentation/nouveaux/partie_i_utiliser_jedi_au_quotidien.md
+- documentation/nouveaux/01_jedi_en_quelques_pages.md
+- documentation/nouveaux/02_installer_et_preparer_jedi.md
+- documentation/nouveaux/03_choisir_un_titre_support.md
+- documentation/nouveaux/04_tools_profile.md
+- documentation/nouveaux/05_tools_score.md
+- documentation/nouveaux/06_tools_candidate.md
+- documentation/nouveaux/07_ouvrir_un_trade.md
+- documentation/nouveaux/08_suivre_un_trade.md
+- documentation/nouveaux/09_adapter_ou_terminer_un_trade.md
+- documentation/nouveaux/10_base_de_cotations.md
+- documentation/nouveaux/partie_ii_comprendre_jedi.md
+- documentation/nouveaux/11_allers_retours_et_flux_du_trade.md
+- documentation/nouveaux/12_positions_echelons_et_paliers.md
+- documentation/nouveaux/13_lire_la_structure_d_un_bareme.md
+- documentation/nouveaux/14_comprendre_un_bareme_de_type_i.md
+- documentation/nouveaux/15_comprendre_un_bareme_de_type_ii.md
+- documentation/nouveaux/16_continuite_entre_parametrages.md
+- documentation/nouveaux/17_de_l_etat_du_trade_aux_ordres.md
+- documentation/nouveaux/18_capital_risque_et_dimensionnement.md
+- documentation/nouveaux/19_verifier_avec_tools_calc_et_play.md
+- documentation/nouveaux/20_exemple_complet_de_trade.md
+- documentation/nouveaux/partie_iii_etudier_et_valider_jedi.md
+- documentation/nouveaux/21_preparer_une_etude_historique.md
+- documentation/nouveaux/22_simuler_avec_tools_backtest.md
+- documentation/nouveaux/23_exemple_etude_euronext_growth.md
+- documentation/nouveaux/24_interpreter_comparer_et_suivre.md
+- documentation/nouveaux/fr_annex01.md
+- documentation/nouveaux/fr_annex02_fournisseurs_de_donnees.md
+- documentation/nouveaux/fr_annex03_scripts_de_selection_externe.md
+- documentation/nouveaux/fr_annex04_glossaire_et_notations.md
+output-file: output/pdf/jedi-1.0-fr.pdf
+pdf-engine: xelatex
+table-of-contents: true
+toc-depth: 1
+number-sections: false
+filters:
+- pdf/book.lua
+include-in-header:
+- pdf/header.tex
+metadata:
+  title: Jedi 1.0
+  subtitle: Manuel utilisateur
+  date: Octobre 2026
+  lang: fr-FR
+  toc-title: Sommaire
+variables:
+  documentclass: article
+  classoption:
+  - oneside
+  - titlepage
+  papersize: a4
+  fontsize: 10pt
+  geometry:
+  - top=20mm
+  - bottom=20mm
+  - left=18mm
+  - right=18mm
+  mainfont: DejaVu Serif
+  sansfont: DejaVu Sans
+  monofont: DejaVu Sans Mono
+  colorlinks: true
+  linkcolor: blue
+  urlcolor: blue
+  linestretch: 1.02

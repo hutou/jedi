@@ -1,0 +1,155 @@
+fr:
+  note:
+    header: "Gère les notes"
+    banner: |-
+      Gestion des notes
+
+      Usage: jedi note <sous-commande>
+
+      sous-commandes :
+    #
+    # --- create ---
+    #
+    create:
+      header: "Crée une nuvelle note"
+      banner: |
+        Description :
+          Crée une nouvelle note
+      usage: |
+        Usage :
+          1ère forme, avec un éditeur externe :
+            jedi note create --edit [options]
+
+          2nde forme, avec champs nommés :
+            jedi note create --date=DATE --summary=SUMMARY --contents=TEXT [options]
+            
+          3ème forme, avec champs positionnels :
+            jedi note create <date> <summary> <contents> [options]
+      notes: |
+        Notes :
+          Il est recommandé d'utiliser l'option --edit pour permettre l'édition complète du texte 
+          à l'aide de l'éditeur par défaut défini par les variables d'environnement EDITOR ou VISUAL.
+          L'utilisation de champs nommés ou champs positionnels reste possible, mais peu commode. 
+          ** Ne pas mélanger les syntaxes **
+      #required_options: &required_options "Required options:"
+      date: &date "Date de création de la note"
+      summary: &summary "Résumé de la note"
+      contents: &contents "Contenu de la note"
+      edit: "Crée la note à l'aide d'un éditeur externe"
+      examples: |
+        Exemples :
+          jedi note create --edit
+          jedi note create --date 2026-05-28 --summary "Renault\nsummary" --contents "Renault\ncontents"
+          jedi note create 2026-05-28 "Renault\nsummary" "Renault\ncontents"
+      # from note_creator:
+      success: "Note %{ref} créée."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Supprime une note"
+      banner: |
+        Description :
+          Supprime une note
+      usage: |
+        Usage : 
+          jedi note delete <id> [options]
+      required_arguments: &required_arguments |
+        Arguments requis :
+          <id>                             Id de la note dans la base de données
+      examples: |
+        Exemple :
+          jedi note delete 17
+      # from note_deleter:
+      confirm: "Ok pour supprimer la note %{ref} (o/N)? "
+      success: "Note %{ref} supprimée."
+    # from note_helpers:
+    helpers:
+      invalid_contents: "L'ordre des rubriques est incorrect pour l'éditeur externe."
+    #
+    # --- list ---
+    #
+    list:
+      header: "Liste les notes"
+      banner: |
+        Description :
+          Liste les notes
+      usage: |
+        Usage : 
+          jedi note list [filters] [options]
+      filters:
+        regex: |2-
+                                             Les champs filtrables sont 'id', 'date', 'summary' 
+                                             et 'contents'
+      examples: |
+        Exemple :
+          jedi note list renault
+      # from note_lister:
+      table:
+        title:
+          all: "Liste des notes"
+          one: "Note sélectionnée"
+          some: "Liste des notes sélectionnées"
+        id: "Id"
+        date: "Date"
+        summary: "Sommaire"
+        contents: "Contenu"
+    #
+    # --- show ---
+    #
+    show:
+      header: "Affiche le contenu d'une note"
+      banner: |
+        Description :
+          Affiche le contenu d'une note
+      usage: |
+        Usage : 
+          jedi note show <id> [options]
+      required_arguments: *required_arguments
+      examples: |
+        Exemple :
+          jedi note show 42
+      # from note_presenter:
+      title: "Note: %{ref}"
+      id: "Id"
+      date: "Date"
+      summary: "Sommaire"
+      contents: "Contenu"
+      transpose:
+        fields: "Noms des champs"
+        contents: "Contenu"
+    #
+    # --- update ---
+    #
+    update:
+      header: "Met à jour une note"
+      banner: |
+        Description :
+          Met à jour une note
+      usage: |
+        Usage: 
+          1ère forme, avec un éditeur externe :
+            jedi note update <id> --edit [options]
+
+          2nde forme, avec champs nommés :
+            jedi note  update <id> --date=DATE --summary=SUMMARY --contents=TEXT [options]
+      required_arguments: *required_arguments
+      notes: |
+        Notes :
+          Il est recommandé d'utiliser l'option --edit pour permettre l'édition complète du texte 
+          à l'aide de l'éditeur par défaut défini par les variables d'environnement EDITOR ou VISUAL.
+          L'utilisation de champs nommés reste possible, mais peu commode.
+          ** Ne pas mélanger les syntaxes **
+      date: *date
+      summary: *summary
+      contents: *contents
+      edit: "Modifie la note à l'aide d'un éditeur externe"
+      examples: |
+        Exemples :
+          jedi note update 42 --edit
+          jedi note update 42 --date 2026-05-28 --summary Summary\nexample
+      # from note_updater:
+      success: "Note %{ref} mise à jour."
+      unchanged: "Note %{ref} inchangée."
+    #note:
+    query_failed: "Note %{ref} non trouvée."

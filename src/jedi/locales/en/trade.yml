@@ -1,0 +1,372 @@
+en:
+  trade:
+    help: "Run the ‘jedi trade’ command to display the list of subcommands."
+    header: "Manage trades (create, update, ...)"
+    banner: |
+      Trades management (create, update, ...)
+
+      Usage: jedi trade <subcommand>
+    #
+    # --- create ---
+    #
+    create:
+      header: "Create a new trade"
+      banner: |
+        Description:
+          Create a new trade
+      usage: |
+        Usage:
+          1st form, with named fields:
+            jedi trade create --name NAME --security <ID | ISIN> [--money MONEY] [options]
+
+          2nd form, with positional fields
+            jedi trade create <name> <Security: id | isin> [--money=MONEY] [options]
+      notes: |
+        Notes:
+          The recommended syntax uses named options for all parameters.
+          The positional syntax is a shorthand equivalent, on required fields only.
+          Do not mix both syntaxes.
+      name: &name |-
+        Trade Name:
+          - Must begin with a letter
+          - Followed by at least one letter, digit or underscore.
+      id: "Security id in the database"
+      isin: "Security ISIN code"
+      money: |
+        Money definition:
+          A comma-separated list of three parameters. 
+          Each parameter is defined as <k>:<v>, where
+          <k> is one of 'r', 'o' or 'n', and <v> is 
+          its associated value:
+            r:<v>  Maximum risk rate applied to the capital (K) 
+                   allocated to trading
+            o:<v>  Financial objective coefficient 
+                   (applied to R = r × K)
+            n:<v>  Jedi operating margin (number of down steps)
+      examples: |
+        Examples:
+          jedi trade create --name G13 --security FR0000066722
+          jedi trade create g13 FR0000066722 --money r:1.5%,o:1,n:2
+      #exclusive_options: "Options --id et --isin are mutually exclusive"
+      #
+      success: "Trade %{ref} created."
+      name_exists: "Trade %{ref} already exists."
+      invalid_name: "The trade name must begin with a letter followed by at least one letter, digit or underscore."
+      invalid_security_identifier: "The security identifier is invalid (%{ref})."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Delete a trade"
+      banner: |
+        Description:
+          Delete a trade
+      usage: |
+        Usage:
+          jedi trade delete <id | name> [options]
+      notes: |
+        Condition:
+          Deletion not permitted if the trade is running or closed
+      required_arguments: |
+        Required arguments:
+          <id>                             Trade Id in the database
+          <name>                           Trade name
+      examples: |
+        Examples:
+          jedi trade delete 22
+          jedi trade delete g13 --noconfirm
+      #
+      success: "Trade %{ref} deleted."
+      in_use: "Trade %{ref} in use, cannot delete"
+      confirm: "Ok to delete trade %{ref} (y/N)? "
+    #
+    # --- list ---
+    #
+    list:
+      header: "List trades"
+      banner: |
+        Description:
+          List trades
+      usage: |
+        Usage:
+          jedi trade list [filters] [options]
+      filters:
+        regex: |2-
+                                             The filterable fields are 'id', 'name', 'money' and 'stop'
+                                             in the 'trade' table, as well as 'isin' and 'name' fields 
+                                             in the 'security' table if the --extended option is enabled.
+      notes: |
+        Notes:
+          Filtering is done in the following order:
+            1. Trades in progress
+            2. Regular expression
+            3. Record selection
+      examples: |
+        Example:
+          jedi trade list "g1 "
+      option_extended: "Includes security fields 'id', 'isin' and 'name'"
+      #
+      option_csv_missing: "--csv option is required with --headers option."
+      table:
+        title:
+          all: "List of trades"
+          one: "Selected trade"
+          some: "List of selected trades"
+        id: "\nId"
+        name: "\nName"
+        money: "Money\nManagement"
+        stop: "Stop\nStatus"
+        security_id: "Id\nSecurity"
+        security_isin: "ISIN\nCode"
+        security_name: "Security\nName"
+    #
+    # --- update ---
+    #
+    update:
+      header: "Update one or several trade fields"
+      banner: |
+        Description:
+          Update one or several trade fields
+      usage: |
+        Usage:
+          jedi trade update <id | name> [options]
+      required_arguments: |
+        Required arguments:
+          <id>                             Database id of the trade
+          <name>                           Name of the trade
+      examples: |
+        Example:
+          jedi trade update G01 --name "XG01"
+      name: *name
+      money: |-
+        New definition of capital management, accepted only if 
+        the 'stop' field is 'null' or if the --reset-stop option
+        is enabled.
+        (See 'trade create' command for syntax details)
+      reset_stop: |-
+        Reset 'stop' field to 'null', deleting stoploss data
+      #
+      invalid_money: "Money value ‘%{value}’ is invalid."
+      nothing_to_update: "Nothing to update."
+      unchanged: "Trade is unchanged."
+      reset_stop_required: |-
+        A stop status '%{stop}' prevents any changes to the capital management settings.
+        Use the --reset-stop option to clear this condition and allow changes.
+      name_already_used: "Name %{ref} already used, cannot update."
+      success: "Trade %{ref} updated."
+      reset_stop_confirm: "Ok for resetting trade stop '%{stop}' (y/N)? "
+    #
+    # --- show ---
+    #
+    show:
+      header: "Display trade details"
+      banner: |
+        Description:
+          Display trade details
+      usage: |
+        Usage:
+          jedi trade show <id | name> [options]
+      required_arguments: |
+        Required arguments: 
+          <id>                             Database id of the trade
+          <name>                           Name of the trade
+      examples: |
+        Example:
+          jedi trade show 12
+      #show:
+      title: "Trade %{ref}"
+      id: "Id"
+      name: "Name"
+      money: "Money management"
+      stop: "Stop data"
+      security_id: "Security Id"
+      security_isin: "ISIN"
+      security_name: "Security name"
+      transpose:
+        fields: "Field names"
+        contents: "Contents"
+    #
+    # --- plot ---
+    #
+    plot:
+      header: "Graphically displays stock market gains and losses"
+      banner: |
+        Description:
+          Graphically displays stock market gains and losses, and related
+          investments, in the form of centered and scaled data
+      usage: |
+        Usage:
+          jedi trade plot <id | name> [options]
+      required_arguments: |
+        Required arguments:
+          <id>                             Database id of the trade
+          <name>                           Name of the trade
+      legend: |-
+        Legend position:
+          - tl: top left
+          - tr: top right
+          - bl: bottom left (default)
+          - br: bottom right
+      examples: |
+        Example:
+          jedi trade plot G13 -l tr
+      # trade_plotter:
+      #
+      error_too_few_operations: "Operations count (%{nbop}) is less then 2, cannot plot."
+      transaction_days: "Period: %{first} - %{last}"
+      transaction_prices: "Amounts (standardized on a base-1 basis)"
+      legend_invalid_position: "Invalid legend position '%{position}':  tl, tr, bl or br expected"
+      gains: "Gains/Losses (standardized on a base-1 basis)"
+      investment: "Amount invested (idem)"
+      prices: "Stock prices (idem)"
+    #
+    # --- orders ---
+    #
+    orders:
+      header: "Calculates and displays the next stock orders to be placed"
+      banner: |
+        Description:
+          Calculates and displays the next stock orders to be placed
+      usage: |
+        Usage:
+          jedi trade orders [filters] [options]
+      filters:
+        regex: |2
+                                             Filterable fields are 'name' in table 'trade' and 
+                                             'name' in table 'security'
+      examples: |
+        Example:
+          jedi trade orders g12
+      option_tick_buy: |-
+        Set the tick for buy value for the underlying security 
+        (only if a single trade has been selected)
+      option_tick_sell: |-
+        Set the tick for sell value for the underlying security 
+        (only if a single trade has been selected)
+      option_net_stop: |-
+        If applicable, show stoploss quantity net of 
+        the sell-limit order
+      # trade_orders:
+      error_tick_update: "Only one trade should be selected to change the tick size."
+      calculation_failed: "Orders calculation failed for trade %{ref}."
+      see_logfile: "See logfile: '%{logfile}'"
+      operating_warning: "Trade %{ref}: %{warning}"
+      mark:
+        ready: "-READY-"
+        watch: "-WATCH-"
+      list:
+        table:
+          title:
+            all: "List of orders"
+            many: "List of orders of selected trades"
+            one: "Selected trade orders"
+          name: "Trade"
+          scale: "Scale"
+          security: "Security"
+          name_group: "Names"
+          type: "Type"
+          mode: "Mode"
+          qty: "Qty"
+          price: "Price"
+          amount: "Amount"
+          order_group: "Orders"
+          position: "Position"
+          rate: "Rate"
+          mark: "Mark"
+          target_group: "Targets"
+          nil_value: ""
+      # order_engine:
+      out_of_control: "Trade '%{trade}': Maximum loss (%{maxloss}) already exceeded (%{curloss}): capital management inapplicable"
+      stoploss_exceeded: "Trade '%{trade}': After operation #%{operation}, current price (%{current}) is lower than stoploss price (%{stoploss}): capital management is inapplicable"
+      trade_stop_price_anomaly: |-
+        Trade '%{trade}': could not retrieve a valid price, but a trade stop exists (%{stop})
+        This is an anomaly requiring investigation and manual intervention
+      operating_mode_warning: |-
+        Warning: If prices rise further, the scale will soon generate a sell order 
+        for a very small quantity. You may need to adjust the settings (scale change, reinit option, ...)
+      operating_mode_blocked: "Jedi operating mode is blocked: %{key} order quantity is %{quantity}"
+      operating_mode_degraded: "Jedi operating mode is degraded: %{key} order quantity is %{quantity}"
+    #
+    # --- status ---
+    #
+    status:
+      header: "Display running trades status"
+      banner: |
+        Description:
+          Display running trades status
+      usage: |
+        Usage:
+          jedi trade status [filters] [options]
+      filters:
+        regex: |2
+                                             Filterable fields are 'name' in table 'trade' and 
+                                             'name' in table 'security'
+      examples: |
+        Example:
+          jedi trade status g12
+      # status:
+      list:
+        table:
+          title:
+            all: "Running trades status"
+            one: "Selected trade status"
+            many: "Selected trades status"
+          trade_name: "Trade\nName"
+          security_name: "Underlying\nsecurity Name"
+          initial_quantity: "Init.\nQty"
+          initial_price: "Init.\nPrice"
+          stock_held: "Stock\nheld"
+          quot_price: "\nPrice"
+          quot_var: "↓\nVar."
+          unit_cost: "Unit\ncost"
+          year_dur: "Year\nDur."
+          op_cnt: "Op.\nCnt"
+          oper_freq: "Oper. Freq.\nlast 12 mths"
+          position: "s x:y: e\nPosition"
+          nil_value: ""
+    #
+    # --- results ---
+    #
+    results:
+      header: "Display financial results"
+      banner: |
+        Description:
+          Display financial results
+      usage: |
+        Usage:
+          jedi trade results [filters] [options]
+      filters:
+        regex: |2
+                                             Filterable fields are 'name' in table 'trade' and 
+                                             'name' in table 'security'
+      examples: |
+        Example:
+          jedi trade results --running
+      # results:
+      list:
+        table:
+          title:
+            all: "Financial results"
+            one: "Financial results of selected trade"
+            many: "Financial results of selected trades"
+          trade_name: "Trade\nName"
+          security_name: "Underlying\nsecurity Name"
+          gains_losses: "Gains\nLosses"
+          gain_loss_day: "Ga/Lo\n/day"
+          brokers_fees: "Brokers\nFees"
+          eval_portf: "Eval.\nPortf."
+          pct_portf: "Pct.\nPortf."
+          pct_inv: "Pct.\nInv."
+          current_invest: "Current\nInvest."
+          maximum_invest: "Maximum\nInvest."
+          return_rate: "Return\n↓ Rate"
+          total: "Total"
+          net: "(net)"
+    #trade:
+    query_failed: "Trade %{ref} not found."
+    invalid_stored_money: |-
+      Trade '%{trade}' : the current value ‘%{money}’ for the ‘money’ field is invalid: corrupted data.
+      This issue must be corrected using an external tool, as Jedi cannot fix it.
+    invalid_stored_stop: |-
+      Trade '%{trade}' : the current value ‘%{stop}’ for the ‘stop’ field is invalid: corrupted data.
+      This issue must be corrected using an external tool, as Jedi cannot fix it.

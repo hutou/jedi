@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  printf '%s\n' 'Run this launcher as a command; do not source it.' >&2
+  return 1
+fi
+
+# By default, the project is the directory where jedidev is launched.
+dev_dir="${JEDI_DEV_DIR:-$PWD}"
+CDPATH= cd -- "$dev_dir" || exit 1
+
+unset JEDI_CONFIG_DIR JEDI_LOG_DIR JEDI_DATA_DIR JEDI_DB_FILE JEDI_MARKET_DIR
+export JEDI_ENV=dev
+if [[ -n "${JEDI_DEV_MARKET_DIR:-}" ]]; then
+  export JEDI_MARKET_DIR="$JEDI_DEV_MARKET_DIR"
+fi
+
+# Contributors can select the binary they have just compiled.
+binary="${JEDI_DEV_BINARY:-$HOME/.local/libexec/jedi}"
+if [[ ! -f "$binary" || ! -x "$binary" ]]; then
+  printf 'Jedi binary missing or not executable: %s\n' "$binary" >&2
+  exit 127
+fi
+
+exec "$binary" "$@"

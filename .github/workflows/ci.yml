@@ -1,0 +1,27 @@
+name: Jedi 1.0 checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Prepare the pinned Crystal 1.21.1 builder
+        run: bash release/build-static.sh prepare
+      - name: Run the 493 specs and build the static binary
+        run: bash release/build-static.sh build
+      - name: Exercise the resulting binary on Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnuplot-nox
+          python3 release/smoke.py build/static/jedi --graphics --log-dir build/smoke-target
+      - name: Prepare release assets without publishing
+        run: python3 release/package.py

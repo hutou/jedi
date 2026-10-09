@@ -1,0 +1,32 @@
+name: jedi
+version: 1.0.0
+
+authors:
+  - hutou <hubert.toullec@gmail.com>
+
+targets:
+  jedi:
+    main: src/jedi_cli.cr
+
+dependencies:
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+  cryplot:
+    github: naqvis/cryplot
+  tablo:
+    github: hutou/tablo
+    #path: ../tablo
+  i18n:
+    github: crystal-i18n/i18n
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: 1.7.0
+  debug:
+    github: Sija/debug.cr
+    version: 2.0.4
+
+crystal: ">= 1.21.0, < 2.0"
+
+license: MIT

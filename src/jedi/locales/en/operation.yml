@@ -1,0 +1,154 @@
+en:
+  operation:
+    header: "Manage operations"
+    banner: |-
+      Manage operations
+
+      Usage: jedi operation <subcommand>
+
+      subcommands:
+    #
+    # --- create ---
+    #
+    create:
+      header: "Create a new operation"
+      banner: |
+        Description:
+          Create a new operation for an existing trade
+      usage: |
+        Usage: 
+          1st form, with named fields:
+            jedi operation create <id | name> --date=DATE --time=TIME --type=TYPE \
+                                             --mode=MODE --quantity=QUANTITY \
+                                             --price=PRICE [--fees=FEES] [options]
+
+          2nd form, with positional fields:
+            jedi operation create <id | name> <date> <time> <type> <mode> <quantity> <price> \
+                                   [--fees=FEES] [options]
+      notes: |
+        Notes:
+          The recommended syntax uses one positional argument for the trade identifier
+          and named options for the other parameters.
+          The positional syntax is a shorthand equivalent, on required fields only.
+          A zero price is reserved for a Sell operation that closes the entire stock,
+          for example after the security has been liquidated.
+          ** Do not mix syntaxes **
+      required_arguments: |
+        Required arguments:
+          <id>                             Trade Id in the database     
+          <name>                           Name of the trade
+      examples: |
+        Examples:
+          jedi operation create g22 --date 2026-04-15 --time 15:00:00 --type Buy --mode Limit \
+                                    --quantity 100 --price 10.0
+          jedi operation create 22 2026-04-15 15:00:00 Buy Limit 100 10.0
+      required_date: "Transaction date (format ISO 8601: YYYY-MM-DD)"
+      required_time: "Transaction time (format ISO 8601: HH:MM:SS)"
+      required_type: "Transaction type : Buy or Sell"
+      required_mode: "Execution mode : Market, Limit, Stop or StopLoss"
+      required_quantity: "Execution quantity"
+      required_price: |-
+        Execution price
+        (use +PRICE syntax to skip tick check)
+      optional_fees: |-
+        Transaction fees 
+        (default: calculated based on configuration data)
+      # from operation_creator:
+      trade_is_closed: "Trade %{ref} is closed (stock = 0)."
+      no_settings: "No settings in trade %{ref} yet."
+      success: "Operation %{ref} created."
+      date_exceeded_last_operation: "Date '%{date}' exceeded (by last operation)."
+      date_exceeded_last_settings: "Date '%{date}' exceeded (by last settings)."
+      tick_control: "Invalid price due to tick value '%{tick}'."
+      buy_required: "Buy operation type required (Limit or Market mode)."
+      missing_reinit_option: "Missing 'reinit' option."
+      short_selling_forbidden: "Short selling forbidden."
+      type_mode_invalid: "Invalid operation type and mode."
+      quantity_must_be_positive: "Operation quantity must be greater than zero (received: %{quantity})."
+      price_must_be_positive: "Operation price must be finite and greater than zero (received: %{price})."
+      zero_price_requires_full_liquidation: "A zero price is allowed only for a Sell operation that closes the entire position."
+      invalid_fees: "Operation fees must be finite and non-negative (received: %{fees})."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Delete last entered operation"
+      banner: |
+        Description:
+          Delete last created operation
+      usage: |
+        Usage: 
+          jedi operation delete [options]
+      notes: |
+        Condition: 
+          No more recent settings
+      examples: |
+        Example:
+          jedi operation delete
+      # from operationdeleter:
+      nothing: "Nothing to delete."
+      recent_settings: "A more recent settings exists, delete it first."
+      confirm: "Ok to delete operation %{ref} %{detail}: (y/N)? "
+      success: "Operation %{ref} deleted."
+    #
+    # --- list ---
+    #
+    list:
+      header: "List operations"
+      banner: |
+        Description:
+          List operations
+      usage: |
+        Usage: 
+          jedi operation list [filters] [options]
+      filters:
+        regex: |2-
+                                             The filterable fields are 'id', 'timestamp', 'type' 
+                                             and 'mode' in the 'operation' table, as well as the 'name'
+                                             field in tables 'trade', 'security' and 'scale'. 
+                                             (if the --csv option is used, the --extended option
+                                             must also be enabled to extend the filtering to these
+                                             last three fields)
+      notes: |
+        Notes:
+          Operation records are filtered in the following order:
+            1. Trades in progress
+            2. regex (Regular expression)
+            3. Record selection
+      examples: |
+        Example:
+          jedi operation list "Market && scale=qdt"
+      option_group: "Group operations by trade name"
+      option_extended: "With CSV option, add trade and security names"
+      # from operationlister:
+      option_group_records: "With --group, --select accepts only the first n or last n records"
+      option_group_missing: "--group option is required with --running option"
+      option_csv_missing: "--csv option is required with --headers or --extended options"
+      table:
+        title:
+          all: "List of operations"
+          one: "Selected operation"
+          some: "List of selected operations"
+        id: "\nId"
+        trade_name: "Trade\nName"
+        security_name: "Security\nName"
+        sg: "SG\nId"
+        scale_name: "Scale\nName"
+        dateonly: "\nDate"
+        timestamp: "Operation\nTimestamp"
+        type: "\nType"
+        mode: "\nMode"
+        quantity: "\nQty"
+        price: "\nPrice"
+        position: "\nPosition"
+        buy: "\nBuy"
+        sell: "\nSell"
+        gains_losses: "Gains\nLosses"
+        trade_invest: "Trade\nInvest."
+        global_invest: "Global\nInvest."
+        fees: "\nFees"
+        stock_held: "Stock\nheld"
+        ksp: "\nksp"
+        kcp: "\nkcp"
+    # operation:
+    query_failed: "Operation %{ref} not found."

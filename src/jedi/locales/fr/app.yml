@@ -1,0 +1,28 @@
+fr:
+  app:
+    invalid_environment: "Environment '%{env}' invalide, valeurs autorisées : '%{allowed}'"
+    initialization:
+      cancelled: "Initialisation annulée"
+      conf_file_confirm: "Ok pour créer le fichier de configuration <%{filename}> (O/n)? "
+      log_file_confirm: "Ok pour créer le fichier de log <%{filename}> (O/n)? "
+      data_file_confirm: "Ok pour créer la base de données SQL <%{filename}> (O/n)? "
+    dbfile:
+      not_found: "Base de données '%{filename}' non trouvée"
+      empty: "Le fichier '%{filename}' est vide"
+      invalid_sqlite: "Le fichier '%{filename}' n'est pas une base de données Sqlite"
+      not_jedi_database: "Le fichier '%{filename}' n'est pas une base de données Jedi"
+      not_current: "Le fichier '%{filename}' n'est pas la dernière version de la base de données Jedi"
+      mismatch: |-
+        Empreintes du schéma de la base de données discordantes :
+          - database : %{database_sha256}
+          - config   : %{config_sha256}
+    database:
+      schema: |-
+        Schéma de la base de données :
+        %{schema}
+    paths:
+      no_value_resolved: "Résolution des chemins : pas de résultat"
+      home_not_defined: "Résolution des chemins : HOME non défini"
+      log_file: "Fichier de log non initialisé"
+    money:
+      invalid_limits: "Valeurs limites invalides pour 'money'='%{name}' (min:%{min}, max:%{max})"

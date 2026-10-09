@@ -1,0 +1,211 @@
+en:
+  security:
+    header: "Manage listed securities (securities, ETFs, funds…)"
+    banner: |-
+      Securities management
+
+      Usage: jedi security <subcommand>
+
+      subcommands:
+    query_failed: "Security %{ref} not found."
+    #
+    # --- create ---
+    #
+    # jedi security create [options]
+    # jedi security create <isin> <name> <ticker> [<tick_buy> [<tick_sell> [<tax>]]] [options]
+    create:
+      header: "Create a new security"
+      banner: |
+        Description:
+          Create a new security
+      usage: |
+        Usage: 
+          1st form, with named fields:
+            jedi security create --isin=ISIN --name=NAME --ticker=TICKER \
+                                [--tick-buy=TICK_BUY] [--tick-sell=TICK_SELL] \
+                                [--tax-rate=TAX_RATE] [options]
+
+          2nd form, with positional fields;
+            jedi security create <isin> <name> <ticker> \
+                                [--tick-buy=TICK_BUY] [--tick-sell=TICK_SELL] \
+                                [--tax-rate=TAX_RATE] [options]
+      notes: |
+        Notes:
+          The recommended syntax uses named options for all parameters.
+          The positional syntax is a shorthand equivalent, on required fields only.
+          ** Do not mix syntaxes **
+      examples: |
+        Examples: 
+          jedi security create --isin FR0000131906 --name Renault --ticker RNO
+          jedi security create FR0000131906 Renault RNO --tick-buy 0.01 --tick-sell 0.01 --tax-rate 0.0
+      isin: &isin |-
+        ISIN identifier 
+        (International Securities Identification Numbers)
+      name: &name "Name of the security"
+      ticker: &ticker "Ticker code"
+      tick_buy: &tick_buy |-
+        Tick value for Buy order 
+        (default: 0.0001)
+      tick_sell: &tick_sell |-
+        Tick value for Sell order 
+        (default: 0.0001)
+      tax_rate: &tax_rate |-
+        Financial tax on Buy for specific securities 
+        (default: 0.0%)
+      # from security_creator:
+      isin_exists: "ISIN code '%{isin}' already exists."
+      invalid_isin: "The ISIN is invalid."
+      name_required: "The security name must not be empty."
+      invalid_tax: "The tax rate must be finite and non-negative (received: %{tax})."
+      invalid_quotation_price: "The initial quote must be finite and greater than zero (received: %{price})."
+      success: "Security %{ref} created."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Delete a security"
+      banner: |
+        Description:
+          Delete a security
+      usage: |
+        Usage: 
+          jedi security delete <id | isin> [options]
+      notes: |
+        Condition: 
+          Deletion is not permitted if the security is (or has been) used
+      required_arguments: &ident |-
+        Required arguments:
+          <id>                             Security Id in the database
+          <isin>                           ISIN code (International Securities Identification Numbers)
+      examples: |
+        Example:
+          jedi security delete FR0000131906
+      # from security_deleter:
+      in_use: "Security %{ref} is in use, cannot delete."
+      confirm: "Ok to delete security %{ref} (y/N)? "
+      success: "Security %{ref} deleted."
+    #
+    # --- list ---
+    #
+    list:
+      header: "List securities"
+      banner: |
+        Description:
+          List securities
+      usage: |
+        Usage: 
+          jedi security list [filters] [command-options]
+      filters:
+        regex: |2-
+                                             The filterable fields are 'id', 'isin', 'name' and 'ticker', 
+                                             as well as 'date', 'website' and 'mode' from quotation data
+                                             if the --extended option is enabled
+      notes: |
+        Notes:
+          Filtering is done in the following order:
+            1. Securities related to running trades
+            2. regex (Regular expression)
+            3. Record selection
+      examples: |
+        Example:
+          jedi security list abiv
+      option_extended: "Includes quotation data"
+      # from security_lister:
+      option_csv_missing: "--csv option is required with --headers"
+      table:
+        title:
+          all: "List of securities"
+          one: "Selected security"
+          some: "List of selected securities"
+        id: "Id"
+        isin: "Isin"
+        name: "Name"
+        ticker: "Ticker"
+        tick_buy: "Tick/B"
+        tick_sell: "Tick/S"
+        tax: "Tax"
+        quotation_date: "Timestamp"
+        quotation_website: "Origin"
+        quotation_mode: "Mode"
+        quotation_price: "Price"
+        quotation_variation: "Variation"
+        descriptive_info: "Descriptive informations"
+        last_quotation: "Last quotation"
+    #
+    # --- show ---
+    #
+    show:
+      header: "Show security details"
+      banner: |
+        Description:
+          Show security details
+      usage: |
+        Usage: 
+          jedi security show <id | isin> [options]
+      required_arguments: *ident
+      examples: |
+        Example:
+          jedi security show FR0000131906
+      # show:
+      table:
+        title: "Security: %{ref}"
+        id: "Id"
+        isin: "Isin"
+        name: "Name"
+        ticker: "Ticker"
+        tick_buy: "Buy tick size"
+        tick_sell: "Sell tick size"
+        tax: "Transaction tax rate"
+        quotation_date: "Quotation date"
+        quotation_website: "Origin"
+        quotation_mode: "Mode"
+        quotation_price: "Price"
+        quotation_variation: "Variation"
+        transpose:
+          fields: "Field names"
+          contents: "Contents"
+    #
+    # --- update ---
+    #
+    update:
+      header: "Update security information"
+      banner: |
+        Description:
+          Update security information
+      usage: |
+        Usage: 
+          jedi security update <id | isin> [--isin=ISIN] [--name=NAME] [--ticker=TICKER] \
+                                           [--tick-buy=TICK_BUY]  [--tick-sell=TICK_SELL] \
+                                           [--tax-rate=TAX_RATE] [options]
+      required_arguments: *ident
+      notes: |
+        Notes:
+          Several fields can be updated at once using corresponding options
+      isin: *isin
+      name: *name
+      ticker: *ticker
+      tick_buy: *tick_buy
+      tick_sell: *tick_sell
+      tax_rate: *tax_rate
+      examples: |
+        Examples:
+          jedi security update FR0000131906 --name Renault --tick-buy 0.02
+          jedi security update 3 --tick-sell 0.05
+      # from update:
+      success: "Security %{ref} updated."
+      unchanged: "Security %{ref} unchanged."
+      isin_used: "ISIN code '%{isin}' already used."
+  #
+  # --- split ---
+  #
+  split:
+    invalid_value: "Option --split: invalid value '%{split}'."
+  #
+  # --- tick ---
+  #
+  tick:
+    invalid_value: "Tick: invalid value '%{tick}'."
+  tick_buy:
+    invalid_value: "Option --tick-buy: invalid value '%{tick}'."
+  tick_sell:
+    invalid_value: "Option --tick-sell: invalid value '%{tick}'."

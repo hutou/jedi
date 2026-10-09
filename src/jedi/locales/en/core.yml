@@ -1,0 +1,9 @@
+en:
+  core:
+    conversion:
+      kv_decode_error: "Error decoding arguments list '%{args}'"
+    collection:
+      invalid_selection: "Invalid selection '%{selection}'"
+    external_editor:
+      not_configured: "External editor not configured"
+      failed: "External editor has failed"

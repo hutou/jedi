@@ -1,0 +1,170 @@
+en:
+  settings:
+    help: "Run the ‘jedi settings’ command to display the list of subcommands."
+    header: "Manage settings (scale, split)"
+    banner: |-
+      Manage settings (scale, split)
+
+      Usage: jedi settings subcommand
+
+      subcommands:
+    #
+    # --- create ---
+    #
+    create:
+      header: "create new settings"
+      banner: |
+        Description:
+          Create new settings for an existing trade
+      usage: |
+        Usage: 
+          1st form, with named fields:
+            jedi settings create <Trade: id | name> --scale <id | name> --date=DATE --time=TIME \
+                                 [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+
+          2nd form, with positional fields:
+            jedi settings create <Trade: id | name> <Scale: id | name> <date> <time> \
+                                 [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+      notes: |
+        Notes:
+          The recommended syntax uses one positional argument for the trade identifier
+          and named options for the other parameters.
+          Positional syntax is an equivalent shortcut, on required fields only
+          ** Do not mix syntaxes **
+      required_arguments: |
+        required arguments:
+          <id>                             Trade Id in the database
+          <name>                           Trade name
+      examples: |
+        Examples:
+          jedi settings create g22 --scale=qdt --date 2026-04-15 --time 15:00:00
+          jedi settings create 22 qdt 2026-04-15 15:00:00
+      required_scale_id: "Scale identifier by its database Id"
+      required_scale_name: "Scale identifier by its name"
+      required_date: "Effective date (format ISO 8601: YYYY-MM-DD)"
+      required_time: "Effective time (format ISO 8601: HH:MM:SS)"
+      option_sync: "Position Synchronization"
+      option_split: "Division or recombination of shares"
+      option_reinit: "Reset trade to initial context"
+      # from settings_creator:
+      last_settings_not_used: "Last entered settings for trade %{ref} not used yet."
+      sync_type_one_only: "Position synchronization is only available for type-I scales."
+      success: "Settings %{ref_settings} created for trade %{ref}."
+      zero_or_one_option_only: "Options split, sync and reinit are mutually exclusive, only one is accepted."
+      option_not_allowed_in_empty_settings: "Option(s) not allowed without existing settings."
+      datetime_operation: "Date '%{date}' exceeded by last operation."
+      datetime_settings: "Date '%{date}' exceeded by last settings."
+      scale_steps_incompatibility: "Scale not compatible with the step position value."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Delete last created settings"
+      banner: |
+        Description:
+          Delete last created settings
+      usage: |
+        Usage: 
+          jedi settings delete [options]
+      notes: |
+        Condition: 
+          No operations should be associated with these settings
+      examples: |
+        Example:
+          jedi settings delete
+      # from settings_deleter:
+      nothing_to_delete: "Nothing to delete"
+      success: "Settings %{ref} deleted."
+      in_use: "Settings %{ref} is in use, cannot delete."
+      confirm: "Ok to delete settings %{ref} (y/N)? "
+    #
+    # --- list ---
+    #
+    list:
+      header: "List settings"
+      banner: |
+        Description:
+          List settings
+      usage: |
+        Usage: 
+          jedi settings list [filters] [options]
+      filters:
+        regex: |2-
+                                             The filterable fields are 'id' and 'timestamp' in the
+                                             'settings' table, as well as the 'name' field in the
+                                             'trade', 'security' and 'scale' tables
+      notes: |
+        Notes:
+          Filtering is done in the following order:
+            1. Trades in progress
+            2. regex (Regular expression)
+            3. Record selection
+      examples: |
+        Examples:
+          jedi settings list "2018-" -gr
+          jedi settings list -sl3 -r
+      option_layout: |-
+        Displays the list in two different formats, depending on 
+        the value of the option:
+          0 : full format (default)
+          1 : reduced format
+      option_group: "Group settings by trade name"
+      # settingslister:
+      table:
+        title:
+          all: "List of settings"
+          many: "List of selected settings"
+          one: "Selected settings"
+        id: "Id"
+        trade: "Trade"
+        security: "Security"
+        scale: "Scale"
+        timestamp: "Timestamp"
+        qty: "Qty (q0)"
+        price: "Price (c0)"
+        position: "Position"
+        split: "split"
+        sync: "sync"
+        reinit: "reinit"
+        kspc: "kspc"
+        kcpc: "kcpc"
+        opcount: "# Op"
+    #
+    # --- show ---
+    #
+    show:
+      header: "Show settings details"
+      banner: |
+        Description:
+          Show settings details
+      usage: |
+        Usage: 
+          jedi settings show <id> [options]
+      required_arguments: |
+        Required arguments:
+          <id>                             Settings Id in the database
+      examples: |
+        Example:
+          jedi settings show 12
+      #show:
+      title: "Settings %{ref}"
+      id: "Id"
+      trade: "Trade"
+      scale: "Scale"
+      rank: "Rank"
+      timestamp: "Timestamp"
+      split: "split"
+      sync: "sync"
+      reinit: "reinit"
+      q0: "q0"
+      c0: "c0"
+      position: "Position"
+      kspc: "kspc"
+      kcpc: "kcpc"
+      transpose:
+        fields: "Field names"
+        contents: "Contents"
+    #
+    # --- settings ---
+    #
+    query_failed: "Settings %{ref} not found."

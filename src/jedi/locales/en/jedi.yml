@@ -1,0 +1,45 @@
+en:
+  jedi:
+    banner: |-
+      jedi, version %{version}
+
+      The jedi application can be used in 'command line' mode only, using the
+      following syntax:
+
+      jedi [global options] command subcommand arguments [options]
+
+      Entering a command alone displays the list of sub-commands available
+      for this command.
+
+      - Arguments and options apply only to the sub-command that precedes them.
+        At this level are defined:
+        . whether or not arguments are mandatory
+        . availability of options
+      - If no arguments are required, the subcommand is executed immediately.
+      - All subcommands have a help page that can be accessed using the -h or --help option.  
+
+      A double dash “--” must be used to separate options and positional
+      arguments (mandatory if these start with a single dash, as in the case
+      of negative numbers). So be careful when placing options in this case;
+      they must always precede the double dash.
+
+      When an option or positional argument expects a list, the elements of 
+      this list must be separated by a comma, with no intervening spaces 
+      (except if surrounded by double quotes).
+
+      Commands:
+    notes: |
+      Notes:
+        Commands and subcommands can be abbreviated to the shortest unambiguous prefix.
+    config:
+      header: |
+        Display configuration data
+        (Use --paths option to only display files in use)"
+    version:
+      header: "Display version details"
+      details: |
+        %{appname} app, from Jedi project v%{version}
+        (Using Tablo lib v%{tablo})
+
+        Build infos:
+        %{compile}

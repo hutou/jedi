@@ -1,0 +1,1944 @@
+Jedi 1.0 — Command help
+
+===== database dump =====
+
+Description:
+  Generate jedi commands to populate an empty database
+
+Usage: 
+  jedi database dump [>filename] [options]
+  (Standard output is used, usually redirected to a file)
+
+Options:
+  -h, --help                       Show this help
+
+Example: 
+  jedi database dump >jedidump.txt
+
+===== database load =====
+
+Description:
+  Populate an empty database from file
+
+Usage: 
+  jedi database load <filename> [options]
+
+Required argument: 
+  <filename>                       File resulting from the redirected ‘database dump’ subcommand
+
+Options:
+  -h, --help                       Show this help
+
+Example: 
+  jedi database load jedidump.txt
+
+===== database schema =====
+
+Description: 
+  Display the database schema, along with its sha256 digest
+
+Usage: 
+  jedi database schema [options]
+  (Standard output is used)
+
+Options:
+  -h, --help                       Show this help
+
+Example: 
+  jedi database schema
+
+===== main =====
+
+jedi, version 1.0.0
+
+The jedi application can be used in 'command line' mode only, using the
+following syntax:
+
+jedi [global options] command subcommand arguments [options]
+
+Entering a command alone displays the list of sub-commands available
+for this command.
+
+- Arguments and options apply only to the sub-command that precedes them.
+  At this level are defined:
+  . whether or not arguments are mandatory
+  . availability of options
+- If no arguments are required, the subcommand is executed immediately.
+- All subcommands have a help page that can be accessed using the -h or --help option.  
+
+A double dash “--” must be used to separate options and positional
+arguments (mandatory if these start with a single dash, as in the case
+of negative numbers). So be careful when placing options in this case;
+they must always precede the double dash.
+
+When an option or positional argument expects a list, the elements of 
+this list must be separated by a comma, with no intervening spaces 
+(except if surrounded by double quotes).
+
+Commands:
+  security                         Manage listed securities (securities, ETFs, funds…)
+  quote                            Manages quotes
+  trade                            Manage trades (create, update, ...)
+  scale                            Manage scales (Type I and type II)
+  settings                         Manage settings (scale, split)
+  operation                        Manage operations
+  note                             Manage notes
+  database                         Manage database
+  market                           Manages market quotation databases
+  tools                            Jedi toolbox
+
+  version                          Display version details
+  config                           Display configuration data
+                                   (Use --paths option to only display files in use)"
+                                   
+Notes:
+  Commands and subcommands can be abbreviated to the shortest unambiguous prefix.
+
+Global options:
+  -b, --border=PRESET              Select border style, among following values:
+                                     - ascii         - modern         - markdown   - empty 
+                                     - reducedascii  - reducedmodern  - fancy      - blank
+
+===== market group =====
+
+Description:
+  Adds one security to an existing group or removes it.
+
+Usage:
+  jedi market group <source> <group> <ISIN> (--add | --remove) [options]
+
+Required arguments:
+  <source>                         Database source
+  <group>                          Existing group code
+  <ISIN>                           Security ISIN
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --add                        Add the security to the group
+      --remove                     Remove the security from the group
+  -h, --help                       Show this help
+
+Examples:
+  jedi market group abcbourse PEA FR0000031122 --add
+  jedi market group abcbourse PEA FR0000031122 --remove
+
+===== market import =====
+
+Description:
+  Adds a set of securities and quotations to an existing database.
+  ISINs without labels are skipped and listed in the report.
+
+Usage:
+  jedi market import <source> <dataset> <quotes> <labels> [options]
+
+Required arguments:
+  <source>                         Database source
+  <dataset>                        Free dataset code, for example Euronext_A
+  <quotes>                         Quotation file
+  <labels>                         ISIN;Name;Ticker labels file
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --date-order=ORDER           Date order: auto, ymd, dmy or mdy (default: auto)
+      --year-pivot=NN              Two-digit year pivot from 0 to 99 (default: 70)
+      --from=DATE                  First quotation date retained, in YYYY-MM-DD format
+  -h, --help                       Show this help
+
+Examples:
+  jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt
+  jedi market import abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01
+
+===== market info =====
+
+Description:
+  Displays a global database summary, details for each dataset and
+  several integrity checks.
+
+Usage:
+  jedi market info <source> [options]
+
+Required arguments:
+  <source>                         Database source
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --dataset=CODE               Limits the report to the specified dataset
+  -h, --help                       Show this help
+
+Examples:
+  jedi market info abcbourse
+  jedi market info abcbourse --dataset=Euronext_A
+
+===== market init =====
+
+Description:
+  Creates an empty database for one source and general universe.
+  Datasets are then added with the import subcommand.
+
+Usage:
+  jedi market init <source> [options]
+
+Required arguments:
+  <source>                         Logical source name used in the database filename
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+  -h, --help                       Show this help
+
+Example:
+  jedi market init abcbourse
+
+===== market list =====
+
+Description:
+  Lists securities stored in the market database. --dataset can restrict
+  the list to one dataset. An optional regex filter can target all fields
+  or a named field.
+
+Usage:
+  jedi market list <source> [regex] [options]
+
+Required arguments:
+  <source>                         Database source
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   Filterable fields are: isin, ticker, name, group, dataset.
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --dataset=CODE               Limits the report to the specified dataset
+      --last-quote                 Add the date and closing price of the last quote
+  -h, --help                       Show this help
+
+Examples:
+  jedi market list abcbourse
+  jedi market list abcbourse air
+  jedi market list abcbourse 'group=PEA && name=air'
+  jedi market list abcbourse --dataset=Euronext_Growth
+  jedi market list abcbourse 'ticker=^AL' --dataset=Euronext_A
+  jedi market list abcbourse --last-quote
+
+===== market quote =====
+
+Description:
+  Displays the complete OHLCV history of one market security. Date
+  selection is applied before record selection.
+
+Usage:
+  jedi market quote <source> <ISIN> [options]
+
+Required arguments:
+  <source>   Database source
+  <ISIN>     Security ISIN
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+      --date=OP:DATE               Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)
+  -h, --help                       Show this help
+
+Examples:
+  jedi market quote abcbourse FR0000120073
+  jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01
+  jedi market quote abcbourse FR0000120073 --select=20
+  jedi market quote abcbourse FR0000120073 --date=ge:2026-01-01 --select=l20
+
+===== market replace =====
+
+Description:
+  Replaces one dataset transactionally. Data shared with other datasets
+  is preserved.
+
+Usage:
+  jedi market replace <source> <dataset> <quotes> <labels> [options]
+
+Required arguments:
+  <source>                         Database source
+  <dataset>                        Dataset code to replace
+  <quotes>                         New quotation file
+  <labels>                         ISIN;Name;Ticker labels file
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --date-order=ORDER           Date order: auto, ymd, dmy or mdy (default: auto)
+      --year-pivot=NN              Two-digit year pivot from 0 to 99 (default: 70)
+      --from=DATE                  First quotation date retained, in YYYY-MM-DD format
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Examples:
+  jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt
+  jedi market replace abcbourse Euronext_A Euronext_A.txt labels.txt --from=2020-01-01 --noconfirm
+
+===== market sync-group =====
+
+Description:
+  Transactionally replaces the membership of a named group from a
+  simple file containing an ISIN or ticker at the beginning of each
+  line. A label may follow after whitespace, ';' or ':'. Blank lines
+  and lines beginning with # are ignored. Existing members absent from
+  the file are removed from the group.
+
+Usage:
+  jedi market sync-group <source> <group> <references_file> [options]
+
+Required arguments:
+  <source>                         Database source
+  <group>                          Free group code, for example PEA
+  <references_file>                File containing an ISIN or ticker at line start
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --as-of=DATE                 Group membership reference date in YYYY-MM-DD format
+      --reference-source=NAME      Reference source for group membership
+  -h, --help                       Show this help
+
+Example:
+  jedi market sync-group abcbourse PEA pea.txt --reference-source=prorealtime --as-of=2026-09-24
+
+===== market update =====
+
+Description:
+  Non-destructively merges securities and quotations into an existing
+  dataset. Equivalent duplicates are ignored; a conflicting quotation
+  is reported and skipped. An extension more than 7 calendar days
+  after the current dataset end is rejected unless --allow-gap is used.
+
+Usage:
+  jedi market update <source> <dataset> <quotes> <labels> [options]
+
+Required arguments:
+  <source>                         Database source
+  <dataset>                        Dataset code to update
+  <quotes>                         Quotation update file
+  <labels>                         ISIN;Name;Ticker labels file
+
+Options:
+      --universe=NAME              General universe used in the database name (default: france)
+      --date-order=ORDER           Date order: auto, ymd, dmy or mdy (default: auto)
+      --year-pivot=NN              Two-digit year pivot from 0 to 99 (default: 70)
+      --from=DATE                  First quotation date retained, in YYYY-MM-DD format
+      --allow-gap                  Explicitly accepts a history gap larger than 7 calendar days
+  -h, --help                       Show this help
+
+Examples:
+  jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt
+  jedi market update abcbourse Euronext_A Euronext_A_update.txt labels.txt --allow-gap
+
+===== note create =====
+
+Description:
+  Create a new note
+
+Usage:
+  1st form, with an external editor:
+    jedi note create --edit [options]
+
+  2nd form, with named fields:
+    jedi note create --date=DATE --summary=SUMMARY --contents=TEXT [options]
+
+  3rd form, with positional fields;
+    jedi note create <date> <summary> <contents> [options]
+
+Notes:
+  It is recommended to use the --edit option to enable full text editing using
+  the default editor specified by the EDITOR or VISUAL environment variables
+  It is still possible to use named fields or positional fields, but this is not 
+  very convenient. 
+  ** Do not mix syntaxes **
+
+Required fields:
+      --date=DATE                  Note creation date
+      --summary=SUMMARY            Note summary
+      --contents=TEXT              Note contents
+
+Options:
+      --edit                       Create the note with an external editor
+  -h, --help                       Show this help
+
+Examples:
+  jedi note create --edit
+  jedi note create --date 2026-05-28 --summary "Renault\nsummary" --contents "Renault\ncontents"
+  jedi note create 2026-05-28 "Renault\nsummary" "Renault\ncontents"
+
+===== note delete =====
+
+Description:
+  Delete a note
+
+Usage: 
+  jedi note delete <id> [options]
+
+Required arguments:
+  <id>                             Note Id in the database
+
+Options:
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Example:
+  jedi note delete 17
+
+===== note list =====
+
+Description:
+  List notes
+
+Usage: 
+  jedi note list [filters] [options]
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   The filterable fields are 'id', 'date', 'summary' 
+                                   and 'contents'
+
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+Options:
+  -c, --column-indexes=INDEXES     Select column indexes to display, using a list of integers
+                                   or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+                                   be displayed in the order of indexes, and ranges can be 
+                                   inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+                                   (not compatible with option --csv)
+  -h, --help                       Show this help
+
+Example:
+  jedi note list renault
+
+===== note show =====
+
+Description:
+  Show note contents
+
+Usage: 
+  jedi note show <id> [options]
+
+Required arguments:
+  <id>                             Note Id in the database
+
+Options:
+  -h, --help                       Show this help
+
+Example:
+  jedi note show 42
+
+===== note update =====
+
+Description:
+  Update a note
+
+Usage: 
+  1st form, with an external editor:
+    jedi note update <id> --edit [command options]
+
+  2nd form, with named fields:
+    jedi note update <id> --date=DATE --summary=SUMMARY --contents=TEXT [options]
+
+Notes:
+  It is recommended to use the --edit option to enable full text editing using
+  the default editor specified by the EDITOR or VISUAL environment variables
+  It is still possible to use named fields, but this is not very convenient.
+  ** Do not mix syntaxes **
+
+Required arguments:
+  <id>                             Note Id in the database
+
+Required fields:
+      --date=DATE                  Note creation date
+      --summary=SUMMARY            Note summary
+      --contents=TEXT              Note contents
+
+Options:
+      --edit                       Modify the note with an external editor
+  -h, --help                       Show this help
+
+Examples:
+  jedi note update 42 --edit
+  jedi note update 42 --date 2026-05-28 --summary Summary\nexample
+
+===== operation create =====
+
+Description:
+  Create a new operation for an existing trade
+
+Usage: 
+  1st form, with named fields:
+    jedi operation create <id | name> --date=DATE --time=TIME --type=TYPE \
+                                     --mode=MODE --quantity=QUANTITY \
+                                     --price=PRICE [--fees=FEES] [options]
+
+  2nd form, with positional fields:
+    jedi operation create <id | name> <date> <time> <type> <mode> <quantity> <price> \
+                           [--fees=FEES] [options]
+
+Notes:
+  The recommended syntax uses one positional argument for the trade identifier
+  and named options for the other parameters.
+  The positional syntax is a shorthand equivalent, on required fields only.
+  A zero price is reserved for a Sell operation that closes the entire stock,
+  for example after the security has been liquidated.
+  ** Do not mix syntaxes **
+
+Required arguments:
+  <id>                             Trade Id in the database     
+  <name>                           Name of the trade
+
+Required fields:
+      --date=DATE                  Transaction date (format ISO 8601: YYYY-MM-DD)
+      --time=TIME                  Transaction time (format ISO 8601: HH:MM:SS)
+      --type=TYPE                  Transaction type : Buy or Sell
+      --mode=MODE                  Execution mode : Market, Limit, Stop or StopLoss
+      --quantity=QTY               Execution quantity
+      --price=PRICE                Execution price
+                                   (use +PRICE syntax to skip tick check)
+
+Optional fields:
+      --fees=FEES                  Transaction fees 
+                                   (default: calculated based on configuration data)
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi operation create g22 --date 2026-04-15 --time 15:00:00 --type Buy --mode Limit \
+                            --quantity 100 --price 10.0
+  jedi operation create 22 2026-04-15 15:00:00 Buy Limit 100 10.0
+
+===== operation delete =====
+
+Description:
+  Delete last created operation
+
+Usage: 
+  jedi operation delete [options]
+
+Condition: 
+  No more recent settings
+
+Options:
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Example:
+  jedi operation delete
+
+===== operation list =====
+
+Description:
+  List operations
+
+Usage: 
+  jedi operation list [filters] [options]
+
+Filters:
+  -r, --running                    Running trades only
+
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   The filterable fields are 'id', 'timestamp', 'type' 
+                                   and 'mode' in the 'operation' table, as well as the 'name'
+                                   field in tables 'trade', 'security' and 'scale'. 
+                                   (if the --csv option is used, the --extended option
+                                   must also be enabled to extend the filtering to these
+                                   last three fields)
+
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+Notes:
+  Operation records are filtered in the following order:
+    1. Trades in progress
+    2. regex (Regular expression)
+    3. Record selection
+
+Options:
+  -g, --group                      Group operations by trade name
+  -c, --column-indexes=INDEXES     Select column indexes to display, using a list of integers
+                                   or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+                                   be displayed in the order of indexes, and ranges can be 
+                                   inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+                                   (not compatible with option --csv)
+      --csv                        Exports records in CSV format
+      --headers                    Includes headers when CSV selected
+  -x, --extended                   With CSV option, add trade and security names
+  -h, --help                       Show this help
+
+Example:
+  jedi operation list "Market && scale=qdt"
+
+===== quote get =====
+
+Description:
+  Displays the current quote for a security identified by its ISIN
+
+Usage:
+  jedi quote get <isin>
+
+Required arguments:
+  <isin>                           ISIN code (International Securities Identification Number)
+
+Options:
+  -h, --help                       Show this help
+
+Example:
+  jedi quote get FR0000120271
+
+===== quote refresh =====
+
+Description:
+  Update quotes via data providers
+
+Usage: 
+  jedi quote refresh [filters] [options]
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   Filterable fields are 'id', 'isin', 'name' and 'ticker'
+Notes:
+   By default, only securities related to running trades are updated
+
+Options:
+  -m, --mode=MODE                  Quotation mode: 'live' or 'eod' (default: 'live')
+                                     - 'live' mode for Web Scraping
+                                     - 'eod' (End of Day) mode for direct download
+                                       (generally not free)
+      --force                      Force an update of all securities, based on the filter.
+  -h, --help                       Show this help
+
+Examples:
+  jedi quote refresh "isin=FR000005.*"
+  jedi quote refresh "MEDCL || ALCJ" --force
+
+===== quote set =====
+
+Description:
+  Manually update the security price
+
+Usage: 
+  1st form, with named fields:
+    jedi quote set <id | isin> --price=PRICE [options]
+
+  2nd form, with positional fields;
+    jedi quote set <id | isin> <price> [options]
+
+Notes:
+  Manual update would also set fields 'website' to 'manual', 'timestamp' to
+  current date and time and 'quotation_variation' to null
+
+Required arguments:
+  <id>                             Security Id in the database
+  <isin>                           ISIN code (International Securities Identification Numbers)
+
+Options:
+      --price=PRICE                The new price to be assigned to the security
+                                   
+  -h, --help                       Show this help
+
+Examples:
+  jedi quote set 2 8.97
+
+===== quote update =====
+
+Description:
+  Update a security's quote via data providers
+
+Usage: 
+  jedi quote update <id | isin> [options]
+
+Required arguments:
+  <id>                             Security Id in the database
+  <isin>                           ISIN code (International Securities Identification Numbers)
+
+Options:
+  -m, --mode=MODE                  Quotation mode: 'live' or 'eod' (default: 'live')
+                                     - 'live' mode for Web Scraping
+                                     - 'eod' (End of Day) mode for direct download
+                                       (generally not free)
+  -h, --help                       Show this help
+
+Examples:
+  jedi quote update 17
+  jedi quote update FR0000050001
+
+===== scale create =====
+
+Description:
+  Create a new scale
+
+Usage:
+  1st form, with named fields:
+    jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
+  2nd form, with positional fields:
+    jedi scale create <name> <comment> <builder> [options]
+
+Notes:
+  The recommended syntax uses named options for all parameters.
+  The positional syntax is a shorthand equivalent.
+  ** Do not mix syntaxes **
+
+Required fields:
+      --name=NAME                  Scale Name:
+                                     - Must begin with a letter,
+                                     - Followed by at least one alphanumeric character.
+      --comment=COMMENT            Comment on scale (free-form)
+      --builder=BUILDER            Valid scale builder keyword sets:
+                                     - {kc,ks,ki,kb}           : Type I, canonical format
+                                     - {kc,ki,kb,kd}           : Type I, optimized on ks
+                                     - {vr,ks,ki,kb}           : Type II, canonical format
+                                     - {vr,np,nn,ki,kb,kd}     : Type II, optimized on ks
+                                     - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+                                   Each keyword expects one or more parameters:
+                                     - np, nn, mi, kb: a single integer value (e.g., np:3)
+                                     - kc, ks: a list of decimal values, separated by commas 
+                                       (e.g., kc:1.45,1.30, 1.15, ...)
+                                     - vr, sr, ki, kd: a single decimal value (which can be expressed 
+                                       as a percentage, except for kd)
+                                       (e.g., vr:15% or vr:0.15)
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi scale create --name sc01 --comment "scale 01" --definition "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+  jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+
+===== scale delete =====
+
+Description:
+  Delete a scale
+
+Usage:
+  jedi scale delete <id | name> [options]
+
+Condition: 
+  Deletion not permitted if the scale is (or has been) used
+
+Required arguments:
+  <id>                             Scale Id in the database
+  <name>                           Scale name
+
+Options:
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Examples:
+  jedi scale delete 13
+  jedi scale delete sc01
+
+===== scale list =====
+
+Description:
+  List scales
+
+Usage:
+  jedi scale list [filters] [options]
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   The filterable fields are 'id', 'name', 'comment', 'status', 'type', 
+                                   'optimized' (and 'definition' if option --extended is enabled)
+
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+      --in-use                     Show only scales in use
+
+Notes:
+  Scale records are filtered in the following order:
+    1. Scales in use
+    2. regex (Regular expression)
+    3. Records selection
+
+Options:
+  -x, --extended                   Also displays scale definition (canonical form)
+      --csv                        Exports records in CSV format
+      --headers                    Includes headers when CSV selected
+  -c, --column-indexes=INDEXES     Select column indexes to display, using a list of integers
+                                   or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+                                   be displayed in the order of indexes, and ranges can be 
+                                   inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+                                   (not compatible with option --csv)
+  -h, --help                       Show this help
+
+Examples:
+  jedi scale list --in-use -sl1
+  jedi scale list -x --csv --headers
+
+===== scale show =====
+
+Description:
+  Show scale details
+
+Usage:
+  jedi scale show <id | name | ="literal"> [options]
+
+Required arguments:
+  <id>                             Scale Id in the database
+  <name>                           Scale name
+  "literal"                        A literal scale constructor,
+                                   introduced by the ‘=’ character
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi scale show qdt
+  jedi scale show ="vr:10.0%, ks:0.8,1.2, ki:0.0%, kb:0"
+
+===== scale update =====
+
+Description:
+  Update a scale
+
+Usage:
+  jedi scale update <id | name> --name=NAME --comment=COMMENT --builder=BUILDER [options]
+
+Notes:
+  Several fields can be updated at once
+
+Required arguments:
+  <id>                             Scale Id in the database
+  <name>                           Scale name
+
+Optional fields:
+      --name=NAME                  Scale Name:
+                                     - Must begin with a letter,
+                                     - Followed by at least one alphanumeric character.
+      --comment=COMMENT            Comment on scale (free-form)
+      --builder=BUILDER            Valid scale builder keyword sets:
+                                     - {kc,ks,ki,kb}           : Type I, canonical format
+                                     - {kc,ki,kb,kd}           : Type I, optimized on ks
+                                     - {vr,ks,ki,kb}           : Type II, canonical format
+                                     - {vr,np,nn,ki,kb,kd}     : Type II, optimized on ks
+                                     - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+                                   Each keyword expects one or more parameters:
+                                     - np, nn, mi, kb: a single integer value (e.g., np:3)
+                                     - kc, ks: a list of decimal values, separated by commas 
+                                       (e.g., kc:1.45,1.30, 1.15, ...)
+                                     - vr, sr, ki, kd: a single decimal value (which can be expressed 
+                                       as a percentage, except for kd)
+                                       (e.g., vr:15% or vr:0.15)
+
+Options:
+      --force                      Force update on used scale
+  -h, --help                       Show this help
+
+Example:
+  jedi scale update 14 --builder "vr:10%, np:3, nn:3, ki:10%, kb:1, kd:0.3" --comment "scale sc01 v2"
+
+===== security create =====
+
+Description:
+  Create a new security
+
+Usage: 
+  1st form, with named fields:
+    jedi security create --isin=ISIN --name=NAME --ticker=TICKER \
+                        [--tick-buy=TICK_BUY] [--tick-sell=TICK_SELL] \
+                        [--tax-rate=TAX_RATE] [options]
+
+  2nd form, with positional fields;
+    jedi security create <isin> <name> <ticker> \
+                        [--tick-buy=TICK_BUY] [--tick-sell=TICK_SELL] \
+                        [--tax-rate=TAX_RATE] [options]
+
+Notes:
+  The recommended syntax uses named options for all parameters.
+  The positional syntax is a shorthand equivalent, on required fields only.
+  ** Do not mix syntaxes **
+
+Required fields:
+      --isin=ISIN                  ISIN identifier 
+                                   (International Securities Identification Numbers)
+      --name=NAME                  Name of the security
+      --ticker=TICKER              Ticker code
+
+Optional fields:
+      --tick-buy=TICK_BUY          Tick value for Buy order 
+                                   (default: 0.0001)
+      --tick-sell=TICK_SELL        Tick value for Sell order 
+                                   (default: 0.0001)
+      --tax-rate=TAX_RATE          Financial tax on Buy for specific securities 
+                                   (default: 0.0%)
+
+Options:
+  -h, --help                       Show this help
+
+Examples: 
+  jedi security create --isin FR0000131906 --name Renault --ticker RNO
+  jedi security create FR0000131906 Renault RNO --tick-buy 0.01 --tick-sell 0.01 --tax-rate 0.0
+
+===== security delete =====
+
+Description:
+  Delete a security
+
+Usage: 
+  jedi security delete <id | isin> [options]
+
+Condition: 
+  Deletion is not permitted if the security is (or has been) used
+
+Required arguments:
+  <id>                             Security Id in the database
+  <isin>                           ISIN code (International Securities Identification Numbers)
+
+Options:
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Example:
+  jedi security delete FR0000131906
+
+===== security list =====
+
+Description:
+  List securities
+
+Usage: 
+  jedi security list [filters] [command-options]
+
+Filters:
+  -r, --running                    Running trades only
+
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   The filterable fields are 'id', 'isin', 'name' and 'ticker', 
+                                   as well as 'date', 'website' and 'mode' from quotation data
+                                   if the --extended option is enabled
+
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+Notes:
+  Filtering is done in the following order:
+    1. Securities related to running trades
+    2. regex (Regular expression)
+    3. Record selection
+
+Options:
+  -x, --extended                   Includes quotation data
+      --csv                        Exports records in CSV format
+      --headers                    Includes headers when CSV selected
+  -c, --column-indexes=INDEXES     Select column indexes to display, using a list of integers
+                                   or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+                                   be displayed in the order of indexes, and ranges can be 
+                                   inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+                                   (not compatible with option --csv)
+  -h, --help                       Show this help
+
+Example:
+  jedi security list abiv
+
+===== security show =====
+
+Description:
+  Show security details
+
+Usage: 
+  jedi security show <id | isin> [options]
+
+Required arguments:
+  <id>                             Security Id in the database
+  <isin>                           ISIN code (International Securities Identification Numbers)
+
+Options:
+  -h, --help                       Show this help
+
+Example:
+  jedi security show FR0000131906
+
+===== security update =====
+
+Description:
+  Update security information
+
+Usage: 
+  jedi security update <id | isin> [--isin=ISIN] [--name=NAME] [--ticker=TICKER] \
+                                   [--tick-buy=TICK_BUY]  [--tick-sell=TICK_SELL] \
+                                   [--tax-rate=TAX_RATE] [options]
+
+Required arguments:
+  <id>                             Security Id in the database
+  <isin>                           ISIN code (International Securities Identification Numbers)
+
+Optional fields:
+      --isin=ISIN                  ISIN identifier 
+                                   (International Securities Identification Numbers)
+      --name=NAME                  Name of the security
+      --ticker=TICKER              Ticker code
+      --tick-buy=TICK_BUY          Tick value for Buy order 
+                                   (default: 0.0001)
+      --tick-sell=TICK_SELL        Tick value for Sell order 
+                                   (default: 0.0001)
+      --tax-rate=TAX_RATE          Financial tax on Buy for specific securities 
+                                   (default: 0.0%)
+
+Notes:
+  Several fields can be updated at once using corresponding options
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi security update FR0000131906 --name Renault --tick-buy 0.02
+  jedi security update 3 --tick-sell 0.05
+
+===== settings create =====
+
+Description:
+  Create new settings for an existing trade
+
+Usage: 
+  1st form, with named fields:
+    jedi settings create <Trade: id | name> --scale <id | name> --date=DATE --time=TIME \
+                         [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+
+  2nd form, with positional fields:
+    jedi settings create <Trade: id | name> <Scale: id | name> <date> <time> \
+                         [--split=NEW:OLD] [--sync=POSITION] [--reinit=VALUE] [options]
+
+Notes:
+  The recommended syntax uses one positional argument for the trade identifier
+  and named options for the other parameters.
+  Positional syntax is an equivalent shortcut, on required fields only
+  ** Do not mix syntaxes **
+
+required arguments:
+  <id>                             Trade Id in the database
+  <name>                           Trade name
+
+Required fields:
+      --scale=ID                   Scale identifier by its database Id
+      --scale=NAME                 Scale identifier by its name
+      --date=DATE                  Effective date (format ISO 8601: YYYY-MM-DD)
+      --time=TIME                  Effective time (format ISO 8601: HH:MM:SS)
+
+Options:
+      --sync=POSITION              After a significant 'gap' or a temporary exit from the trade, resynchronize
+                                   the position at a theoretical price:
+                                   - immediately below the current price in the event of an uptrend,
+                                   - immediately above the current price in the event of a downtrend.
+                                   ** This option applies only to Type I scales **
+
+      --split=NEW:OLD              Performs a stock split or reverse stock split, based on the ratio
+                                   established by the values of ‘NEW’ and ‘OLD’, i.e., ‘NEW’ new shares
+                                   for ‘OLD’ old shares.
+
+      --reinit=VALUE               Reset the trade with VALUE = 'reset,<price>' or 'merge,<price>': 
+                                   - The financial results of past transactions are retained
+                                   - The history of previous settings is cleared
+                                   - Depending on the parameters passed to the option, the calculation 
+                                     basis (q0 and c0) is redefined as follows:
+                                     - With ‘reset, <price>’: q0 takes the value of the existing position, 
+                                       and c0 takes the value of the <price> parameter
+                                     - With ‘merge, <price>’, q0 and c0 are calculated using a weighted average 
+                                       that takes into account their current values and those of the upcoming 
+                                       transaction—a buy or sell—initiated by the user. This allows the user 
+                                       to increase or decrease the amount invested in the trade.
+
+  -h, --help                       Show this help
+
+Examples:
+  jedi settings create g22 --scale=qdt --date 2026-04-15 --time 15:00:00
+  jedi settings create 22 qdt 2026-04-15 15:00:00
+
+===== settings delete =====
+
+Description:
+  Delete last created settings
+
+Usage: 
+  jedi settings delete [options]
+
+Condition: 
+  No operations should be associated with these settings
+
+Options:
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Example:
+  jedi settings delete
+
+===== settings list =====
+
+Description:
+  List settings
+
+Usage: 
+  jedi settings list [filters] [options]
+
+Filters:
+  -r, --running                    Running trades only
+
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   The filterable fields are 'id' and 'timestamp' in the
+                                   'settings' table, as well as the 'name' field in the
+                                   'trade', 'security' and 'scale' tables
+
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+Notes:
+  Filtering is done in the following order:
+    1. Trades in progress
+    2. regex (Regular expression)
+    3. Record selection
+
+Options:
+  -g, --group                      Group settings by trade name
+  -c, --column-indexes=INDEXES     Select column indexes to display, using a list of integers
+                                   or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+                                   be displayed in the order of indexes, and ranges can be 
+                                   inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+                                   (not compatible with option --csv)
+  -h, --help                       Show this help
+
+Examples:
+  jedi settings list "2018-" -gr
+  jedi settings list -sl3 -r
+
+===== settings show =====
+
+Description:
+  Show settings details
+
+Usage: 
+  jedi settings show <id> [options]
+
+Required arguments:
+  <id>                             Settings Id in the database
+
+Options:
+  -h, --help                       Show this help
+
+Example:
+  jedi settings show 12
+
+===== tools backtest =====
+
+Description:
+  Simulates one or more trades on historical quotations.
+  After a complete stop-loss exit, a new trade starts on the next session.
+
+Usage:
+  From a file:
+    jedi tools backtest <quotes_file> --scale=DEF [--money=DEF] [options]
+
+  From a market database:
+    jedi tools backtest --database=SOURCE --security=IDENT --scale=DEF [--money=DEF] [options]
+
+Positional arguments:
+  <quotes_file>         Prepared file containing one security
+                        Required only when --database is absent
+
+
+Source options:
+      --database=SOURCE            Load quotations from market database SOURCE
+      --universe=NAME              Select market universe NAME (default: france)
+      --security=IDENT             Select the security by ISIN or ticker
+
+Simulation definition:
+      --scale=DEF                  Scale name or definition (required option)
+  -m, --money=DEFSTR               Optional capital-management definition
+
+History selection:
+      --date=OP:DATE               Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+Position sizing:
+      --capital=AMOUNT             Defines the capital used to calculate the initial amount
+      --distance=COEFFICIENT       Defines the ‘distance to stop’ coefficient
+      --minimum-quantity=COUNT     Minimum quantity required for every checked order (default: 2)
+      --operability-steps=COUNT    Number of upward steps checked for operability (default: 3)
+
+OHLC execution:
+      --execution=MODE             OHLC execution policy: conservative (default) or legacy
+      --opening-day-orders=WHEN    Pending-order activation after the opening buy: next (next session, default) or same (same session)
+
+Output:
+      --display=MODE               Display: compact (economic summary, default) or technical (full report with statistical diagnostics). Use -c to select the displayed sections.
+  -c, --command=COMMANDS           Selects output sections:
+                                     r: summary report
+                                     f: financial results by trade and totals
+                                     o: operation list
+                                     t: trade list
+                                     d: orders still active at the end of the simulation
+                                     p: base-one chart
+                                   Compatibility variants T, K and S keep their extended display.
+                                   Default: r in compact display, rf in technical display.
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools backtest quotes_RNO.txt --scale=Qdt
+  jedi tools backtest quotes_RNO.txt --scale=Qdt --money="r:1.5%,o:1,n:2" --capital=20000
+  jedi tools backtest --database=abcbourse --security=RNO --scale=Qdt
+
+===== tools calc =====
+
+Description:
+  Jedi calculator
+
+  "Mastering Jedi's internal calculations through practice"
+
+  Only type I scales are supported. Use 'tools play' command for complex
+  simulations, mixing type I and type II scales
+
+Usage:
+  jedi tools calc <kcb | kcp | ksp | cpe | spe | quantity | price> <params> [options]
+
+Required arguments:
+                 --- functions ---
+  <kcb>                            Capital factor
+  <kcp>                            Price-position factor
+  <ksp>                            Quantity-position factor
+  <cpe>                            Theorical price at position (level/step)
+  <spe>                            Theorical stock at position (level/step)
+  <quantiy>                        Order quantity (<0 = Sell, >0 = Buy)
+  <price>                          Order price rounded to the nearest tick
+
+  Depending on the requested calculation, parameters to provide in <params> are:
+                 --- arguments ---
+  <scale>                          Type I scale (name or literal builder)
+  <position>                       Target position
+  <q0>                             Initial buy quantity
+  <c0>                             Initial buy price
+  <dir>                            Price direction: 'up' or 'down' values
+  <stock>                          Existing stock
+  <tick>                           Tick value
+
+Notes:
+  Relation between requested calculation and required parameters:
+  kcb      : scale, position
+  kcp      : scale, position
+  ksp      : scale, position
+  spe      : scale, position, q0
+  cpe      : scale, position, c0
+  quantity : spe, stock
+  price    : cpe, tick, dir
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools calc kcb scale=qdt position=1:1:1
+  jedi tools calc price scale=qdt position=1:1:0 tick=0.02 c0=10 dir=up
+
+===== tools candidate =====
+
+Description:
+  Mechanically evaluates a candidate with a Jedi scale, without a historical quotation database.
+  The candidate is chosen by the user.
+  --price allows evaluation even when the security is not registered in the Jedi database.
+
+Usage:
+  jedi tools candidate <isin> [--price=PRICE] --scale=DEF --amount=AMOUNT [options]
+  jedi tools candidate <isin> [--price=PRICE] --scale=DEF --money=DEF [--capital=AMOUNT] [options]
+
+Positional argument:
+  <isin>                           ISIN of the candidate to evaluate
+
+
+Definition and sizing:
+      --scale=DEF                  Scale name or definition (required option)
+      --price=PRICE                Current candidate price; overrides any quotation stored in Jedi
+      --amount=AMOUNT              User-selected trade amount T (incompatible with --money)
+  -m, --money=DEFSTR               Capital management r/o/n; r and n size T from K
+      --capital=AMOUNT             Portfolio capital K used for financeability and, with --money, for sizing T (default: configured dedicated capital)
+      --minimum-quantity=COUNT     Minimum quantity required for every checked order (default: 2)
+      --operability-steps=COUNT    Number of upward steps checked for operability (default: 3)
+
+Output:
+  -x, --extended                   Display technical sizing details
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --amount=10000
+  jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --money="r:1%,o:1,n:2"
+  jedi tools candidate FR0000131104 --price=76.42 --scale=Qdt --money="r:1%,o:1,n:2" --capital=100000 --extended
+
+===== tools play =====
+
+Description:
+ Simulates the application of a scale based on the provided parameters
+
+Usage :
+  1st form: from a production environment
+    jedi tools play <id> <args>... [options]
+
+  2nd form: from a created environment
+    jedi tools play <environment> <args>... [options]
+
+Required arguments:
+  <id>                             ID of a database operation from which
+                                   the simulation environment will be defined
+
+  <environment>                    A list of parameters to create the simulation environment
+                                   from scratch, using the following concatenated entities:
+                                   <scale>, <q0>, <c0>, <tick>, [<money>]
+
+  <args>...                        A list of arguments defining the simulation scenario, where each argument
+                                   can take one of the following forms:
+                                   - An integer, positive or negative, indicating the number of steps to move
+                                     up or down (zero randomly takes the value 1 or -1)
+                                   - A list of integers, separated by commas, possibly preceded
+                                     by a multiplicative factor (e.g., 3x1,-1,0)
+                                   - A decimal value, defining a target price
+                                   - A “real” transaction, in the form q@p (q=quantity, p=price), where the
+                                     price change must match the sign of the quantity (< 0 = sell,
+                                     > 0 = buy)
+                                   - A new set of parameters, including keywords and associated values
+                                     (scale=?, split=?, sync=?, reinit=?, loss=?, loss_trigger=?)
+                                   - A new definition of capital management with money=?
+                                   - A new stop status with stop=?
+                                   - A mark defining the start of the calculation of the simulation’s
+                                     financial results, with 'mark'
+
+  -c, --command=COMMANDS           Displays results based on the following command characters:
+                                     t: list of trades         ) The lists shown here can be customized
+                                     k: list of securities     ) by selecting the column index numbers
+                                     s: list of prices         ) to display, in index order, using the following syntax:
+                                     c: list of settings       ) n: column number, n-m: column range
+                                     o: list of operations     ) Ex: o0,6-9,17,14-13 to display columns 0, 6, 7, 8, 9, 17, 14, 13
+                                   
+                                     r: list of orders
+                                     f: results
+                                     d: debugging
+Options:
+  -v, --verbose                    Set verbose mode
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools play -c o0,4,6-13,17rf -- scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0.0,q0=100,c0=10.0,tick=0.02 5 \
+                                       money=r:1.5%,o:1,n:2 -5
+  jedi tools play -- 811 3x1,-1 scale=vr:12%,np:3,sr:15%,nn:4,mi:300%,ki:15%,kb:1 2
+
+===== tools plot =====
+
+Description:
+  Plots a quotation history and its linear regression.
+
+Usage:
+  From a file:
+    jedi tools plot <quotes_file> [options]
+
+  From a market database:
+    jedi tools plot --database=SOURCE --security=IDENT [options]
+
+Positional arguments:
+  <quotes_file>         Prepared file containing one security
+                        Required only when --database is absent
+
+
+Source options:
+      --database=SOURCE            Load quotations from market database SOURCE
+      --universe=NAME              Select market universe NAME (default: france)
+      --security=IDENT             Select the security by ISIN or ticker
+
+History selection:
+      --date=OP:DATE               Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+Display:
+      --legend=POSITION            Legend position: tl, tr, bl or br (default: automatic)
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools plot quotes_RNO.txt
+  jedi tools plot quotes_RNO.txt --legend=br --date=ge:2024-01-01
+  jedi tools plot --database=abcbourse --security=RNO --select=250
+
+===== tools profile =====
+
+Detailed or summary Jedi profile
+Usage:
+  Detailed profile from a file:
+    jedi tools profile [options] <quotes_file>
+
+  Detailed profile from SQLite:
+    jedi tools profile [options] --database=SOURCE --security=IDENT
+
+  Dataset selection:
+    jedi tools profile [options] --database=SOURCE --dataset=CODE
+
+  Named group selection:
+    jedi tools profile [options] --database=SOURCE --group=CODE
+
+  Explicit selection of several securities:
+    jedi tools profile [options] --database=SOURCE \
+      --security=IDENT --security=IDENT [...]
+
+Positional argument:
+  <quotes_file>                     Prepared file containing one security
+                                    (file mode only)
+
+
+Source and scope:
+      --database=SOURCE            Load quotations from market database SOURCE
+      --universe=NAME              Select market universe NAME (default: france)
+      --security=IDENT             Select a security by ISIN or ticker; repeatable option
+      --dataset=CODE               Select all securities in dataset CODE
+
+Selection filters:
+      --group=CODE                 Keep only securities belonging to group CODE
+      --include-rejected           Include rejected candidates
+
+History selection:
+      --date=OP:DATE               Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+Presentation:
+      --sort=KEY                   Sort by KEY; KEY values are always the English identifiers listed in Notes
+      --rank-criteria=N            Use the first N ranking criteria in the global total (1 to 7; default 7)
+      --limit=COUNT                Limit the displayed result to the first COUNT securities
+
+Notes:
+  By default, a database selection is ordered by global rank.
+  The global rank adds, without weighting, the ranks obtained from the first N criteria in this order:
+  trend, liquidity, volatility, oscillation, drawdown, gap and step.
+  N is selected with --rank-criteria=N (1 to 7, default 7).
+  Criteria after N stay visible for information but do not affect the total or tie-breaking.
+  Equal values for one criterion receive the same rank.
+  The lowest total ranks first. Ties are broken by the included ranks in that order, then by ticker.
+  --sort values are never translated and must always use these English identifiers:
+  global, ticker, trend, liquidity, volatility, oscillation, drawdown, gap, step.
+  The global rank is relative to the current selection: changing the selection can change ranks.
+  Rejected securities never enter the global ranking; --include-rejected displays them with "-" for Total/Ranks
+  and does not change the ranks of retained candidates.
+  Trend, liquidity, oscillation, drawdown, gaps and step use the latest 252 sessions;
+  ATR uses the latest 20 sessions. Minimum history depth remains a separate quality check.
+  Freshness is assessed in market sessions against the dataset's global freshness date:
+  the latest date reached by at least 95% of its securities, recomputed after each import or update.
+  It is not assessed for files, filtered historical selections (--date/--select),
+  datasets without a validated freshness date, or securities belonging to several datasets
+  when no explicit --dataset resolves that ambiguity.
+
+Table columns:
+  Total     Unweighted sum of the first N ranks selected by --rank-criteria; lower is better.
+  Ranks     Seven ranks in importance order; "|" separates included from informative-only ranks.
+  Ticker    Security ticker.
+  Name      Security name.
+  Years     History depth in years.
+  Lag       Sessions behind the dataset's global freshness date (95%); '-' when unavailable.
+  Trend%/y  Annualized trend over 252 sessions; --sort=trend, higher is better.
+  Med.val   Median daily traded value over 252 sessions; --sort=liquidity, higher is better.
+  ATR%      ATR(20) as a percentage; contributes to --sort=volatility.
+  Range%    252-session range; contributes to the oscillation assessment.
+  Sw5/y     Swings of at least 5%, annualized from the latest 252 sessions; contributes to --sort=oscillation.
+  DD%       Maximum drawdown over 252 sessions; --sort=drawdown, lower is better.
+  Gap%      Frequency of gaps of at least 3% over 252 sessions; --sort=gap, lower is better.
+  Step%     Suggested Jedi scale step; --sort=step, lower is better.
+  Mov/y     Estimated annual moves at the suggested step; information, not a separate sort.
+  Status    retained, warning or rejected.
+  Warn.     Number of warnings.
+
+--sort values:
+  global      Total of the first N ranks selected by --rank-criteria, ascending.
+  ticker      Ticker, neutral alphabetical order.
+  trend       Trend%/y, descending.
+  liquidity   Med.val, descending.
+  volatility  Volatility class, then ATR% ascending within the same class.
+  oscillation Oscillation class (Sw5/y + Range%), then Sw5/y descending within the same class.
+  drawdown    DD%, ascending.
+  gap         Gap%, ascending.
+  step        Step%, ascending.
+
+Warning thresholds used by Status:
+  Sw5/y < 4.0 per year, Gap% > 3.0%, DD% > 45.0%.
+Volatility ranking classes:
+  good 2.0-5.0%; acceptable 1.5-<2.0% or >5.0-6.0%; weak >6.0-8.0%; poor >8.0%.
+  ATR(20) below 1.5% is rejected before ranking.
+Oscillation ranking classes:
+  excellent: Sw5/y >= 8 with Range% 40-100; good: Sw5/y >= 4 with Range% 40-100;
+  acceptable: Sw5/y >= 3 with Range% 30-120; weak: Sw5/y >= 1; poor: Sw5/y < 1.
+
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools profile quotes_RNO.txt
+  jedi tools profile --database=abcbourse --security=RNO
+  jedi tools profile --database=abcbourse --dataset=Euronext_A --group=PEA
+  jedi tools profile --database=abcbourse --group=PEA
+  jedi tools profile --database=abcbourse --group=PEA --rank-criteria=4
+  jedi tools profile --database=abcbourse --dataset=Euronext_A \
+    --group=PEA --date=ge:2020-01-01 --sort=liquidity --limit=20
+  jedi tools profile --database=abcbourse \
+    --security=RNO --security=AI --security=BNP --include-rejected
+
+===== tools score =====
+
+Description:
+  Automatically searches for the scales best suited to a quotation history.
+  Without an explicit builder, Jedi explores its three internal scale families.
+
+Usage:
+  From a file:
+    jedi tools score <quotes_file> [<builder>] [options]
+
+  From a market database:
+    jedi tools score --database=SOURCE --security=IDENT [<builder>] [options]
+
+  The builder is optional. P1, P2 and P3 remain accepted as expert selections
+  of one internal search family.
+
+      --date=OP:DATE               Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+      --database=SOURCE            Load quotations from market database SOURCE
+      --universe=NAME              Select market universe NAME (default: france)
+      --security=IDENT             Select the security by ISIN or ticker
+      --sort=KEY                   Sort: fitness (default), activity (operations/month) or investment (maximum investment); 1, 2 and 3 remain accepted
+      --ranking=MODE               Displayed ranking: raw (raw results, default), jedi (preference, expert mode) or both (both rankings)
+      --search=MODE                Search strategy: adaptive (exploration then refinement, default) or grid (exhaustive)
+      --budget=COUNT               Maximum number of main-search backtests with --search=adaptive (default: 500)
+      --display=MODE               Display: compact (3 ordering metrics + typed builder, default), study (economic reading of scales) or technical (expert diagnostics; parameter influence with --search=adaptive, robustness with --ranking=jedi or both)
+  -h, --help                       Show this help
+
+===== tools stats =====
+
+Description:
+  Computes the main statistical indicators for a quotation history.
+
+Usage:
+  From a file:
+    jedi tools stats <quotes_file> [options]
+
+  From a market database:
+    jedi tools stats --database=SOURCE --security=IDENT [options]
+
+Positional arguments:
+  <quotes_file>         Prepared file containing one security
+                        Required only when --database is absent
+
+
+Source options:
+      --database=SOURCE            Load quotations from market database SOURCE
+      --universe=NAME              Select market universe NAME (default: france)
+      --security=IDENT             Select the security by ISIN or ticker
+
+History selection:
+      --date=OP:DATE               Selects a period with OP:YYYY-MM-DD (ge, gt, le or lt)
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi tools stats quotes_RNO.txt
+  jedi tools stats quotes_RNO.txt --date=ge:2024-01-01
+  jedi tools stats --database=abcbourse --security=RNO --select=500
+
+===== trade create =====
+
+Description:
+  Create a new trade
+
+Usage:
+  1st form, with named fields:
+    jedi trade create --name NAME --security <ID | ISIN> [--money MONEY] [options]
+
+  2nd form, with positional fields
+    jedi trade create <name> <Security: id | isin> [--money=MONEY] [options]
+
+Notes:
+  The recommended syntax uses named options for all parameters.
+  The positional syntax is a shorthand equivalent, on required fields only.
+  Do not mix both syntaxes.
+
+Required fields:
+      --name=NAME                  Trade Name:
+                                     - Must begin with a letter
+                                     - Followed by at least one letter, digit or underscore.
+      --security=ID                Security id in the database
+      --security=ISIN              Security ISIN code
+
+Optional fields:
+      --money=MONEY                Money definition:
+                                     A comma-separated list of three parameters. 
+                                     Each parameter is defined as <k>:<v>, where
+                                     <k> is one of 'r', 'o' or 'n', and <v> is 
+                                     its associated value:
+                                       r:<v>  Maximum risk rate applied to the capital (K) 
+                                              allocated to trading
+                                       o:<v>  Financial objective coefficient 
+                                              (applied to R = r × K)
+                                       n:<v>  Jedi operating margin (number of down steps)
+                                   
+Options:
+  -h, --help                       Show this help
+
+Examples:
+  jedi trade create --name G13 --security FR0000066722
+  jedi trade create g13 FR0000066722 --money r:1.5%,o:1,n:2
+
+===== trade delete =====
+
+Description:
+  Delete a trade
+
+Usage:
+  jedi trade delete <id | name> [options]
+
+Condition:
+  Deletion not permitted if the trade is running or closed
+
+Required arguments:
+  <id>                             Trade Id in the database
+  <name>                           Trade name
+
+Options:
+      --noconfirm                  Execute command without asking for confirmation.
+  -h, --help                       Show this help
+
+Examples:
+  jedi trade delete 22
+  jedi trade delete g13 --noconfirm
+
+===== trade list =====
+
+Description:
+  List trades
+
+Usage:
+  jedi trade list [filters] [options]
+
+Filters:
+  -r, --running                    Running trades only
+
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   The filterable fields are 'id', 'name', 'money' and 'stop'
+                                   in the 'trade' table, as well as 'isin' and 'name' fields 
+                                   in the 'security' table if the --extended option is enabled.
+
+  -s, --select=RECORDS             Selects the records defined in RECORDS, a comma-separated 
+                                   list of elements, with the following syntax:
+                                   - The letter F or L (case insensitive), followed by an 
+                                     integer, to designate the first or last records to be 
+                                     selected, respectively
+                                   - A positive or (negative integer for end-of-array indexing)
+                                   - A range of two integers, positive or negative, separated 
+                                     by a colon.
+                                   Example: "f10,-12:-1" for selecting the first 10 records 
+                                            and the last 12 ones
+Notes:
+  Filtering is done in the following order:
+    1. Trades in progress
+    2. Regular expression
+    3. Record selection
+
+Options:
+      --csv                        Exports records in CSV format
+      --headers                    Includes headers when CSV selected
+  -x, --extended                   Includes security fields 'id', 'isin' and 'name'
+  -c, --column-indexes=INDEXES     Select column indexes to display, using a list of integers
+                                   or range of integers, such as 1,2,5-8,10,13-16. Columnswill
+                                   be displayed in the order of indexes, and ranges can be 
+                                   inverted (ex: 2,1,8-5,15,10 order will be 2,1,8,7,6,5,15,10)
+                                   (not compatible with option --csv)
+  -h, --help                       Show this help
+
+Example:
+  jedi trade list "g1 "
+
+===== trade orders =====
+
+Description:
+  Calculates and displays the next stock orders to be placed
+
+Usage:
+  jedi trade orders [filters] [options]
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   Filterable fields are 'name' in table 'trade' and 
+                                   'name' in table 'security'
+
+Options:
+      --tick-buy=TICK_VALUE        Set the tick for buy value for the underlying security 
+                                   (only if a single trade has been selected)
+      --tick-sell=TICK_VALUE       Set the tick for sell value for the underlying security 
+                                   (only if a single trade has been selected)
+      --net-stop                   If applicable, show stoploss quantity net of 
+                                   the sell-limit order
+      --update-now                 Force updating quotes
+  -h, --help                       Show this help
+
+Example:
+  jedi trade orders g12
+
+===== trade plot =====
+
+Description:
+  Graphically displays stock market gains and losses, and related
+  investments, in the form of centered and scaled data
+
+Usage:
+  jedi trade plot <id | name> [options]
+
+Required arguments:
+  <id>                             Database id of the trade
+  <name>                           Name of the trade
+
+Options:
+  -l, --legend=LEGEND              Legend position:
+                                     - tl: top left
+                                     - tr: top right
+                                     - bl: bottom left (default)
+                                     - br: bottom right
+  -h, --help                       Show this help
+
+Example:
+  jedi trade plot G13 -l tr
+
+===== trade results =====
+
+Description:
+  Display financial results
+
+Usage:
+  jedi trade results [filters] [options]
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   Filterable fields are 'name' in table 'trade' and 
+                                   'name' in table 'security'
+
+  -r, --running                    Running trades only
+
+Options:
+      --update-now                 Force updating quotes
+  -h, --help                       Show this help
+
+Example:
+  jedi trade results --running
+
+===== trade show =====
+
+Description:
+  Display trade details
+
+Usage:
+  jedi trade show <id | name> [options]
+
+Required arguments: 
+  <id>                             Database id of the trade
+  <name>                           Name of the trade
+
+Options:
+  -h, --help                       Show this help
+
+Example:
+  jedi trade show 12
+
+===== trade status =====
+
+Description:
+  Display running trades status
+
+Usage:
+  jedi trade status [filters] [options]
+
+Filters:
+  [regex]                          Regex filter, case insensitive, on the concatenation 
+                                   of all filterable fields.
+                                   && = AND, || = OR, with && before ||.
+                                   Examples: abc, abc && xyz, abc || xyz, a && b || c && d.
+                                   Each term is an independent regex. Field order does not 
+                                   matter. No parentheses support.
+
+                                   Filterable fields are 'name' in table 'trade' and 
+                                   'name' in table 'security'
+
+Options:
+      --update-now                 Force updating quotes
+  -h, --help                       Show this help
+
+Example:
+  jedi trade status g12
+
+===== trade update =====
+
+Description:
+  Update one or several trade fields
+
+Usage:
+  jedi trade update <id | name> [options]
+
+Required arguments:
+  <id>                             Database id of the trade
+  <name>                           Name of the trade
+
+Optional fields:
+      --name=NAME                  Trade Name:
+                                     - Must begin with a letter
+                                     - Followed by at least one letter, digit or underscore.
+      --money=MONEY                New definition of capital management, accepted only if 
+                                   the 'stop' field is 'null' or if the --reset-stop option
+                                   is enabled.
+                                   (See 'trade create' command for syntax details)
+
+Options:
+      --reset-stop                 Reset 'stop' field to 'null', deleting stoploss data
+  -h, --help                       Show this help
+
+Example:
+  jedi trade update G01 --name "XG01"

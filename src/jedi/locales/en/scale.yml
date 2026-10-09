@@ -1,0 +1,233 @@
+en:
+  scale:
+    header: "Manage scales (Type I and type II)"
+    banner: |
+      Manage scales (Type I and type II)
+
+      Usage: jedi scale <subcommand>
+    #
+    # --- create ---
+    #
+    create:
+      header: "Create a new scale"
+      banner: |
+        Description:
+          Create a new scale
+      usage: |
+        Usage:
+          1st form, with named fields:
+            jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
+          2nd form, with positional fields:
+            jedi scale create <name> <comment> <builder> [options]
+      notes: |
+        Notes:
+          The recommended syntax uses named options for all parameters.
+          The positional syntax is a shorthand equivalent.
+          ** Do not mix syntaxes **
+      required_name: &required_name |-
+        Scale Name:
+          - Must begin with a letter,
+          - Followed by at least one alphanumeric character.
+      required_comment: &required_comment "Comment on scale (free-form)"
+      required_builder: &required_builder |-
+        Valid scale builder keyword sets:
+          - {kc,ks,ki,kb}           : Type I, canonical format
+          - {kc,ki,kb,kd}           : Type I, optimized on ks
+          - {vr,ks,ki,kb}           : Type II, canonical format
+          - {vr,np,nn,ki,kb,kd}     : Type II, optimized on ks
+          - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+        Each keyword expects one or more parameters:
+          - np, nn, mi, kb: a single integer value (e.g., np:3)
+          - kc, ks: a list of decimal values, separated by commas 
+            (e.g., kc:1.45,1.30, 1.15, ...)
+          - vr, sr, ki, kd: a single decimal value (which can be expressed 
+            as a percentage, except for kd)
+            (e.g., vr:15% or vr:0.15)
+      examples: |
+        Examples:
+          jedi scale create --name sc01 --comment "scale 01" --definition "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+          jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+      # from scale_creator:
+      success: "Scale %{ref} created."
+      name_exists: "Scale %{ref} already exists."
+      invalid_builder: "The ‘%{builder}’ scale builder is invalid."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Delete a scale"
+      banner: |
+        Description:
+          Delete a scale
+      usage: |
+        Usage:
+          jedi scale delete <id | name> [options]
+      notes: |
+        Condition: 
+          Deletion not permitted if the scale is (or has been) used
+      required_arguments: |
+        Required arguments:
+          <id>                             Scale Id in the database
+          <name>                           Scale name
+      examples: |
+        Examples:
+          jedi scale delete 13
+          jedi scale delete sc01
+      # scale_deleter:
+      success: "Scale %{ref} deleted."
+      in_use: "Scale %{ref} is in use; deletion is not allowed."
+      confirm: "Ok to delete scale %{ref} (y/N)? "
+    #
+    # --- list ---
+    #
+    list:
+      header: "list scales"
+      banner: |
+        Description:
+          List scales
+      usage: |
+        Usage:
+          jedi scale list [filters] [options]
+      filters:
+        regex: |2-
+                                             The filterable fields are 'id', 'name', 'comment', 'status', 'type', 
+                                             'optimized' (and 'definition' if option --extended is enabled)
+      option_in_use: "Show only scales in use"
+      notes: |
+        Notes:
+          Scale records are filtered in the following order:
+            1. Scales in use
+            2. regex (Regular expression)
+            3. Records selection
+      option_extended: "Also displays scale definition (canonical form)"
+      examples: |
+        Examples:
+          jedi scale list --in-use -sl1
+          jedi scale list -x --csv --headers
+      # from scale_lister:
+      option_csv_missing: "The --csv option is required when using the --headers option."
+      table:
+        title:
+          all: "List of scales"
+          one: "Selected scale"
+          some: "List of selected scales"
+        id: "Id"
+        name: "Name"
+        comment: "Comment"
+        status: "Status"
+        type: "Type"
+        optimized: "ks opt?"
+        definition: "Canonical definition"
+    #
+    # --- show ---
+    #
+    show:
+      header: "show scale details"
+      banner: |
+        Description:
+          Show scale details
+      usage: |
+        Usage:
+          jedi scale show <id | name | ="literal"> [options]
+      required_arguments: |
+        Required arguments:
+          <id>                             Scale Id in the database
+          <name>                           Scale name
+          "literal"                        A literal scale constructor,
+                                           introduced by the ‘=’ character
+      examples: |
+        Examples:
+          jedi scale show qdt
+          jedi scale show ="vr:10.0%, ks:0.8,1.2, ki:0.0%, kb:0"
+      # from scale_presenter:
+      title: "Scale: record #%{id}"
+      title_literal: "Literal scale"
+      table:
+        id: "Id"
+        name: "Name"
+        comment: "Comment"
+        type: "Type"
+        optimized: "Optimized / ks"
+        builder: "Builder"
+        definition: "Canonical definition"
+        developped: "Developped definition"
+      transpose:
+        fields: "Field names"
+        contents: "Contents"
+      type_one:
+        ki: |-
+          Capital coefficient:
+          - Rate of change (ki) ............. : 
+        kb: "- Calculation method (kb).......... : "
+        step_header: "    Step  Price coefficient (kc)  Stock coefficient (ks)"
+      type_two:
+        ki: |-
+          Capital coefficient:
+          - Rate of change (ki) ............. : 
+        kb: "- Calculation method (kb).......... : "
+        vr: "Rate of price change (vr) ......... : "
+        step_header: "    Step     Stock coefficient (ks)"
+    #
+    # --- update ---
+    #
+    update:
+      header: "Update a scale"
+      banner: |
+        Description:
+          Update a scale
+      usage: |
+        Usage:
+          jedi scale update <id | name> --name=NAME --comment=COMMENT --builder=BUILDER [options]
+      notes: |
+        Notes:
+          Several fields can be updated at once
+      required_arguments: |
+        Required arguments:
+          <id>                             Scale Id in the database
+          <name>                           Scale name
+      required_name: *required_name
+      required_comment: *required_comment
+      required_builder: *required_builder
+      option_force: "Force update on used scale"
+      examples: |
+        Example:
+          jedi scale update 14 --builder "vr:10%, np:3, nn:3, ki:10%, kb:1, kd:0.3" --comment "scale sc01 v2"
+      # from scale_updater:
+      unchanged: "Scale %{ref} unchanged."
+      name_already_used: "The name %{ref} is already in use, the update cannot be performed."
+      builder_syntax_error: "The syntax of the '%{builder}' scale builder is invalid."
+      invalid_stored_builder: "The existing ‘%{builder}’ scale builder is invalid."
+      in_use: "Scale %{ref} is in use; the update cannot be performed."
+      success: "Scale %{ref} updated."
+    #
+    #
+    #
+    #scale:
+    query_failed: "Scale %{ref} not found."
+    status:
+      used: "Used"
+      in_use: "In use"
+      not_used: "Not used"
+    operational:
+      type:
+        one: "I"
+        two: "II"
+      missing_kc: "The 'kc' coefficients are missing."
+      missing_vr: "The variation rate 'vr' is missing."
+    builder:
+      validation:
+        invalid_np_value: "'np' value (%{np}) must be in range %{np_min}..%{np_max}"
+        invalid_nn_value: "'nn' value (%{nn}) must be in range %{nn_min}..%{nn_max}"
+        invalid_emax: "'emax' value (%{emax}) must be in range %{np_min}..%{np_max}"
+        invalid_emin: "'emin' value (%{emin}) must be in range %{nn_min}..%{nn_max}"
+        invalid_ki_value: "'ki' value (%{ki}) must be in range %{ki_min}..%{ki_max}"
+        invalid_kb_value: "'kb' value (%{kb}) must be in range %{kb_min}..%{kb_max}"
+        invalid_kd_value: "'kd' value (%{kd}) must be in range %{kd_min}..%{kd_max}"
+        invalid_sr_value: "'sr' value (%{sr}) must be in range %{sr_min}..%{sr_max}"
+        invalid_mi_value: "'mi' value (%{mi}) must be in range %{mi_min}..%{mi_max}"
+        invalid_vr_value: "vr value '%{vr}' must be in range %{vr_min}..%{vr_max}"
+        invalid_kc_list: "Invalid 'kc' list: unordered, duplicates or incorrect values (min=%{kc_min}, max=%{kc_max})"
+        kc_diff_too_low: "Difference between stock prices too low, min=%{kc_diff_min}"
+        invalid_kc_ks: "'ks' size (%{ks_size}) must be equal to 'kc' size (%{kc_size}) minus 2"
+        invalid_ks_list: "Invalid 'ks' list: unordered, duplicates or incorrect values (min=%{ks_min}, max=%{ks_max})"
+        ks_diff_too_low: "Difference between stock coefficients too low, min=%{ks_diff_min}"

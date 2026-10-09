@@ -1,0 +1,234 @@
+fr:
+  scale:
+    header: "Gère les barèmes (Type I et type II)"
+    banner: |
+      Gestion des barèmes (Type I et type II)
+
+      Usage: jedi scale <sous-commande>
+    #
+    # --- create ---
+    #
+    create:
+      header: "Crée un nouveau barème"
+      banner: |
+        Description :
+          Crée un nouveau barème
+      usage: |
+        Usage :
+          1ère forme, avec champs nommés :
+            jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
+          2ème forme, avec champs positionnels :
+            jedi scale create <name> <comment> <builder> [options]
+      notes: |
+        Notes:
+          La syntaxe recommandée est d'utiliser les options nommées pour tous les paramètres.
+          La syntaxe positionnelle est un raccourci équivalent.
+          ** Ne pas mélanger les syntaxes **
+      required_name: &required_name |-
+        Nom du barème :
+          - Doit commencer par une lettre,
+          - Suivie d'au moins un caractère alphanumérique.
+      required_comment: &required_comment "Commentaire (forme libre)"
+      required_builder: &required_builder |-
+        Jeux de mots-clés des constructeurs de barème valides :
+          - {kc,ks,ki,kb}           : Type I, format canonique
+          - {kc,ki,kb,kd}           : Type I, optimisé sur 'ks'
+          - {vr,ks,ki,kb}           : Type II, format canonique
+          - {vr,np,nn,ki,kb,kd}     : Type II, optimisé sur 'ks'
+          - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+         Chaque mot-clé attend un ou plusieurs paramètres :
+          - np, nn, mi, kb : une seule valeur entière (par exemple, np:3)
+          - kc, ks : une liste de valeurs décimales, séparées par des virgules 
+            (par exemple, kc:1,45;1,30; 1,15, …)
+          - vr, sr, ki, kd : une seule valeur décimale (qui peut être exprimée 
+            en pourcentage, sauf pour kd)
+            (par exemple, vr:15 % ou vr:0.15)
+      examples: |
+        Exemples:
+          jedi scale create --name sc01 --comment "scale 01" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+          jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+      # from scale_creator:
+      success: "Barème %{ref} créé."
+      name_exists: "Le barème %{ref} existe déjà."
+      invalid_builder: "Le constructeur de barème '%{builder}' n'est pas valide."
+    #
+    # --- delete ---
+    #
+    delete:
+      header: "Supprime un barème"
+      banner: |
+        Description :
+          Supprime un barème
+      usage: |
+        Usage :
+          jedi scale delete <id | name> [options]
+      notes: |
+        Condition : 
+          Suppression non autorisée si le barème est (ou a été) utilisé
+      required_arguments: |
+        Arguments requis :
+          <id>                             Id du barème dans la base de données
+          <name>                           Nom du barème
+      examples: |
+        Exemples :
+          jedi scale delete 13
+          jedi scale delete sc01
+      # from scale_deleter:
+      success: "Barème %{ref} supprimé."
+      in_use: "Le barème %{ref} est utilisé, la suppression n'est pas permise."
+      confirm: "Ok pour supprimer le barème %{ref} (o/N)? "
+    #
+    # --- list ---
+    #
+    list:
+      header: "liste les barèmes"
+      banner: |
+        Description :
+          Liste les barèmes
+      usage: |
+        Usage :
+          jedi scale list [filters] [options]
+      filters:
+        regex: |2-
+                                             Les champs filtrables sont 'id', 'name', 'comment', 
+                                             'status', 'type', 'optimized' (ainsi que 'definition' 
+                                             avec l'option --extended)
+      option_in_use: "Affiche seulement les barèmes en cours d'utilisation"
+      notes: |
+        Notes:
+          Le filtrage est réalisé dans l'ordre suivant :
+            1. Barèmes en cours d'utilisation
+            2. regex (Expression régulière)
+            3. Sélection d'enregistrements
+      option_extended: "Affiche aussi la définition du barème (forme canonique)"
+      examples: |
+        Exemples:
+          jedi scale list --in-use -sl1
+          jedi scale list -x --csv --headers
+      # from scale_lister:
+      option_csv_missing: "L'option --csv est obligatoire lorsque l'on utilise l'option --headers."
+      table:
+        title:
+          all: "Liste des barèmes"
+          one: "Barème sélectionné"
+          some: "Liste des barèmes sélectionnés"
+        id: "Id"
+        name: "Nom"
+        comment: "Commentaire"
+        status: "Statut"
+        type: "Type"
+        optimized: "ks opt?"
+        definition: "Définition canonique"
+    #
+    # --- show ---
+    #
+    show:
+      header: "Affiche les détails d'un barème"
+      banner: |
+        Description :
+          Affiche les détails d'un barème
+      usage: |
+        Usage :
+          jedi scale show <id | name | ="literal"> [options]
+      required_arguments: |
+        Arguments requis :
+          <id>                             Id du barème dans la base de données
+          <name>                           Nom du barème
+          "literal"                        Constructeur littéral d'un barème, 
+                                           introduit par le caractère '='
+      examples: |
+        Exemples:
+          jedi scale show qdt
+          jedi scale show ="vr:10.0%, ks:0.8,1.2, ki:0.0%, kb:0"
+      # from scale_presenter:
+      title: "Barème: vue de l'enregistrement N°%{id}"
+      title_literal: "Barème littéral"
+      table:
+        id: "Id"
+        name: "Nom"
+        comment: "Commentaire"
+        type: "Type"
+        optimized: "Optimisé / ks"
+        builder: "Constructeur"
+        definition: "Définition canonique"
+        developped: "Définition développée"
+      transpose:
+        fields: "Noms des champs"
+        contents: "Contenu"
+      type_one:
+        ki: |-
+          Coefficient de capital :
+          - Taux de variation (ki) .......... : 
+        kb: "- Méthode de calcul (kb) .......... : "
+        step_header: " Échelon     Coeff. de prix (kc)    Coeff. de stock (ks)"
+      type_two:
+        ki: |-
+          Coefficient de capital :
+          - Taux de variation (ki) .......... : 
+        kb: "- Méthode de calcul (kb) .......... : "
+        vr: "Taux de variation de prix (vr) .... : "
+        step_header: "    Step     Stock coefficient (ks)"
+    #
+    # --- update ---
+    #
+    update:
+      header: "Met à jour un barème"
+      banner: |
+        Description :
+          Met à jour un barème
+      usage: |
+        Usage :
+          jedi scale update <id | name> --name=NAME --comment=COMMENT --builder=BUILDER [options]
+      notes: |
+        Notes :
+          Plusieurs champs peuvent être mis à jour simultanément
+      required_arguments: |
+        Arguments requis :
+          <id>                             Id du barème dans la base de données
+          <name>                           Nom du barème
+      required_name: *required_name
+      required_comment: *required_comment
+      required_builder: *required_builder
+      option_force: "Force la mise à jour d'un barème utilisé"
+      examples: |
+        Exemple:
+          jedi scale update 14 --builder "vr:10%, np:3, nn:3, ki:10%, kb:1, kd:0.3" --comment "barème sc01 v2"
+      # from scale_updater:
+      unchanged: "Barème %{ref} inchangé."
+      name_already_used: "Le nom %{ref} est déjà utilisé; la mise à jour ne peut pas être effectuée."
+      builder_syntax_error: "La syntaxe du constructeur de barème '%{builder}' n'est pas valide."
+      invalid_stored_builder: "Le constructeur de barème '%{builder}' existant n'est pas valide."
+      in_use: "Le barème %{ref} est utilisé, la mise à jour ne peut pas être effectuée."
+      success: "Barème %{ref} mis à jour."
+    #
+    #
+    #
+    #scale:
+    query_failed: "Barème %{ref} non trouvé."
+    status:
+      used: "Utilisé"
+      in_use: "Actif"
+      not_used: "Non utilisé"
+    operational:
+      type:
+        one: "I"
+        two: "II"
+      missing_kc: "Les coefficients 'kc' sont manquants."
+      missing_vr: "Le taux de variation 'vr' est manquant."
+    builder:
+      validation:
+        invalid_np_value: "La valeur de 'np' (%{np}) doit être dans la plage %{np_min}..%{np_max}"
+        invalid_nn_value: "La valeurn de 'nn' (%{nn}) doit être dans la plage %{nn_min}..%{nn_max}"
+        invalid_emax: "La valeur de 'emax' (%{emax}) doit être dans la plage %{np_min}..%{np_max}"
+        invalid_emin: "La valeur de 'emin' (%{emin}) doit être dans la plage %{nn_min}..%{nn_max}"
+        invalid_ki_value: "La valeur de 'ki' (%{ki}) doit être dans la plage %{ki_min}..%{ki_max}"
+        invalid_kb_value: "La valeur de 'kb' (%{kb}) doit être dans la plage %{kb_min}..%{kb_max}"
+        invalid_kd_value: "La valeur de 'kd' (%{kd}) doit être dans la plage %{kd_min}..%{kd_max}"
+        invalid_sr_value: "La valeur de 'sr' (%{sr}) doit être dans la plage %{sr_min}..%{sr_max}"
+        invalid_mi_value: "La valeur de 'mi' (%{mi}) doit être dans la plage %{mi_min}..%{mi_max}"
+        invalid_vr_value: "La valeur de 'vr' (%{vr}) doit être dans la plage %{vr_min}..%{vr_max}"
+        invalid_kc_list: "La liste 'kc' est invalide: valeurs non ordonnées, doublonnées ou incorrectes (min=%{kc_min}, max=%{kc_max})"
+        kc_diff_too_low: "La différence entre les coefficients de cours est trop faible, min=%{kc_diff_min}"
+        invalid_kc_ks: "La taille de 'ks' (%{ks_size}) doit être égale à celle de 'kc' (%{kc_size}) moins 2"
+        invalid_ks_list: "La liste 'ks' est invalide : valeurs non ordonnées, doublonnées ou incorrectes (min=%{ks_min}, max=%{ks_max})"
+        ks_diff_too_low: "La différence entre les coefficients de stock est trop faible, min=%{ks_diff_min}"
