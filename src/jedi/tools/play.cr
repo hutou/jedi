@@ -162,12 +162,8 @@ module Jedi
           !@loss_trigger.nil? && !settings_change?
         end
 
-        def one_option_only? : Bool
-          count = 0
-          count += 1 if @sync
-          count += 1 if @split
-          count += 1 if @reinit
-          (count > 1) ? false : true
+        def options_compatible? : Bool
+          @sync.nil? || (@split.nil? && @reinit.nil?)
         end
       end
 
@@ -707,11 +703,11 @@ module Jedi
               App.warn(key: "tools.play.no_merge_pending")
             end
           when SettingsChangeAction
-            if action.one_option_only?
+            if action.options_compatible?
               execute_settings_change_action(action)
             else
               raise LowLevelError.new(
-                "play reinit, split and sync options are mutually exclusive",
+                "play sync cannot be combined with split or reinit",
                 key: "tools.play.reinit_split_sync_exclusive",
                 kind: LowLevelError::Kind::UserInput,
                 log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
@@ -761,12 +757,8 @@ module Jedi
       end
 
       private def execute_target_price_action(action : TargetPriceAction) : Nil
-        current_price = if context.current_settings.split &&
-                           context.current_settings.operations.size.zero?
-                          context.current_settings.c0
-                        else
-                          context.current_operation.price
-                        end
+        current_price = TradingRules::LastData.new(
+          context.current_settings, context.current_operation).maybe_splitted_price
         target_price = action.price
         return if target_price == current_price
         if target_price > current_price
@@ -786,7 +778,8 @@ module Jedi
             action.price
           )
         elsif action.quantity < 0
-          available_stock = context.current_operation.stock
+          available_stock = TradingRules::LastData.new(
+            context.current_settings, context.current_operation).maybe_splitted_stock
           validate_no_short_selling!(action.quantity.abs, available_stock)
           add_fixed_operation(
             TradingLife::Operation::Type::Sell,

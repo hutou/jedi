@@ -118,6 +118,9 @@ en:
                                              > 0 = buy)
                                            - A new set of parameters, including keywords and associated values
                                              (scale=?, split=?, sync=?, reinit=?, loss=?, loss_trigger=?)
+                                             Split may accompany reinit=reset or reinit=merge; prices then
+                                             use the post-split unit. Merge requires a following manual
+                                             transaction q@p. Sync remains a separate option.
                                            - A new definition of capital management with money=?
                                            - A new stop status with stop=?
                                            - A mark defining the start of the calculation of the simulation’s

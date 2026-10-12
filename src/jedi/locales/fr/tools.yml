@@ -120,6 +120,9 @@ fr:
                                              > 0 = achat)
                                            - Un nouveau jeu de paramètres, comprenant mots-clés et valeurs associées
                                              (scale=?, split=?, sync=?, reinit=?, loss=?, loss_trigger=?)
+                                             Split peut accompagner reinit=reset ou reinit=merge ; les prix
+                                             sont alors exprimés après le split. Merge nécessite ensuite
+                                             une transaction manuelle q@p. Sync reste une option séparée.
                                            - Une nouvelle définition de la gestion du capital avec money=?
                                            - Un nouveau statut de stop avec stop=?
                                            - Une marque définissant le début du calcul des résultats financiers de

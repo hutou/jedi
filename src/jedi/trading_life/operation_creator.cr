@@ -281,13 +281,10 @@ module Jedi
                    key: "operation.create.missing_reinit_option",
                    log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
 
-        q0_part, c0_part =
-          if reinit.merge? && !(split = settings.split).nil?
-            # NOTE settings.c0 == split.price(reinit.c0)
-            {split.quantity(lastop.stock).to_f, split.price(reinit.c0)} # settings.c0}
-          else
-            {lastop.stock.to_f, reinit.c0}
-          end
+        # Convert the held stock once. Both the reinit reference price and the
+        # execution price are supplied in the post-split unit.
+        q0_part = TradingRules::LastData.new(settings, lastop).maybe_splitted_stock.to_f
+        c0_part = reinit.c0
         base_amount = (q0_part * c0_part * 100).round.to_i
         amount = (quantity * price * 100).round.to_i
         case type

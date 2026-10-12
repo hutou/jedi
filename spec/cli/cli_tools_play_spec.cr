@@ -55,4 +55,23 @@ describe Jedi::Command, "CLI tools play" do
       ])
     end
   end
+
+  it "accepts split with reset or merge in a CLI play scenario" do
+    ["reset", "merge"].each do |mode|
+      JediCliSpec.with_cli_db do |conn|
+        JediSpec.insert_scale(conn, name: "S_TEST", scale: JediSpec.type_two_scale)
+        actions = ["split=1:10,reinit=#{mode},12.0"]
+        actions << "21@10.0" if mode == "merge"
+        actions << "1"
+        JediCliSpec.run(conn,
+          ["tools", "play", "--", "scale=S_TEST,q0=1790,c0=0.8,tick=0.01"] + actions)
+
+        operations = Jedi::TradingLife::Operations.new(Jedi::App.conn_memory).fetch.to_a
+        settings = operations.last.settings
+        settings.split.to_s.should eq("1:10")
+        settings.q0.should eq(mode == "reset" ? 179.0 : 200.0)
+        operations.last.stock.should eq(mode == "reset" ? 143 : 160)
+      end
+    end
+  end
 end

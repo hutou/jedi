@@ -27,18 +27,21 @@ module Jedi
                      @operation : TradingLife::Operation)
         @maybe_splitted_stock = @operation.stock
         @maybe_splitted_price = @operation.price
-        unless @settings.split.nil?
+        if @settings.operations.empty?
           # In the event of a security split or reverse security split, the final stock held
           # will always be a whole value, with the allocation of rights if the
           # reverse security split is not fair (see Phaxiam Therapeutics in September 2023).
           #
           # A split must be applied if no operations were recorded since last settings,
           # as, in that case, stock from last operation would not be correct
-          if @settings.operations.empty?
-            @maybe_splitted_stock = @settings.split.as(Exchange::Security::Split)
-              .quantity(@operation.stock).to_i
-            @maybe_splitted_price = @settings.split.as(Exchange::Security::Split)
-              .price(@operation.price)
+          if split = @settings.split
+            @maybe_splitted_stock = split.quantity(@operation.stock).to_i
+            @maybe_splitted_price = split.price(@operation.price)
+          end
+          # Reset starts a new reference immediately, including type-II prices.
+          # Its c0 is already in the post-split unit and must not be converted.
+          if (reinit = @settings.reinit) && reinit.reset?
+            @maybe_splitted_price = @settings.c0
           end
         end
       end

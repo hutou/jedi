@@ -23,6 +23,7 @@ module Jedi
         last_operation = operations.last
         lastdata = TradingRules::LastData.new(last_settings, last_operation)
         stock = lastdata.maybe_splitted_stock
+        position = last_settings.operations.empty? ? last_settings.position : last_operation.position
 
         # Number of days between first operation timestamp (initial buy) and
         # either current time or timestamp of last operation if trade is closed (stock = 0)
@@ -36,7 +37,7 @@ module Jedi
         Data.new buys: sum_buys, sells: sum_sells, fees: sum_fees,
           maximum_investment: max_invest, current_investment: current_investment, stock: stock,
           operation_count: operations.size, timeline: tline[-[tline.size, 12].min..-1],
-          q0: last_settings.q0, c0: last_settings.c0, position: last_operation.position,
+          q0: last_settings.q0, c0: last_settings.c0, position: position,
           duration: duration
       end
 

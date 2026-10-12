@@ -142,6 +142,8 @@ fr:
       (Non compatible avec l'option --csv)
     option_reinit: |-
       Réinitialise le trade avec VALUE = 'reset,<price>' ou 'merge,<price>' :
+      Peut être combiné avec --split. Dans ce cas, <price> et le prix de la
+      transaction suivante doivent être exprimés après le split.
       - le résultat financier des transactions passées est conservé
       - l'historique des paramétrages précédents est oublié
       - Selon les paramètres passés à l'option, la base de calcul (q0 et c0) 

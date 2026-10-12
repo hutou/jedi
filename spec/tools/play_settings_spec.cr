@@ -80,13 +80,17 @@ describe Jedi::Tools::Play do
     end
   end
 
-  it "rejects split and reinit in the same play settings action" do
-    expect_raises(Jedi::LowLevelError) do
-      JediPlaySpec.with_seeded_play(
-        "scale=S_TEST,q0=100,c0=10,tick=0.01",
-        ["split=2:1,reinit=reset,8.5"]
-      ) do |_play|
-      end
+  it "combines split and reinit in the same play settings action" do
+    JediPlaySpec.with_seeded_play(
+      "scale=S_TEST,q0=100,c0=10,tick=0.01",
+      ["split=2:1,reinit=reset,8.5"]
+    ) do |play|
+      settings = JediPlaySpec.settings_rows(play).last
+      settings.split.to_s.should eq("2:1")
+      settings.reinit.not_nil!.reset?.should be_true
+      settings.q0.should be_close(200.0, JediSpec::EPSILON)
+      settings.c0.should be_close(8.5, JediSpec::EPSILON)
+      JediPlaySpec.operations(play).size.should eq(1)
     end
   end
 
