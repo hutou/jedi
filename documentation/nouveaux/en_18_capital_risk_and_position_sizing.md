@@ -25,6 +25,8 @@ A `money` definition requires all three fields `r`, `o` and `n`: none is implici
 
 For a real trade, capital comes from `trading.capital`. For **`tools play`**, it comes from **`simulation.capital`**. `candidate --capital=20000` sets the capital for that evaluation without modifying configuration.
 
+In play, the risk rate is the required r field of money; simulation.risk_rate and simulation.distance are not used. They contribute to score’s reference opening amount and backtest without --capital. [Appendix 05](en_annex05_default_configuration.md) gives built-in values and each setting’s use.
+
 Before the protection examples, use [chapter 02's experiment environment](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment) and check its configuration file:
 
 ~~~yaml

@@ -28,7 +28,7 @@ Les réglages nécessaires sont indiqués avant les exemples : frais, capital de
 
 ## Retrouver une information
 
-Les numéros identifient les fichiers et les renvois. Dans les PDF, le sommaire reprend les trois parties, les 24 chapitres et les quatre annexes. Les versions française et anglaise suivent le même plan.
+Les numéros identifient les fichiers et les renvois. Dans les PDF régénérés avec cette édition, le sommaire reprend les trois parties, les 24 chapitres et les cinq annexes. Les versions française et anglaise suivent le même plan.
 
 Pour connaître les possibilités de la version installée, lancer `jedi` sans argument, puis demander l'aide d'une sous-commande, par exemple `jedi tools backtest --help`. `jedi version` affiche la version ; `jedi config --paths` affiche les chemins réellement utilisés.
 

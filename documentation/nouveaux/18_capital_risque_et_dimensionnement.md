@@ -25,6 +25,8 @@ Une définition `money` exige les trois champs `r`, `o` et `n` : aucun n'est com
 
 Pour un trade réel, le capital vient de `trading.capital`. Pour **`tools play`**, il vient de **`simulation.capital`**. `candidate --capital=20000` impose le capital de cette évaluation sans modifier la configuration.
 
+Dans `play`, le taux de risque est le champ `r` de `money`, obligatoirement fourni ; `simulation.risk_rate` et `simulation.distance` n’y interviennent pas. Ils servent au montant initial de référence de `score` et du backtest sans `--capital`. L’[annexe 05](fr_annex05_configuration_par_defaut.md) donne les valeurs intégrées et l’usage de chaque réglage.
+
 Avant les exemples de protection, utiliser [l'espace d'essai du chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé) et vérifier dans son fichier de configuration :
 
 ~~~yaml

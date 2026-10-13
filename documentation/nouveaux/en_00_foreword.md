@@ -28,7 +28,7 @@ Required settings appear before the examples: fees, simulation capital and main 
 
 ## Finding information
 
-Numbers identify files and cross-references. The PDF table of contents covers the three parts, 24 chapters and four appendices. French and English editions follow the same plan.
+Numbers identify files and cross-references. PDFs rebuilt from this edition include the three parts, 24 chapters and five appendices in their table of contents. French and English editions follow the same plan.
 
 To discover the installed version's capabilities, run `jedi` without arguments, then request a subcommand's help, for example `jedi tools backtest --help`. `jedi version` shows the version; `jedi config --paths` shows the paths actually used.
 

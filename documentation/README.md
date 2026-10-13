@@ -4,9 +4,9 @@ Cette édition Markdown accompagne la préparation de **Jedi 1.1**. La combinais
 
 This Markdown edition accompanies preparation of **Jedi 1.1**. The `split + reinit` combination requires the updated `next-version` executable. [The update note](MISE_A_JOUR_v1_1.md) lists affected chapters, new names and completed checks. This archive contains Markdown files; rebuild the 1.0 PDFs from the complete repository to reflect these changes.
 
-Le manuel comprend un avant-propos, la philosophie de Jedi, trois introductions de parties, 24 chapitres et quatre annexes dans chaque langue. Les 66 textes actuels sont dans `nouveaux/` ; les titres Markdown restent sans numéro.
+Le manuel comprend un avant-propos, la philosophie de Jedi, trois introductions de parties, 24 chapitres et cinq annexes dans chaque langue. Les 68 textes actuels sont dans `nouveaux/` ; les titres Markdown restent sans numéro.
 
-Each language includes a foreword, Jedi’s philosophy, three part introductions, 24 chapters and four appendices. All 66 current texts are in `nouveaux/`; Markdown headings remain unnumbered.
+Each language includes a foreword, Jedi’s philosophy, three part introductions, 24 chapters and five appendices. All 68 current texts are in `nouveaux/`; Markdown headings remain unnumbered.
 
 PDF de l’édition publiée 1.0 / PDFs from the published 1.0 edition: [français](../output/pdf/jedi-1.0-fr.pdf), [English](../output/pdf/jedi-1.0-en.pdf).
 
@@ -45,6 +45,7 @@ PDF de l’édition publiée 1.0 / PDFs from the published 1.0 edition: [frança
 | Annexe / Appendix 02 | [Configuration des fournisseurs de cours API et Web](nouveaux/fr_annex02_fournisseurs_de_donnees.md) | [Configuring API and Web quote providers](nouveaux/en_annex02_data_providers.md) |
 | Annexe / Appendix 03 | [Script de sélection externe ProScreener JEDI](nouveaux/fr_annex03_scripts_de_selection_externe.md) | [External selection script: JEDI ProScreener](nouveaux/en_annex03_external_selection_scripts.md) |
 | Annexe / Appendix 04 | [Glossaire et notations Jedi](nouveaux/fr_annex04_glossaire_et_notations.md) | [Jedi glossary and notation](nouveaux/en_annex04_glossary_and_notation.md) |
+| Annexe / Appendix 05 | [Configuration par défaut et usage des paramètres](nouveaux/fr_annex05_configuration_par_defaut.md) | [Default configuration and parameter usage](nouveaux/en_annex05_default_configuration.md) |
 
 ## Utiliser les exemples / Use the examples
 
@@ -63,3 +64,8 @@ bash pdf/build.sh both
 Les paramètres sont dans [pdf/fr.yaml](../pdf/fr.yaml) et [pdf/en.yaml](../pdf/en.yaml). [pdf/README.md](../pdf/README.md) décrit Pandoc, XeLaTeX, les polices et le filtre des renvois internes. Aucun ancien chapitre n’entre dans ces PDF.
 
 The defaults files are [pdf/fr.yaml](../pdf/fr.yaml) and [pdf/en.yaml](../pdf/en.yaml). [pdf/README.md](../pdf/README.md) covers Pandoc, XeLaTeX, fonts and internal cross-references. Former chapters are excluded.
+
+
+Pour inclure l’annexe 05 dans les PDF, vérifier que les listes de fichiers utilisées par la génération comprennent `documentation/nouveaux/fr_annex05_configuration_par_defaut.md` et `documentation/nouveaux/en_annex05_default_configuration.md`, chacune dans sa langue. Les fichiers de génération du dépôt ne sont pas fournis dans cette archive Markdown.
+
+To include appendix 05 in the PDFs, ensure that the build’s input lists include `documentation/nouveaux/fr_annex05_configuration_par_defaut.md` and `documentation/nouveaux/en_annex05_default_configuration.md` in their respective languages. Repository build files are not included in this Markdown archive.

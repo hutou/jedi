@@ -3,48 +3,49 @@ from: markdown
 to: pdf
 standalone: true
 input-files:
-- documentation/nouveaux/en_00_foreword.md
-- documentation/nouveaux/en_philosophy_of_jedi.md
-- documentation/nouveaux/en_part_i_using_jedi_daily.md
-- documentation/nouveaux/en_01_jedi_in_a_few_pages.md
-- documentation/nouveaux/en_02_installing_and_preparing_jedi.md
-- documentation/nouveaux/en_03_choosing_a_security.md
-- documentation/nouveaux/en_04_tools_profile.md
-- documentation/nouveaux/en_05_tools_score.md
-- documentation/nouveaux/en_06_tools_candidate.md
-- documentation/nouveaux/en_07_opening_a_trade.md
-- documentation/nouveaux/en_08_monitoring_a_trade.md
-- documentation/nouveaux/en_09_adapting_or_ending_a_trade.md
-- documentation/nouveaux/en_10_market_database.md
-- documentation/nouveaux/en_part_ii_understanding_jedi.md
-- documentation/nouveaux/en_11_round_trips_and_trade_flows.md
-- documentation/nouveaux/en_12_positions_steps_and_levels.md
-- documentation/nouveaux/en_13_reading_the_structure_of_a_scale.md
-- documentation/nouveaux/en_14_understanding_a_type_i_scale.md
-- documentation/nouveaux/en_15_understanding_a_type_ii_scale.md
-- documentation/nouveaux/en_16_continuity_between_settings.md
-- documentation/nouveaux/en_17_from_trade_state_to_orders.md
-- documentation/nouveaux/en_18_capital_risk_and_position_sizing.md
-- documentation/nouveaux/en_19_checking_with_tools_calc_and_play.md
-- documentation/nouveaux/en_20_complete_trade_example.md
-- documentation/nouveaux/en_part_iii_studying_and_validating_jedi.md
-- documentation/nouveaux/en_21_preparing_a_historical_study.md
-- documentation/nouveaux/en_22_simulating_with_tools_backtest.md
-- documentation/nouveaux/en_23_euronext_growth_study_example.md
-- documentation/nouveaux/en_24_interpreting_comparing_and_monitoring.md
-- documentation/nouveaux/en_annex01.md
-- documentation/nouveaux/en_annex02_data_providers.md
-- documentation/nouveaux/en_annex03_external_selection_scripts.md
-- documentation/nouveaux/en_annex04_glossary_and_notation.md
+  - documentation/nouveaux/en_00_foreword.md
+  - documentation/nouveaux/en_philosophy_of_jedi.md
+  - documentation/nouveaux/en_part_i_using_jedi_daily.md
+  - documentation/nouveaux/en_01_jedi_in_a_few_pages.md
+  - documentation/nouveaux/en_02_installing_and_preparing_jedi.md
+  - documentation/nouveaux/en_03_choosing_a_security.md
+  - documentation/nouveaux/en_04_tools_profile.md
+  - documentation/nouveaux/en_05_tools_score.md
+  - documentation/nouveaux/en_06_tools_candidate.md
+  - documentation/nouveaux/en_07_opening_a_trade.md
+  - documentation/nouveaux/en_08_monitoring_a_trade.md
+  - documentation/nouveaux/en_09_adapting_or_ending_a_trade.md
+  - documentation/nouveaux/en_10_market_database.md
+  - documentation/nouveaux/en_part_ii_understanding_jedi.md
+  - documentation/nouveaux/en_11_round_trips_and_trade_flows.md
+  - documentation/nouveaux/en_12_positions_steps_and_levels.md
+  - documentation/nouveaux/en_13_reading_the_structure_of_a_scale.md
+  - documentation/nouveaux/en_14_understanding_a_type_i_scale.md
+  - documentation/nouveaux/en_15_understanding_a_type_ii_scale.md
+  - documentation/nouveaux/en_16_continuity_between_settings.md
+  - documentation/nouveaux/en_17_from_trade_state_to_orders.md
+  - documentation/nouveaux/en_18_capital_risk_and_position_sizing.md
+  - documentation/nouveaux/en_19_checking_with_tools_calc_and_play.md
+  - documentation/nouveaux/en_20_complete_trade_example.md
+  - documentation/nouveaux/en_part_iii_studying_and_validating_jedi.md
+  - documentation/nouveaux/en_21_preparing_a_historical_study.md
+  - documentation/nouveaux/en_22_simulating_with_tools_backtest.md
+  - documentation/nouveaux/en_23_euronext_growth_study_example.md
+  - documentation/nouveaux/en_24_interpreting_comparing_and_monitoring.md
+  - documentation/nouveaux/en_annex01.md
+  - documentation/nouveaux/en_annex02_data_providers.md
+  - documentation/nouveaux/en_annex03_external_selection_scripts.md
+  - documentation/nouveaux/en_annex04_glossary_and_notation.md
+  - documentation/nouveaux/en_annex05_default_configuration.md
 output-file: output/pdf/jedi-1.0-en.pdf
 pdf-engine: xelatex
 table-of-contents: true
 toc-depth: 1
 number-sections: false
 filters:
-- pdf/book.lua
+  - pdf/book.lua
 include-in-header:
-- pdf/header.tex
+  - pdf/header.tex
 metadata:
   title: Jedi 1.0
   subtitle: User manual
@@ -54,15 +55,15 @@ metadata:
 variables:
   documentclass: article
   classoption:
-  - oneside
-  - titlepage
+    - oneside
+    - titlepage
   papersize: a4
   fontsize: 10pt
   geometry:
-  - top=20mm
-  - bottom=20mm
-  - left=18mm
-  - right=18mm
+    - top=20mm
+    - bottom=20mm
+    - left=18mm
+    - right=18mm
   mainfont: DejaVu Serif
   sansfont: DejaVu Sans
   monofont: DejaVu Sans Mono

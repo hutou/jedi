@@ -1,5 +1,7 @@
 # Référence des commandes et options
 
+Les valeurs intégrées et l’usage de chaque entrée sont détaillés dans l’[annexe 05](fr_annex05_configuration_par_defaut.md).
+
 ## Trouver l'aide de la version installée
 
 Lancer `jedi` sans argument affiche les familles de commandes. Une famille seule, par exemple `jedi tools`, affiche ses sous-commandes. L'aide détaillée s'obtient au niveau de la sous-commande :

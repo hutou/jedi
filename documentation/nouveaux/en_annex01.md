@@ -1,5 +1,7 @@
 # Command and option reference
 
+Built-in values and the use of every configuration entry are detailed in [appendix 05](en_annex05_default_configuration.md).
+
 ## Find help for the installed version
 
 Run `jedi` without arguments to see command families. A family alone, such as `jedi tools`, shows its subcommands. Detailed help belongs at subcommand level:

@@ -2,6 +2,8 @@
 
 This appendix supplements [chapter 08](en_08_monitoring_a_trade.md). It is for someone who needs to **create or change** a current-quote provider. This work requires the ability to read API documentation or HTML, write a regular expression, inspect an HTTP response and check the source's access conditions. A configured provider is not necessarily available or authorized. Addresses and responses in the examples below are **invented**: they explain configuration structure and do not fetch a real quote.
 
+[Appendix 05](en_annex05_default_configuration.md) lists every built-in value, including fields that are currently unused.
+
 ## Built-in providers and separate databases
 
 Default configuration tries ABC Bourse, Tradingsat and Boursorama Web pages, then the Alpha Vantage API. These are collection definitions whose availability depends on the provider and its current response structure. `live` identifies Web collection without promising real-time or undelayed prices. `eod` identifies the API path; check the session actually returned.
