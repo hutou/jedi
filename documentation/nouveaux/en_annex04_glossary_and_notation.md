@@ -41,6 +41,19 @@
 
 [Chapters 13–16](en_13_reading_the_structure_of_a_scale.md) explain the parameters. A reset may redefine `q0` and `c0`; read active settings before interpreting them as the very first historical purchase.
 
+## Split and new origin
+
+| Notation | Meaning |
+|---|---|
+| `split=NEW:OLD` | Number of new shares for old ones; `1:10` is a ten-for-one consolidation. |
+| Effective holding | Holding to use after conversion, even while the latest historical operation retains the old quantity. |
+| `reinit=reset,price` | Immediate new mechanical origin; position `0:0:0`, effective stock as `q0`, chosen price as `c0`. |
+| `reinit=merge,price` | New origin established by the following manual transaction; references remain pending until then. |
+| `split + reinit` | Combination available in next-version / v1.1; convert stock before reset or merge, supply prices after the split. |
+| Fractional entitlement | Fractional right resulting from consolidation; Jedi accounts for neither its handling nor its settlement. |
+
+[Chapter 09](en_09_adapting_or_ending_a_trade.md) details the effects and restrictions. Reinitialisation changes mechanical references, not past financial results.
+
 ## Orders and protection
 
 | Term | Meaning |

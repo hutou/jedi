@@ -34,6 +34,22 @@ Each help page describes required fields. Deleting an entity in use may be refus
 
 `quote get ISIN` displays an external price without recording a security or quotation. `quote set` records a manual price. `quote update` updates one registered security; `quote refresh` handles a selection, defaulting to securities of running trades. `--mode=live|eod` applies to `update` and `refresh`, not `get`. `--force` belongs to `refresh` and forces updates according to its filtering.
 
+## Adapt settings: split, reinit and sync
+
+New settings require `--scale`, `--date` and `--time`. Their timestamp must follow the latest settings and operations across the whole database; the trade's previous settings must already have been used by an operation.
+
+| Option or combination | Effect |
+|---|---|
+| `--split=NEW:OLD` | Convert units; `1:10` means one new share for ten old shares. |
+| `--reinit=reset,PRICE` | Current stock as `q0`, chosen price as `c0`, position `0:0:0`. |
+| `--reinit=merge,PRICE` | Pending reference; an actual manual transaction then defines `q0` and `c0`. |
+| `--split` + `--reinit=reset,PRICE` | Accepted in next-version / v1.1; reset from converted whole stock. |
+| `--split` + `--reinit=merge,PRICE` | Accepted in next-version / v1.1; merge from converted whole stock. |
+| `--sync=POSITION` | Synchronisation restricted to type I scales. |
+| `--sync` + `--split` or `--reinit` | Rejected. |
+
+With split + reinit, `PRICE` and values of the following operation use **post-split units**. While merge waits for its operation, Jedi proposes no automatic order. Fractional rights are not accounted for. Chapter 09 gives practical cases and chapter 19 gives simulations.
+
 ## Market databases
 
 | Subcommand | Main arguments | Use |
@@ -52,7 +68,7 @@ Each help page describes required fields. Deleting an entity in use may be refus
 
 `import`, `replace` and `update` accept `--date-order=auto|ymd|dmy|mdy`, `--year-pivot=NN` and `--from=DATE`. Updates refuse an extension more than seven calendar days beyond the current end unless `--allow-gap` is supplied. Update does not overwrite conflicting quotations; use `replace` with a corrected corpus. `sync-group` accepts `--as-of=DATE` and `--reference-source=NAME` to describe membership.
 
-`market list` accepts field regex expressions, including `group` and `dataset`, with `&&` and `||`. This does not provide a multi-group option to `profile`. Jedi 1.0 exposes one `--group=CODE` in `profile`; no dedicated command deletes a group. `market quote` displays an OHLCV table and offers no CSV export.
+`market list` accepts field regex expressions, including `group` and `dataset`, with `&&` and `||`. This does not provide a multi-group option to `profile`. Jedi exposes one `--group=CODE` in `profile`; no dedicated command deletes a group. `market quote` displays an OHLCV table and offers no CSV export.
 
 ## Common listing options
 

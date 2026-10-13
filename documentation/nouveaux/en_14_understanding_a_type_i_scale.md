@@ -82,10 +82,10 @@ The optimised structural check therefore does not ensure sufficiently large orde
 The compact builder replaces the `ks` list with `kd`:
 
 ~~~console
-jedidemo scale create --name=PEDA-I-AUTO \
+jedidemo scale create --name=B1_example_auto_v01 \
   --comment="Teaching builder" \
   --builder="kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0"
-jedidemo scale show PEDA-I-AUTO
+jedidemo scale show B1_example_auto_v01
 ~~~
 
 Create this name once in the experiment database. With `kd:0`, changes are distributed evenly between intervals. Jedi produces **`ks:0.89,1.25`**: interior targets of 89 and 125 for `q0=100`.

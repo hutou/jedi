@@ -41,6 +41,19 @@
 
 Les [chapitres 13 à 16](13_lire_la_structure_d_un_bareme.md) donnent le contexte des paramètres. `q0` et `c0` peuvent être redéfinis par une réinitialisation ; lire le paramétrage actif avant de les interpréter comme le tout premier achat historique.
 
+## Split et nouvelle origine
+
+| Notation | Sens |
+|---|---|
+| `split=NEW:OLD` | Nombre d'actions nouvelles pour les anciennes ; `1:10` est un regroupement de dix pour une. |
+| Stock effectif | Stock à utiliser après conversion, même si la dernière opération historique conserve l'ancienne quantité. |
+| `reinit=reset,prix` | Nouvelle origine mécanique immédiate ; position `0:0:0`, stock effectif comme `q0`, prix choisi comme `c0`. |
+| `reinit=merge,prix` | Nouvelle origine établie par la transaction manuelle suivante ; références en attente jusque-là. |
+| `split + reinit` | Combinaison de next-version / v1.1 ; convertir le stock avant reset ou merge, saisir les prix après split. |
+| Rompu | Droit fractionnaire issu d'un regroupement ; sa gestion et son règlement ne sont pas comptabilisés par Jedi. |
+
+Le [chapitre 09](09_adapter_ou_terminer_un_trade.md) détaille les effets et les restrictions. Une réinitialisation change les références mécaniques, pas les résultats financiers passés.
+
 ## Ordres et protection
 
 | Terme | Sens |

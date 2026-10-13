@@ -49,15 +49,25 @@ Pour un titre réel, vérifier son ISIN, son libellé, son ticker, ses pas de co
 
 `quote set` enregistre le cours avec la date et l'heure de la saisie. Ce cours sert au suivi ; il ne remplace pas le prix réel de l'achat. Le prix fourni à `candidate` n'avait pas été écrit dans la base.
 
+## Choisir des noms lisibles
+
+Pour un trade, utiliser **`<repère_du_titre>_<numéro>`** : `Exa_01`, puis `Exa_02` si un nouveau trade distinct est créé sur ce titre. Un repère plus long, comme `Airliquide_01`, convient aussi. Le numéro identifie le trade, pas ses paramétrages. Un split, un changement de barème ou une réinitialisation conserve ce nom.
+
+Pour un barème, utiliser **`B<type>_<caractéristiques>_v<version>`**. Notre exemple est `B2_vr10_ki10_v01` : type II, `vr=10%`, `ki=10%`, version 01. La définition complète reste fournie à `--builder` ; le nom ne configure aucun paramètre. Le [chapitre 13](13_lire_la_structure_d_un_bareme.md#nommer-et-versionner-un-barème) précise cette convention.
+
+Employer des lettres sans accents, des chiffres et des soulignés `_`, avec une lettre au début et au moins deux caractères. Les noms doivent être uniques dans leur catégorie et sont insensibles à la casse. Jedi normalise leur écriture : `EXA_01` devient `Exa_01`.
+
+Les exemples de cette édition adoptent ces noms. Un trade déjà créé sous un ancien nom reste utilisable ; employer son nom réel dans les commandes ou le corriger avec `trade update --name`, selon le chapitre 09.
+
 ## Conserver le barème retenu
 
 Le paramétrage d'un trade demande un barème permanent de la base principale. Enregistrer sous un nom la définition utilisée pour le candidat :
 
 ~~~console
-jedidemo scale create --name=EXA-10 \
+jedidemo scale create --name=B2_vr10_ki10_v01 \
   --comment="Exemple avec mouvements de 10 %" \
   --builder="vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
-jedidemo scale show EXA-10
+jedidemo scale show B2_vr10_ki10_v01
 ~~~
 
 Si le barème existe déjà, le consulter et le réutiliser. Lorsqu'il vient de `score`, copier le constructeur sans son préfixe d'affichage `I:` ou `II:`. Le nom temporaire d'un barème littéral d'évaluation ne suffit pas à le conserver.
@@ -65,8 +75,8 @@ Si le barème existe déjà, le consulter et le réutiliser. Lorsqu'il vient de 
 ## Créer le trade et son paramétrage initial
 
 ~~~console
-jedidemo trade create --name=EXA01 --security=FR4487601001
-jedidemo trade show EXA01
+jedidemo trade create --name=Exa_01 --security=FR4487601001
+jedidemo trade show Exa_01
 ~~~
 
 Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN ou l'identifiant interne du titre, pas son ticker. Si le projet utilise la gestion du capital, ajouter la définition évaluée, par exemple `--money="r:1%,o:1,n:2"`, à la commande de création.
@@ -74,7 +84,7 @@ Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN
 Associer ensuite le trade au barème :
 
 ~~~console
-jedidemo settings create EXA01 --scale=EXA-10 \
+jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
 
@@ -89,7 +99,7 @@ Avant l'achat, ce premier paramétrage possède une position `0:0:0`, avec `q0` 
 Passer vous-même l'ordre d'achat, suivre son exécution et reprendre les valeurs confirmées par le courtier. Notre exemple suppose l'exécution de 100 titres à 10 €, avec 3,50 € de frais :
 
 ~~~console
-jedidemo operation create EXA01 \
+jedidemo operation create Exa_01 \
   --date=2026-09-21 --time=09:01:00 \
   --type=Buy --mode=Limit --quantity=100 --price=10 --fees=3.50
 ~~~
@@ -103,10 +113,10 @@ Un achat non exécuté ne crée aucune opération. S'il est exécuté en plusieu
 ## Contrôler l'ouverture et les premiers ordres
 
 ~~~console
-jedidemo settings list EXA01
-jedidemo operation list EXA01 -c 0,6-14,17
-jedidemo trade status EXA01
-jedidemo trade orders EXA01
+jedidemo settings list Exa_01
+jedidemo operation list Exa_01 -c 0,6-14,17
+jedidemo trade status Exa_01
+jedidemo trade orders Exa_01
 ~~~
 
 Le stock doit être de **100 titres**, `q0` de 100, `c0` de 10 € et la position `0:0:0`. L'investissement net hors frais vaut 1 000 €. Comparer le stock et l'opération au relevé du courtier.

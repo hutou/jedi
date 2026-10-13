@@ -14,7 +14,7 @@ Three kinds of information remain distinct:
 
 A price change does not alter stock. Placing or cancelling a broker order does not change the Jedi database. A broker execution appears there only after you record it.
 
-This chapter continues **fictional trade EXA01 opened in [chapter 07](en_07_opening_a_trade.md)**: 100 shares bought at €10, scale `EXA-10`. Recording commands are experiments for the separate database prepared in [chapter 02](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment).
+This chapter continues **fictional trade Exa_01 opened in [chapter 07](en_07_opening_a_trade.md)**: 100 shares bought at €10, scale `B2_vr10_ki10_v01`. Recording commands are experiments for the separate database prepared in [chapter 02](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment).
 
 ## Obtain a relevant price
 
@@ -51,11 +51,11 @@ Monitoring commands can attempt to refresh a price whose configured retention ti
 ## Read status and orders
 
 ~~~console
-jedidemo trade status EXA01
-jedidemo trade orders EXA01
+jedidemo trade status Exa_01
+jedidemo trade orders Exa_01
 ~~~
 
-Compare displayed stock with broker stock. Read each order's `Buy` or `Sell` type, mode, quantity, price and amount. At €11 and without another operation, EXA01 still holds 100 shares and proposes the previous chapter's orders.
+Compare displayed stock with broker stock. Read each order's `Buy` or `Sell` type, mode, quantity, price and amount. At €11 and without another operation, Exa_01 still holds 100 shares and proposes the previous chapter's orders.
 
 | Mode | Practical meaning |
 |---|---|
@@ -82,12 +82,12 @@ When a StopLoss and Limit sale must coexist, `trade orders --net-stop` can displ
 Our example assumes a confirmed sale of 6 shares at €11 with €0.23 fees. Record it:
 
 ~~~console
-jedidemo operation create EXA01 \
+jedidemo operation create Exa_01 \
   --date=2026-09-22 --time=10:15:00 \
   --type=Sell --mode=Limit --quantity=6 --price=11 --fees=0.23
-jedidemo operation list EXA01 -c 0,6-14,17
-jedidemo trade status EXA01
-jedidemo trade orders EXA01
+jedidemo operation list Exa_01 -c 0,6-14,17
+jedidemo trade status Exa_01
+jedidemo trade orders Exa_01
 ~~~
 
 Stock becomes **94 shares**. Net investment excluding fees decreases from €1,000 to **€934**, since the sale received €66. Position becomes `0:0:+1`.
@@ -128,7 +128,7 @@ Operations record stock and cash movements. `note` retains the context of except
 To write several lines, open the content's quotation marks and close them only after the last line:
 
 ~~~console
-$ jedidemo note create 2026-09-22 "EXA01 - partial sale" "Sale of 6 shares:
+$ jedidemo note create 2026-09-22 "Exa_01 - partial sale" "Sale of 6 shares:
 > 2 then 4 shares at EUR 11. Execution completed at 10:15.
 > Total fees: EUR 0.23. One consolidated operation recorded."
 ~~~
@@ -136,7 +136,7 @@ $ jedidemo note create 2026-09-22 "EXA01 - partial sale" "Sale of 6 shares:
 `$` and `>` represent terminal prompts: do not type them. While quotation marks remain open, the terminal continues the same command; line breaks are preserved in the note. This syntax also suits long text that would be cut off in print on a single line.
 
 ~~~console
-jedidemo note list EXA01
+jedidemo note list Exa_01
 ~~~
 
 In a database without previous notes, this note has ID 1. Use the ID actually shown to read or complete it:
@@ -172,7 +172,7 @@ The editor opens a template with three markers, to keep in this order. Here is a
 2026-09-22
 
 # Summary
-EXA01 - partial sale
+Exa_01 - partial sale
 
 # Contents
 Sale of 6 shares: 2 then 4 shares at EUR 11.
@@ -184,4 +184,4 @@ In nano, save with **Ctrl+O**, confirm the filename with **Enter**, then exit wi
 
 Notes form a general journal; including the trade name in the summary or text makes them searchable. There is no automatic trade link. A note replaces neither execution nor its operation record.
 
-After this monitoring example, EXA01 holds 94 shares. [Chapter 09](en_09_adapting_or_ending_a_trade.md) starts from this state to present possible adaptations and closure.
+After this monitoring example, Exa_01 holds 94 shares. [Chapter 09](en_09_adapting_or_ending_a_trade.md) starts from this state to present possible adaptations and closure.

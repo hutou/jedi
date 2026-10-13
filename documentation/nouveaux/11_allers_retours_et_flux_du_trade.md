@@ -2,7 +2,7 @@
 
 Un cours qui monte ne fait entrer de l'argent que si une vente a lieu. Un cours qui baisse ne fait sortir de l'argent que si un achat a lieu. Pour lire un trade, commencer par le prix d'un titre, le nombre de titres détenus et les achats ou ventes exécutés.
 
-Ce chapitre utilise **Exemple A, un titre fictif**, avec 100 titres achetés à 10 €. C'est un exemple de type I, distinct du barème d'EXA01 dans la partie I. Les prix sont choisis pour expliquer les calculs ; ils ne décrivent aucun marché réel.
+Ce chapitre utilise **Exemple A, un titre fictif**, avec 100 titres achetés à 10 €. C'est un exemple de type I, distinct du barème d'Exa_01 dans la partie I. Les prix sont choisis pour expliquer les calculs ; ils ne décrivent aucun marché réel.
 
 ## Vendre puis racheter, ou acheter puis revendre
 

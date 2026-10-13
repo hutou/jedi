@@ -26,15 +26,31 @@ Un coefficient est un multiplicateur : une référence de 10 € avec un coeffic
 
 `ki` est distinct du risque `r` de gestion du capital. Un ajustement de palier de 10 % n'est ni un risque de portefeuille de 10 %, ni un gain promis.
 
+## Nommer et versionner un barème
+
+La convention **`B<type>_<caractéristiques>_v<version>`** aide à reconnaître les règles sans relire toute leur définition :
+
+| Nom | Lecture |
+|---|---|
+| `B1_base_v01` | Type I, famille « base », version 01. |
+| `B2_vr10_ki05_v01` | Type II, `vr=10%`, `ki=5%`, version 01. |
+| `B2_vr10p5_ki0p5_v01` | Type II, `vr=10,5%`, `ki=0,5%`, version 01. |
+
+La lettre `p` remplace le séparateur décimal dans le nom. Elle ne s'utilise pas dans le constructeur : y écrire `vr:10.5%,ki:0.5%`.
+
+Le nom peut donner une famille, comme `B1_example_v01`, plutôt que tous les coefficients. La définition du barème conserve les paramètres exacts ; son commentaire décrit l'usage et ce qui distingue la version. Le nom seul ne règle ni le type ni les valeurs.
+
+Lorsqu'une règle déjà utilisée doit changer, créer un nouveau barème, par exemple une version `v02`, puis lui associer un nouveau paramétrage. Ainsi, les anciennes opérations gardent leur définition de référence. Une simple correction du commentaire ne constitue pas une nouvelle règle.
+
 ## Développer un type I simple
 
 Enregistrer ce barème pédagogique dans une base d'essai :
 
 ~~~console
-jedidemo scale create --name=PEDA-I \
+jedidemo scale create --name=B1_example_v01 \
   --comment="Barème pédagogique de type I" \
   --builder="kc:1.4,1.2,0.8,0.6,ks:0.8,1.2,ki:10%,kb:1"
-jedidemo scale show PEDA-I
+jedidemo scale show B1_example_v01
 ~~~
 
 Créer ce nom une seule fois. S'il existe, consulter le barème avant de le réutiliser. Les autres exemples donnent souvent la définition directement à l'outil, sans créer de nom permanent.
@@ -82,6 +98,6 @@ Jedi vérifie si la structure réduit le stock à la frontière haute et l'augme
 
 Cette qualification ne mesure ni la rentabilité, ni les frais, ni les besoins du portefeuille. Avec des arrondis ou certains parcours de type II, il faut encore lire les ordres effectivement calculés. Le chapitre 17 montrera un Stop de fonctionnement.
 
-Un constructeur optimisé est une méthode pour fabriquer `ks`. Une liste saisie directement peut aussi réussir le contrôle ; c'est le cas de `PEDA-I`.
+Un constructeur optimisé est une méthode pour fabriquer `ks`. Une liste saisie directement peut aussi réussir le contrôle ; c'est le cas de `B1_example_v01`.
 
 Pour changer une règle déjà utilisée, créer un nouveau barème permet de conserver l'interprétation des anciennes opérations. Le [chapitre 16](16_continuite_entre_parametrages.md) explique comment lui associer un nouveau paramétrage daté.

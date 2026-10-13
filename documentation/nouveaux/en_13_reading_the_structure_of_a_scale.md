@@ -26,15 +26,31 @@ A coefficient is a multiplier: a €10 reference with a price coefficient of 1.2
 
 `ki` differs from capital management risk `r`. A 10% level adjustment is neither 10% portfolio risk nor a promised gain.
 
+## Name and version a scale
+
+The convention **`B<type>_<characteristics>_v<version>`** helps identify rules without rereading the complete definition:
+
+| Name | Meaning |
+|---|---|
+| `B1_base_v01` | Type I, “base” family, version 01. |
+| `B2_vr10_ki05_v01` | Type II, `vr=10%`, `ki=5%`, version 01. |
+| `B2_vr10p5_ki0p5_v01` | Type II, `vr=10.5%`, `ki=0.5%`, version 01. |
+
+The letter `p` replaces the decimal separator in a name. It does not belong in the builder: write `vr:10.5%,ki:0.5%` there.
+
+A name can indicate a family, such as `B1_example_v01`, rather than every coefficient. The scale definition retains exact parameters; its comment explains its use and what distinguishes this version. The name itself sets neither the type nor the values.
+
+When a rule already used must change, create a new scale, for example version `v02`, then associate it with new settings. Earlier operations therefore retain their reference definition. Correcting only the comment does not create a new rule.
+
 ## Expand a simple type I scale
 
 Save this teaching scale in an experiment database:
 
 ~~~console
-jedidemo scale create --name=PEDA-I \
+jedidemo scale create --name=B1_example_v01 \
   --comment="Teaching scale of type I" \
   --builder="kc:1.4,1.2,0.8,0.6,ks:0.8,1.2,ki:10%,kb:1"
-jedidemo scale show PEDA-I
+jedidemo scale show B1_example_v01
 ~~~
 
 Create this name once only. If it exists, inspect the scale before reusing it. Other examples often pass the definition directly to a tool without creating a permanent name.
@@ -82,6 +98,6 @@ Jedi checks whether the structure reduces the holding at the upper boundary and 
 
 The label measures neither profitability, fees nor portfolio requirements. Rounding and some type II paths still require inspection of the actual calculated orders. Chapter 17 will show a functioning Stop order.
 
-An optimised builder is a method of constructing `ks`. A directly supplied list can also pass the check, as `PEDA-I` does.
+An optimised builder is a method of constructing `ks`. A directly supplied list can also pass the check, as `B1_example_v01` does.
 
 To change a rule already used, creating a new scale preserves the interpretation of past operations. [Chapter 16](en_16_continuity_between_settings.md) explains how to associate it with new dated settings.

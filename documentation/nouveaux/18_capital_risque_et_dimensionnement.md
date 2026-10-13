@@ -4,6 +4,8 @@ Un projet doit répondre à deux questions : quelle quantité acheter au départ
 
 Nos montants décrivent des simulations. Le risque théorique ne garantit pas la perte maximale effectivement obtenue : frais, arrondis ou exécution défavorable peuvent l'augmenter.
 
+Après un split, les gains courants et les quantités des stops utilisent le **stock converti**, même si aucune transaction nouvelle n'a encore été enregistrée. Avec reset, le trajet de protection part de la nouvelle position mécanique. Ces adaptations ne remettent pas le résultat financier à zéro : les achats, ventes et frais passés restent conservés. Avec merge, les propositions automatiques attendent la transaction manuelle, selon le [chapitre 09](09_adapter_ou_terminer_un_trade.md).
+
 ## Donner un sens à K, r, o et n
 
 | Paramètre | Question pratique | Effet |
@@ -30,7 +32,7 @@ simulation:
   capital: 20000
 ~~~
 
-Les frais restent à 0,35 %, sans minimum. Le capital de 5 000 € d'EXA01 dans la partie I est un autre exemple. Modifier seulement `trading.capital` ne modifie pas le capital de `play`.
+Les frais restent à 0,35 %, sans minimum. Le capital de 5 000 € d'Exa_01 dans la partie I est un autre exemple. Modifier seulement `trading.capital` ne modifie pas le capital de `play`.
 
 ## Dimensionner une ouverture
 

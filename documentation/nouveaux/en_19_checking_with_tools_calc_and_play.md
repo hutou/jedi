@@ -67,6 +67,42 @@ q0=100,c0=10,tick=0.01" "2x1,-1"
 
 These two round trips finish with 100 shares and €920 investment: €80 gross profit at the final €10 price.
 
+## Simulate a consolidation with reset or merge
+
+These simulations reproduce 1,790 old shares consolidated into 179 new shares. They use a literal definition: no permanent scale or trade needs to be created. The old €0.80 price describes the starting operation; the €12 resumption price already uses post-consolidation units.
+
+For **reset**:
+
+~~~console
+jedidemo tools play -c co0,6-14,17 -- \
+  "scale=vr:10%,ks:0.8,1.2,ki:0%,kb:0,q0=1790,c0=0.8,tick=0.01" \
+  "split=1:10,reinit=reset,12" 1 -1
+~~~
+
+Section `c` displays settings and section `o` displays operations:
+
+| Step | Holding | Price | New settings reference |
+|---|---:|---:|---|
+| After split + reset, before transaction | 179 | Resume at €12 | `q0=179`, `c0=12`, position `0:0:0` |
+| First rise: sell 36 new shares | 143 | €13.20 | Same reference |
+| Following fall: buy 36 new shares | 179 | €11.87 | Same reference |
+
+The €11.87 price reproduces Jedi's actual rounding at a €0.01 tick. The split is not applied again after the first transaction.
+
+For **merge**, start again in a separate simulation:
+
+~~~console
+jedidemo tools play -c co0,6-14,17 -- \
+  "scale=vr:10%,ks:0.8,1.2,ki:0%,kb:0,q0=1790,c0=0.8,tick=0.01" \
+  "split=1:10,reinit=merge,12" "21@10.00" 1
+~~~
+
+Settings wait for the manual purchase. After `21@10.00`, stock and `q0` equal 200 and `c0` is €11.79. The following rise sells 40 shares at €11, leaving 160 shares. Type II resumes from that manual transaction's actual price for the next movement.
+
+Quantity `21` and price `10.00` describe the **new shares**, after consolidation. A manual sale uses a negative quantity, for example `"-20@14.00"`. Jedi checks sales against converted stock: `"-180@12.00"` would be rejected with only 179 shares available.
+
+Both options belong to the same settings change. `sync` cannot accompany this combination. After `merge`, supply a manual transaction before an automatic movement or target price; otherwise Jedi rejects the scenario. In actual management, record only the transaction really executed.
+
 ## Choose displayed tables
 
 | `--command` letter | Reading |

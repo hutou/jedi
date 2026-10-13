@@ -1,5 +1,7 @@
 # Passer de l'état du trade aux ordres
 
+Un paramétrage plus récent que la dernière transaction peut déjà modifier le stock effectif ou la position de départ. Après `split + reset`, Jedi utilise immédiatement le stock converti, la position `0:0:0` et le prix de reprise. Après `split + merge`, il attend la transaction manuelle avant de calculer les ordres automatiques. Voir le [chapitre 09](09_adapter_ou_terminer_un_trade.md#combiner-un-regroupement-et-une-réinitialisation).
+
 Après une opération, Jedi calcule les cibles voisines du barème. Il transforme chaque cible de stock en une quantité à négocier et chaque cours théorique en un prix compatible avec le pas de cotation.
 
 Le courtier exécute les ordres ; Jedi ne lui transmet rien. Une opération est enregistrée quand une exécution a réellement eu lieu, comme au [chapitre 08](08_suivre_un_trade.md).

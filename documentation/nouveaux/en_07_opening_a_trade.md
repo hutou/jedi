@@ -49,15 +49,25 @@ For an actual security, check its ISIN, name, ticker, quotation ticks and any ta
 
 `quote set` records the price with the entry date and time. This price supports monitoring; it does not replace the purchase's actual execution price. The price supplied to `candidate` had not been written to the database.
 
+## Choose readable names
+
+For a trade, use **`<security_label>_<number>`**: `Exa_01`, then `Exa_02` if a separate new trade is created on the same security. A longer label such as `Airliquide_01` is also suitable. The number identifies the trade, not its settings. A split, scale change or reinitialisation retains the name.
+
+For a scale, use **`B<type>_<characteristics>_v<version>`**. Our example is `B2_vr10_ki10_v01`: type II, `vr=10%`, `ki=10%`, version 01. Supply the complete definition to `--builder`; the name configures no parameter. [Chapter 13](en_13_reading_the_structure_of_a_scale.md#name-and-version-a-scale) explains this convention.
+
+Use unaccented letters, digits and underscores `_`, starting with a letter and using at least two characters. Names must be unique within their category and are case-insensitive. Jedi normalises their spelling: `EXA_01` becomes `Exa_01`.
+
+This edition's examples adopt these names. A trade created under an older name remains usable; use its actual name in commands or correct it with `trade update --name`, as in chapter 09.
+
 ## Retain the selected scale
 
 Trade settings require a permanent scale in the main database. Store the candidate's definition under a name:
 
 ~~~console
-jedidemo scale create --name=EXA-10 \
+jedidemo scale create --name=B2_vr10_ki10_v01 \
   --comment="Exemple avec mouvements de 10 %" \
   --builder="vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
-jedidemo scale show EXA-10
+jedidemo scale show B2_vr10_ki10_v01
 ~~~
 
 If the scale already exists, inspect and reuse it. When it comes from `score`, copy the builder without its display prefix `I:` or `II:`. The temporary name of a literal evaluation scale does not retain it permanently.
@@ -65,8 +75,8 @@ If the scale already exists, inspect and reuse it. When it comes from `score`, c
 ## Create the trade and its initial settings
 
 ~~~console
-jedidemo trade create --name=EXA01 --security=FR4487601001
-jedidemo trade show EXA01
+jedidemo trade create --name=Exa_01 --security=FR4487601001
+jedidemo trade show Exa_01
 ~~~
 
 The name identifies this management history and must be unique. `--security` accepts the security's ISIN or internal ID, not its ticker. If the proposal uses capital management, add the evaluated definition, such as `--money="r:1%,o:1,n:2"`, to the creation command.
@@ -74,7 +84,7 @@ The name identifies this management history and must be unique. `--security` acc
 Then associate the trade with the scale:
 
 ~~~console
-jedidemo settings create EXA01 --scale=EXA-10 \
+jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
 
@@ -89,7 +99,7 @@ At this point Jedi knows the proposal, but no purchase is recorded yet.
 Place the purchase yourself, monitor execution and use the broker's confirmed values. Our example assumes 100 shares executed at €10, with €3.50 fees:
 
 ~~~console
-jedidemo operation create EXA01 \
+jedidemo operation create Exa_01 \
   --date=2026-09-21 --time=09:01:00 \
   --type=Buy --mode=Limit --quantity=100 --price=10 --fees=3.50
 ~~~
@@ -103,10 +113,10 @@ An unexecuted purchase creates no operation. If executed in several fragments, w
 ## Check the opening and initial orders
 
 ~~~console
-jedidemo settings list EXA01
-jedidemo operation list EXA01 -c 0,6-14,17
-jedidemo trade status EXA01
-jedidemo trade orders EXA01
+jedidemo settings list Exa_01
+jedidemo operation list Exa_01 -c 0,6-14,17
+jedidemo trade status Exa_01
+jedidemo trade orders Exa_01
 ~~~
 
 Stock must be **100 shares**, `q0` 100, `c0` €10 and position `0:0:0`. Net investment excluding fees is €1,000. Compare stock and the operation with the broker's statement.

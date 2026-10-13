@@ -1,5 +1,7 @@
 # From trade state to orders
 
+Settings newer than the latest transaction can already change the effective holding or starting position. After `split + reset`, Jedi immediately uses converted stock, position `0:0:0` and the resumption price. After `split + merge`, it waits for the manual transaction before calculating automatic orders. See [chapter 09](en_09_adapting_or_ending_a_trade.md#combine-a-consolidation-and-reinitialisation).
+
 An order compares the actual holding with the integer holding targeted by the scale. A positive difference is a purchase; a negative difference is a sale. Its price follows the mechanical direction and the security's tick size.
 
 ## Separate direction, type and mode

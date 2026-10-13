@@ -1,6 +1,8 @@
 # Comprendre un barème de type II
 
-Le type II calcule le prochain prix en appliquant un taux `vr` au **prix de la dernière opération exécutée**, adapté à un split si nécessaire. Il conserve les positions et les coefficients de stock, sans liste de coefficients de cours `kc`.
+En fonctionnement ordinaire, le type II calcule le prochain prix en appliquant un taux `vr` au **prix de la dernière opération exécutée**, adapté à un split si nécessaire. Il conserve les positions et les coefficients de stock, sans liste de coefficients de cours `kc`.
+
+**Après un `reinit=reset`, le prix de référence fourni à reset remplace immédiatement celui de la dernière opération pour les premiers ordres.** Si le reset accompagne un split, ce prix est déjà exprimé après le split. Les opérations suivantes reprennent ensuite leur prix réellement exécuté comme base. Avec `merge`, Jedi attend d'abord la transaction manuelle qui établit la nouvelle référence. Les [chapitres 09](09_adapter_ou_terminer_un_trade.md) et [16](16_continuite_entre_parametrages.md) présentent ces cas.
 
 Notre exemple fictif utilise `vr:20%` pour rendre les différences lisibles, avec 100 titres à 10 € et un pas de 0,01 € :
 
@@ -63,10 +65,10 @@ Les arrondis de prix influencent les calculs suivants. Un calcul sans arrondi et
 ## Construire le stock avec np, nn et kd
 
 ~~~console
-jedidemo scale create --name=PEDA-II-AUTO \
+jedidemo scale create --name=B2_example_auto_v01 \
   --comment="Construction pédagogique" \
   --builder="vr:20%,np:2,nn:2,ki:10%,kb:1,kd:0"
-jedidemo scale show PEDA-II-AUTO
+jedidemo scale show B2_example_auto_v01
 ~~~
 
 Créer ce nom une seule fois. `np:2,nn:2` fixe deux mouvements jusqu'à chaque borne, avec un échelon intérieur par côté. `kd:0` répartit régulièrement les variations. La définition développée contient **`ks:0.88,1.2`**.

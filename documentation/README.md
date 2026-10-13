@@ -1,10 +1,14 @@
-# Documentation Jedi 1.0 / Jedi 1.0 documentation
+# Documentation Jedi — next-version / préparation v1.1
+
+Cette édition Markdown accompagne la préparation de **Jedi 1.1**. La combinaison `split + reinit` exige le binaire de `next-version` intégrant le correctif. [La note de mise à jour](MISE_A_JOUR_v1_1.md) liste les chapitres concernés, les nouveaux noms et les contrôles réalisés. Cette archive contient les Markdown ; les PDF de 1.0 doivent être régénérés à partir du dépôt complet pour refléter ces changements.
+
+This Markdown edition accompanies preparation of **Jedi 1.1**. The `split + reinit` combination requires the updated `next-version` executable. [The update note](MISE_A_JOUR_v1_1.md) lists affected chapters, new names and completed checks. This archive contains Markdown files; rebuild the 1.0 PDFs from the complete repository to reflect these changes.
 
 Le manuel comprend un avant-propos, la philosophie de Jedi, trois introductions de parties, 24 chapitres et quatre annexes dans chaque langue. Les 66 textes actuels sont dans `nouveaux/` ; les titres Markdown restent sans numéro.
 
 Each language includes a foreword, Jedi’s philosophy, three part introductions, 24 chapters and four appendices. All 66 current texts are in `nouveaux/`; Markdown headings remain unnumbered.
 
-Les PDF fournis / Supplied PDFs : [français](../output/pdf/jedi-1.0-fr.pdf), [English](../output/pdf/jedi-1.0-en.pdf).
+PDF de l’édition publiée 1.0 / PDFs from the published 1.0 edition: [français](../output/pdf/jedi-1.0-fr.pdf), [English](../output/pdf/jedi-1.0-en.pdf).
 
 | Repère / Reference | Français | English |
 |---|---|---|

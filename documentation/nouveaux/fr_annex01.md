@@ -34,6 +34,22 @@ Les champs obligatoires sont décrits par chaque aide. La suppression d'une enti
 
 `quote get ISIN` affiche un cours externe sans enregistrer de titre ou de cotation. `quote set` enregistre un cours manuel. `quote update` actualise un titre enregistré ; `quote refresh` traite une sélection et, par défaut, les titres des trades en cours. `--mode=live|eod` s'applique à `update` et `refresh`, pas à `get`. `--force` appartient à `refresh` ; il permet de forcer la mise à jour selon son filtrage.
 
+## Adapter un paramétrage : split, reinit et sync
+
+Un nouveau paramétrage demande `--scale`, `--date` et `--time`. Il doit suivre les derniers paramétrages et opérations de toute la base ; le paramétrage précédent du trade doit déjà avoir été utilisé par une opération.
+
+| Option ou combinaison | Effet |
+|---|---|
+| `--split=NEW:OLD` | Convertir les unités ; `1:10` signifie une nouvelle action pour dix anciennes. |
+| `--reinit=reset,PRICE` | Stock courant comme `q0`, prix choisi comme `c0`, position `0:0:0`. |
+| `--reinit=merge,PRICE` | Référence en attente ; une transaction manuelle réelle définit ensuite `q0` et `c0`. |
+| `--split` + `--reinit=reset,PRICE` | Accepté dans next-version / v1.1 ; reset sur le stock entier converti. |
+| `--split` + `--reinit=merge,PRICE` | Accepté dans next-version / v1.1 ; merge sur le stock entier converti. |
+| `--sync=POSITION` | Synchronisation réservée aux barèmes de type I. |
+| `--sync` + `--split` ou `--reinit` | Refusé. |
+
+Avec split + reinit, `PRICE` et les valeurs de l'opération suivante sont exprimés **après le split**. Tant que merge attend son opération, Jedi ne propose aucun ordre automatique. Les droits fractionnaires ne sont pas comptabilisés. Le chapitre 09 fournit les cas pratiques et le chapitre 19 les simulations.
+
 ## Bases de marché
 
 | Sous-commande | Arguments principaux | Usage |
@@ -52,7 +68,7 @@ Les champs obligatoires sont décrits par chaque aide. La suppression d'une enti
 
 `import`, `replace` et `update` acceptent `--date-order=auto|ymd|dmy|mdy`, `--year-pivot=NN` et `--from=DATE`. Un update refuse une extension à plus de sept jours calendaires de la fin actuelle, sauf avec `--allow-gap`. Une cotation conflictuelle n'est pas écrasée par update ; reprendre un corpus corrigé avec `replace`. `sync-group` accepte `--as-of=DATE` et `--reference-source=NAME` pour décrire sa composition.
 
-`market list` accepte des expressions regex par champ, dont `group` et `dataset`, avec `&&` et `||`. Cela ne fournit pas une option multi-groupes à `profile`. Jedi 1.0 expose un seul `--group=CODE` dans `profile` ; aucune commande dédiée ne supprime un groupe. `market quote` affiche un tableau OHLCV et ne propose pas d'export CSV.
+`market list` accepte des expressions regex par champ, dont `group` et `dataset`, avec `&&` et `||`. Cela ne fournit pas une option multi-groupes à `profile`. Jedi expose un seul `--group=CODE` dans `profile` ; aucune commande dédiée ne supprime un groupe. `market quote` affiche un tableau OHLCV et ne propose pas d'export CSV.
 
 ## Options communes de consultation
 

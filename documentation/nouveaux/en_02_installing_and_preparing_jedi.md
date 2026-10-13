@@ -443,10 +443,10 @@ To install dependencies, check sources and compile a working binary:
 shards install
 crystal tool format --check src spec
 TZ=UTC crystal spec
-mkdir -p build
-crystal build src/jedi_cli.cr -o build/jedi-dev-core
-chmod +x build/jedi-dev-core
-JEDI_DEV_BINARY="./build/jedi-dev-core" jedidev config --paths
+mkdir -p bin
+crystal build src/jedi_cli.cr --error-trace -o bin/jedi-dev
+chmod +x bin/jedi-dev
+JEDI_DEV_BINARY="./bin/jedi-dev" jedidev config --paths
 ~~~
 
 Compilation also requires the dependencies' development libraries, including SQLite. Package names depend on the distribution. Tests run in UTC to reproduce the validation dates.
@@ -455,10 +455,32 @@ Compilation also requires the dependencies' development libraries, including SQL
 
 ~~~bash
 JEDI_DEV_DIR="/path/to/project" \
-  JEDI_DEV_BINARY="./build/jedi-dev-core" jedidev version
+  JEDI_DEV_BINARY="./bin/jedi-dev" jedidev version
 ~~~
 
 `JEDI_DEV_MARKET_DIR` deliberately selects another market, as for demonstration. For real portfolio monitoring, use the `jedi` launcher.
+
+## Compile quickly during development
+
+Compile without `--release` for everyday changes. For performance measurements and final checks, compile with `--release`. Both commands use `src/jedi_cli.cr`; the database environment is selected when running through `jedi`, `jedidemo` or `jedidev`.
+
+~~~bash
+mkdir -p bin
+crystal build src/jedi_cli.cr --error-trace -o bin/jedi-dev
+crystal build src/jedi_cli.cr --release --error-trace -o bin/jedi
+~~~
+
+Two small Bash scripts, `build-dev` and `build-release`, can wrap these commands. They produce separate files under `bin/`. Keep generated binaries outside versioned source files.
+
+From the project root, select the development binary for this terminal:
+
+~~~bash
+export JEDI_DEV_BINARY=./bin/jedi-dev
+jedidev config --paths
+jedidev trade list
+~~~
+
+Rerun the quick compilation after a source change. Before final validation, also run `TZ=UTC crystal spec --release`, then build the optimised executable. Local compilation follows the host's libraries; the distributable static binary is built by the publication procedure.
 
 ## Back up and recover data
 

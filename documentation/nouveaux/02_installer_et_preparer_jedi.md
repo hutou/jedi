@@ -443,10 +443,10 @@ Pour installer les dépendances, vérifier les sources et compiler un binaire de
 shards install
 crystal tool format --check src spec
 TZ=UTC crystal spec
-mkdir -p build
-crystal build src/jedi_cli.cr -o build/jedi-dev-core
-chmod +x build/jedi-dev-core
-JEDI_DEV_BINARY="./build/jedi-dev-core" jedidev config --paths
+mkdir -p bin
+crystal build src/jedi_cli.cr --error-trace -o bin/jedi-dev
+chmod +x bin/jedi-dev
+JEDI_DEV_BINARY="./bin/jedi-dev" jedidev config --paths
 ~~~
 
 La compilation demande aussi les bibliothèques de développement des dépendances, notamment SQLite. Les noms des paquets dépendent de la distribution. Les tests sont lancés en UTC pour reproduire les dates des vérifications.
@@ -455,10 +455,32 @@ La compilation demande aussi les bibliothèques de développement des dépendanc
 
 ~~~bash
 JEDI_DEV_DIR="/chemin/du/projet" \
-  JEDI_DEV_BINARY="./build/jedi-dev-core" jedidev version
+  JEDI_DEV_BINARY="./bin/jedi-dev" jedidev version
 ~~~
 
 `JEDI_DEV_MARKET_DIR` permet de choisir volontairement un autre marché, comme pour la démonstration. Pour le suivi réel, employer le lanceur `jedi`.
+
+## Compiler rapidement pendant le développement
+
+Compiler sans `--release` pour les modifications quotidiennes. Pour les mesures de performance et la validation finale, compiler avec `--release`. Les deux commandes utilisent `src/jedi_cli.cr` ; l'environnement de données est choisi au lancement par `jedi`, `jedidemo` ou `jedidev`.
+
+~~~bash
+mkdir -p bin
+crystal build src/jedi_cli.cr --error-trace -o bin/jedi-dev
+crystal build src/jedi_cli.cr --release --error-trace -o bin/jedi
+~~~
+
+Deux petits scripts Bash, `build-dev` et `build-release`, peuvent regrouper ces commandes. Ils produisent des fichiers distincts dans `bin/`. Garder les binaires générés hors des fichiers source versionnés.
+
+Depuis la racine du projet, sélectionner le binaire de développement pour ce terminal :
+
+~~~bash
+export JEDI_DEV_BINARY=./bin/jedi-dev
+jedidev config --paths
+jedidev trade list
+~~~
+
+Relancer la compilation rapide après une modification des sources. Avant la validation finale, exécuter aussi `TZ=UTC crystal spec --release`, puis compiler le binaire optimisé. La compilation locale utilise les bibliothèques de l'hôte ; le binaire statique distribué est construit par la procédure de publication.
 
 ## Sauvegarder et reprendre les données
 

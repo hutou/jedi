@@ -8,7 +8,7 @@ Les chapitres 11 et 12 expliquent les flux, les positions, les échelons et les 
 
 ## Préparer les exemples de mécanique
 
-La plupart des exemples partent de **100 titres fictifs à 10 €**, avec un barème de type I et un pas de cotation de 0,01 €. Ce barème diffère du type II d'EXA01 dans la partie I. Au chapitre 15, la comparaison utilise un type II à 20 %. Les chapitres 18 et 20 emploient aussi 125 titres pour montrer le dimensionnement.
+La plupart des exemples partent de **100 titres fictifs à 10 €**, avec un barème de type I et un pas de cotation de 0,01 €. Ce barème diffère du type II d'Exa_01 dans la partie I. Au chapitre 15, la comparaison utilise un type II à 20 %. Les chapitres 18 et 20 emploient aussi 125 titres pour montrer le dimensionnement.
 
 Les parcours se calculent avec `tools play` et, pour un type I, `tools calc`. Ils ne nécessitent ni téléchargement ni import des fichiers de cotations. Les mouvements sont choisis pour montrer le calcul, sans prétendre représenter un marché réel.
 

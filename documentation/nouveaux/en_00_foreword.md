@@ -1,5 +1,7 @@
 # Reading this documentation
 
+This edition accompanies **`next-version`, in preparation for Jedi 1.1**. It includes `split + reinit=reset` and `split + reinit=merge`, together with trade and scale naming conventions. These combinations require the updated executable; the published Jedi 1.0.0 release still rejects them. Chapter 02's installation examples retain the published 1.0.0 distribution: adapt the version for a later release.
+
 Jedi is intended for investors who want to apply and monitor a mechanical trading method. On first reading, start with [The philosophy of Jedi](en_philosophy_of_jedi.md), just before Part I: the method's principle, discipline, the investor's decisions and the limits of historical results.
 
 ## Three reading paths
