@@ -64,7 +64,7 @@ For type II, the last operation also affects the adjustment described in chapter
 | `split=new:old` | Adapt references to a split or consolidation. |
 | `sync=x:y:e` | Impose a justified position for type I. |
 
-Reinitialisation resets the starting position and cumulative coefficients. It does not erase recorded losses or gains. `sync` retains the imposed step in the new frame; it is not a transaction.
+Reinitialisation returns the starting position to `0:0:0` and cumulative coefficients `kcpc` and `kspc` to **1**. It does not erase recorded losses or gains. `sync` retains the imposed step in the new frame; it is not a transaction.
 
 After selling 20 at €12, resetting at €12 uses the **80 shares held**:
 

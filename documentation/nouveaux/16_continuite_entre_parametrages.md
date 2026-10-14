@@ -64,7 +64,7 @@ Pour le type II, la dernière opération intervient aussi dans le recentrage du 
 | `split=nouveau:ancien` | Adapter les références à une division ou un regroupement. |
 | `sync=x:y:e` | Imposer une position justifiée pour un type I. |
 
-Une réinitialisation remet à zéro la position de départ et les coefficients cumulés. Elle n'efface pas les pertes et gains enregistrés. `sync` conserve l'échelon imposé dans le nouveau repère ; ce n'est pas une transaction.
+Une réinitialisation remet la position de départ à `0:0:0` et les coefficients cumulés `kcpc` et `kspc` à **1**. Elle n'efface pas les pertes et gains enregistrés. `sync` conserve l'échelon imposé dans le nouveau repère ; ce n'est pas une transaction.
 
 Après la vente de 20 à 12 €, réinitialiser à 12 € utilise les **80 titres détenus** :
 

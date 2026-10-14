@@ -23,6 +23,7 @@ français et anglais ; elle accompagne une version en développement.
 | 07–09, 24 et annexes 01/05 | Correction du total des frais de toute opération avec `operation fees`, effets sur les résultats nets, les exports et la reprise dans `play`. |
 | Annexe 05 FR/EN | Tableaux Web avec cellules courtes, adresses et regex dans des blocs séparés, chemins de configuration décomposés. |
 | 03 et 07 FR/EN | Choix externe du titre, lecture des tendances et canaux, indicateurs simples et préparation de l'achat initial sur un rebond près du support. |
+| Annexe 04 et chapitre 16 FR/EN | Définitions de `kcpc`, `kspc`, `emax`, `emin` et PRU ; valeurs de départ des coefficients cumulés précisées à 1. |
 
 Les exemples des chapitres 08, 11, 14, 20 et de l'introduction de partie II reprennent
 les nouveaux noms pour conserver la cohérence du parcours. Les 47 fichiers
@@ -202,6 +203,26 @@ l'exemple. Les chapitres 03/07 sont rendus et contrôlés en PDF dans chaque lan
 le PDF complet reste à régénérer avec les fichiers du dépôt. Le README indique
 le chemin de ressources nécessaire aux figures dans Pandoc.
 
+## Compléments du glossaire et nom de l'archive
+
+L'annexe 04 française et anglaise définit désormais `kcpc`, `kspc`, `emax`,
+`emin` et PRU. Les coefficients cumulés assurent la continuité entre
+paramétrages ; ils valent 1 au départ et à la réinitialisation. Les bornes
+déclenchent un saut de palier et un retour de `e` à zéro. Le PRU comptable
+du courtier est distingué de `c0` et du solde achats moins ventes de Jedi.
+Le chapitre 16 de chaque langue précise également le retour des coefficients
+à 1, pour éviter de le confondre avec une remise à zéro.
+Les entrées voisines `kc/ks` et `kb` sont alignées sur le code : `ks` concerne
+les deux types de barème et `kb` choisit la convention de calcul du coefficient
+de capital aux changements de palier.
+
+L'archive complète porte maintenant le nom **`jedi_documentation_20261012_v7.zip`**
+et remplace la v6 téléchargée précédemment. Elle conserve les 70 Markdown,
+les 228 tableaux et les deux figures PNG de la sélection visuelle. Les cinq
+définitions sont vérifiées dans le code, sauf PRU, notion extérieure à la
+mécanique de Jedi dont la définition au comptant est sourcée chez BoursoBank.
+Les renvois et le rendu des deux glossaires sont contrôlés.
+
 ## PDF et publication
 
 Les fichiers de cette archive sont les Markdown. Les PDF de Jedi 1.0 ne reflètent
@@ -253,3 +274,14 @@ files, 228 tables and two PNG figures. Existing CLI examples are preserved, the
 scale's price levels are checked through play, and both chapter pairs are
 rendered and visually checked in PDF. Rebuild the full manuals from the repository;
 the README explains Pandoc's image resource path.
+
+Archive `jedi_documentation_20261012_v7.zip` replaces v6 and adds `kcpc`, `kspc`,
+`emax`, `emin` and PRU to both glossaries. Examples explain cumulative
+coefficients, jump boundaries and the distinction between the broker's
+accounting cost and Jedi's mechanical `c0`. Chapter 16 explicitly states that
+cumulative coefficients return to 1 on reinitialisation. All 70 Markdown files,
+228 tables and both channel figures are retained; glossary links and rendering
+are checked.
+The adjacent `kc/ks` and `kb` entries are also clarified: `ks` applies to both
+scale types, and `kb` selects the capital-coefficient calculation convention
+at level changes.
