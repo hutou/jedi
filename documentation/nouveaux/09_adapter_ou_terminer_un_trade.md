@@ -6,7 +6,7 @@ Une adaptation change les règles ou les références utilisées pour les procha
 
 Avant d'intervenir, vérifier le stock, les dernières opérations et les ordres actifs chez le courtier. Annuler les ordres que le changement rendra caducs et confirmer leur annulation. Sauvegarder la base selon le [chapitre 02](02_installer_et_preparer_jedi.md#sauvegarder-et-reprendre-les-données).
 
-À l'exception du cas distinct de regroupement de 1 790 titres présenté plus bas, les exemples ci-dessous sont **des choix séparés**, chacun partant du trade fictif Exa_01 à la fin du [chapitre 08](08_suivre_un_trade.md) : 94 titres, investissement net de 934 €, position `0:0:+1`, barème `B2_vr10_ki10_v01`. Ne pas exécuter toutes les variantes successivement sur ce même état. Pour les comparer, conserver une sauvegarde de cet état et la restaurer dans une base d'essai vide avant chaque variante.
+À l'exception du cas distinct de regroupement de 1 790 titres présenté plus bas, les exemples ci-dessous sont **des choix séparés**, chacun partant du trade fictif Exa_01 à la fin du [chapitre 08](08_suivre_un_trade.md) : 94 titres, investissement net de 934 €, position `0:0:+1`, barème `B_vr_01`. Ne pas exécuter toutes les variantes successivement sur ce même état. Pour les comparer, conserver une sauvegarde de cet état et la restaurer dans une base d'essai vide avant chaque variante.
 
 ## Choisir le changement nécessaire
 
@@ -30,10 +30,10 @@ Avant d'intervenir, vérifier le stock, les dernières opérations et les ordres
 Dans cette variante, enregistrer un barème avec mouvements de 12 %, puis créer le nouveau paramétrage :
 
 ~~~console
-jedidemo scale create --name=B2_vr12_ki10_v01 \
+jedidemo scale create --name=B_vr_02 \
   --comment="Exemple avec mouvements de 12 %" \
   --builder="vr:12%,np:3,nn:3,ki:10%,kb:1,kd:0"
-jedidemo settings create Exa_01 --scale=B2_vr12_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_02 \
   --date=2026-09-23 --time=09:00:00
 jedidemo settings list Exa_01
 jedidemo trade status Exa_01
@@ -51,7 +51,7 @@ Le nouveau barème doit pouvoir reprendre l'échelon conservé ; sinon Jedi refu
 Cette variante conserve les 94 titres et choisit un cours de référence fictif de 11 € :
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-23 --time=09:00:00 --reinit=reset,11
 jedidemo settings list Exa_01
 jedidemo trade orders Exa_01
@@ -66,7 +66,7 @@ Choisir le nouveau cours selon une règle explicite, par exemple le cours consta
 Cette autre variante suppose un achat manuel **réel** de 6 titres à 11 €. Créer le paramétrage, puis enregistrer cette exécution :
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-23 --time=09:00:00 --reinit=merge,11
 jedidemo operation create Exa_01 \
   --date=2026-09-23 --time=09:01:00 \
@@ -84,7 +84,7 @@ Utiliser `merge` lorsque la transaction fait partie de la décision de réinitia
 Un fractionnement modifie le nombre de titres et leur unité de prix sans achat ni vente. Pour deux titres nouveaux contre un ancien :
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-23 --time=09:00:00 --split=2:1
 jedidemo quote set FR4487601001 --price=5.50
 jedidemo trade status Exa_01
@@ -108,12 +108,12 @@ Après l'événement, vérifier aussi le pas de cotation et tous les ordres. Le 
 
 Ce cas est **distinct des variantes portant sur les 94 titres d'Exa_01**. Supposons un trade fictif déjà enregistré, nommé `Exr_01`, qui conserve **1 790 titres** après sa dernière transaction. Le titre est regroupé à raison d'une action nouvelle pour dix anciennes, puis la reprise du suivi justifie une nouvelle référence. Le prix choisi après regroupement est de **12 €** ; il ne doit pas être divisé par dix dans la commande.
 
-Pour l'illustration, le barème enregistré est `B2_vr10_ki00_v01`, défini par `vr:10%,ks:0.8,1.2,ki:0%,kb:0`. Employer le barème réellement retenu pour votre trade et des dates respectant toute la base. Le [chapitre 19](19_verifier_avec_tools_calc_et_play.md#simuler-un-regroupement-avec-reset-ou-merge) reproduit ce cas en mémoire, sans devoir créer `Exr_01`.
+Pour l'illustration, le barème enregistré est `B_vr_03`, défini par `vr:10%,ks:0.8,1.2,ki:0%,kb:0`. Employer le barème réellement retenu pour votre trade et des dates respectant toute la base. Le [chapitre 19](19_verifier_avec_tools_calc_et_play.md#simuler-un-regroupement-avec-reset-ou-merge) reproduit ce cas en mémoire, sans devoir créer `Exr_01`.
 
 Avec **reset**, créer un seul paramétrage :
 
 ~~~console
-jedidemo settings create Exr_01 --scale=B2_vr10_ki00_v01 \
+jedidemo settings create Exr_01 --scale=B_vr_03 \
   --date=2026-10-12 --time=09:00:00 \
   --split=1:10 --reinit=reset,12
 jedidemo settings list Exr_01
@@ -126,7 +126,7 @@ Le stock effectif et `q0` deviennent **179 titres**, `c0` vaut **12 €**, la po
 Avec **merge**, choisir cette autre variante depuis le même état de départ :
 
 ~~~console
-jedidemo settings create Exr_01 --scale=B2_vr10_ki00_v01 \
+jedidemo settings create Exr_01 --scale=B_vr_03 \
   --date=2026-10-12 --time=09:00:00 \
   --split=1:10 --reinit=merge,12
 ~~~
@@ -156,10 +156,10 @@ Une interruption du suivi ou un gap important peut conduire à reprendre la gest
 `--sync` est réservé aux **barèmes de type I**. Voici une variante fictive utilisant explicitement un tel barème :
 
 ~~~console
-jedidemo scale create --name=B1_sync_v01 \
+jedidemo scale create --name=B_kc_02 \
   --comment="Exemple de type I pour sync" \
   --builder="kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0"
-jedidemo settings create Exa_01 --scale=B1_sync_v01 \
+jedidemo settings create Exa_01 --scale=B_kc_02 \
   --date=2026-09-23 --time=09:00:00 --sync=1:0:+1
 jedidemo settings list Exa_01
 jedidemo trade orders Exa_01

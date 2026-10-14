@@ -1,6 +1,9 @@
 fr:
   scale:
     header: "Gère les barèmes (Type I et type II)"
+    definition_exists: "Un barème équivalent existe déjà : %{ref} (id %{id}). Réutilisez ce barème."
+    name_type_mismatch: "Nom de barème '%{name}' invalide : utiliser %{prefix}_NN avec un numéro positif d'au moins deux chiffres, ou omettre le nom à la création."
+    name_number_exhausted: "Aucun numéro suivant n'est disponible pour la famille de barèmes %{prefix}."
     banner: |
       Gestion des barèmes (Type I et type II)
 
@@ -16,18 +19,23 @@ fr:
       usage: |
         Usage :
           1ère forme, avec champs nommés :
-            jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
+            jedi scale create --comment=COMMENT --builder=BUILDER [--name=NAME] [options]
           2ème forme, avec champs positionnels :
+            jedi scale create <comment> <builder> [options]
             jedi scale create <name> <comment> <builder> [options]
       notes: |
         Notes:
           La syntaxe recommandée est d'utiliser les options nommées pour tous les paramètres.
           La syntaxe positionnelle est un raccourci équivalent.
+          Sans --name, le builder détermine la famille : B_kc_NN (type I), B_vr_NN (type II).
+          NN est le numéro suivant dans cette famille. Un nom explicite doit correspondre au type.
+          Les définitions opérationnelles équivalentes sont refusées, même avec des builders différents.
           ** Ne pas mélanger les syntaxes **
       required_name: &required_name |-
-        Nom du barème :
-          - Doit commencer par une lettre,
-          - Suivie d'au moins un caractère alphanumérique.
+        Nom du barème conforme au type du builder :
+          B_kc_NN pour le type I ; B_vr_NN pour le type II.
+          NN est un numéro positif d'au moins deux chiffres.
+      optional_name: "Nom explicite facultatif conforme au type ; sinon, généré automatiquement"
       required_comment: &required_comment "Commentaire (forme libre)"
       required_builder: &required_builder |-
         Jeux de mots-clés des constructeurs de barème valides :
@@ -37,16 +45,16 @@ fr:
           - {vr,np,nn,ki,kb,kd}     : Type II, optimisé sur 'ks'
           - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
          Chaque mot-clé attend un ou plusieurs paramètres :
-          - np, nn, mi, kb : une seule valeur entière (par exemple, np:3)
+          - np, nn, kb : une seule valeur entière (par exemple, np:3)
           - kc, ks : une liste de valeurs décimales, séparées par des virgules 
-            (par exemple, kc:1,45;1,30; 1,15, …)
-          - vr, sr, ki, kd : une seule valeur décimale (qui peut être exprimée 
+            (par exemple, kc:1.45,1.30,1.15, …)
+          - vr, sr, mi, ki, kd : une seule valeur décimale (qui peut être exprimée
             en pourcentage, sauf pour kd)
-            (par exemple, vr:15 % ou vr:0.15)
+            (par exemple, vr:15% ou vr:0.15)
       examples: |
         Exemples:
-          jedi scale create --name sc01 --comment "scale 01" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
-          jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+          jedi scale create --comment "barème" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+          jedi scale create "barème" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
       # from scale_creator:
       success: "Barème %{ref} créé."
       name_exists: "Le barème %{ref} existe déjà."

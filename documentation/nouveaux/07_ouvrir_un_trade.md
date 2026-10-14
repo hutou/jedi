@@ -53,7 +53,7 @@ Pour un titre réel, vérifier son ISIN, son libellé, son ticker, ses pas de co
 
 Pour un trade, utiliser **`<repère_du_titre>_<numéro>`** : `Exa_01`, puis `Exa_02` si un nouveau trade distinct est créé sur ce titre. Un repère plus long, comme `Airliquide_01`, convient aussi. Le numéro identifie le trade, pas ses paramétrages. Un split, un changement de barème ou une réinitialisation conserve ce nom.
 
-Pour un barème, utiliser **`B<type>_<caractéristiques>_v<version>`**. Notre exemple est `B2_vr10_ki10_v01` : type II, `vr=10%`, `ki=10%`, version 01. La définition complète reste fournie à `--builder` ; le nom ne configure aucun paramètre. Le [chapitre 13](13_lire_la_structure_d_un_bareme.md#nommer-et-versionner-un-barème) précise cette convention.
+Pour un barème, laisser Jedi attribuer **`B_kc_NN` pour le type I ou `B_vr_NN` pour le type II**, en omettant `--name`. Le type est déduit du builder et le numéro est calculé dans cette famille. Dans notre base vide, le premier barème de type II sera `B_vr_01`. Le [chapitre 13](13_lire_la_structure_d_un_bareme.md#nommer-et-numéroter-un-barème) explique le nommage et le refus des définitions équivalentes.
 
 Employer des lettres sans accents, des chiffres et des soulignés `_`, avec une lettre au début et au moins deux caractères. Les noms doivent être uniques dans leur catégorie et sont insensibles à la casse. Jedi normalise leur écriture : `EXA_01` devient `Exa_01`.
 
@@ -64,10 +64,10 @@ Les exemples de cette édition adoptent ces noms. Un trade déjà créé sous un
 Le paramétrage d'un trade demande un barème permanent de la base principale. Enregistrer sous un nom la définition utilisée pour le candidat :
 
 ~~~console
-jedidemo scale create --name=B2_vr10_ki10_v01 \
+jedidemo scale create \
   --comment="Exemple avec mouvements de 10 %" \
   --builder="vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
-jedidemo scale show B2_vr10_ki10_v01
+jedidemo scale show B_vr_01
 ~~~
 
 Si le barème existe déjà, le consulter et le réutiliser. Lorsqu'il vient de `score`, copier le constructeur sans son préfixe d'affichage `I:` ou `II:`. Le nom temporaire d'un barème littéral d'évaluation ne suffit pas à le conserver.
@@ -84,7 +84,7 @@ Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN
 Associer ensuite le trade au barème :
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
 

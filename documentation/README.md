@@ -47,6 +47,10 @@ PDF de l’édition publiée 1.0 / PDFs from the published 1.0 edition: [frança
 | Annexe / Appendix 04 | [Glossaire et notations Jedi](nouveaux/fr_annex04_glossaire_et_notations.md) | [Jedi glossary and notation](nouveaux/en_annex04_glossary_and_notation.md) |
 | Annexe / Appendix 05 | [Configuration par défaut et usage des paramètres](nouveaux/fr_annex05_configuration_par_defaut.md) | [Default configuration and parameter usage](nouveaux/en_annex05_default_configuration.md) |
 
+Jedi nomme automatiquement les nouveaux barèmes `B_kc_NN` (type I) ou `B_vr_NN` (type II, Legacy compris) et refuse les définitions opérationnelles équivalentes. Le [chapitre 13](nouveaux/13_lire_la_structure_d_un_bareme.md#nommer-et-numéroter-un-barème) décrit la numérotation et les noms explicites contraints par le builder. Ces comportements demandent le nouveau correctif ; les noms et les doublons historiques sont conservés.
+
+Jedi automatically names new scales `B_kc_NN` (type I) or `B_vr_NN` (type II, including Legacy) and refuses equivalent operational definitions. [Chapter 13](nouveaux/en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) describes numbering and explicit names constrained by the builder. These behaviours require the new change; historical names and duplicates are retained.
+
 ## Utiliser les exemples / Use the examples
 
 Installer Jedi selon [le guide français](../INSTALL.fr.md) ou [the English guide](../INSTALL.md). Lire [le guide des exemples](../examples/README.md) puis commencer avec `jedidemo`. Toutes les cotations fournies sont fictives. Le chapitre 10 prépare la base Demo ; le chapitre 23 prépare une base figée pour l’étude historique.

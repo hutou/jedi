@@ -14,7 +14,7 @@ Three kinds of information remain distinct:
 
 A price change does not alter stock. Placing or cancelling a broker order does not change the Jedi database. A broker execution appears there only after you record it.
 
-This chapter continues **fictional trade Exa_01 opened in [chapter 07](en_07_opening_a_trade.md)**: 100 shares bought at €10, scale `B2_vr10_ki10_v01`. Recording commands are experiments for the separate database prepared in [chapter 02](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment).
+This chapter continues **fictional trade Exa_01 opened in [chapter 07](en_07_opening_a_trade.md)**: 100 shares bought at €10, scale `B_vr_01`. Recording commands are experiments for the separate database prepared in [chapter 02](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment).
 
 ## Obtain a relevant price
 

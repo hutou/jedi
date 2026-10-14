@@ -20,14 +20,22 @@ module Jedi
           if main_scale.nil?
             # No, so perhaps a literal scale then, store in memory database
             # Scales.create raises if builder invalid
-            scale_id = TradingRules::ScaleCreator.new(conn_memory)
-              .call name: "LIT-#{Helpers.scale_counter += 1}",
-                comment: "Literal", builder: defscale, announce: announce
+            operational = TradingRules::Scale::Decoder.new(defscale).decode
+            if equivalent = TradingRules::ScaleRepository.new(conn_memory).find_equivalent(operational)
+              scale_id = equivalent.id
+            else
+              scale_id = TradingRules::ScaleCreator.new(conn_memory)
+                .call comment: "Literal", builder: defscale, announce: announce
+            end
           else
             # Yes, defscale is known in production database, add it to memory
-            scale_id = TradingRules::ScaleCreator.new(conn_memory).call name: main_scale.name,
-              comment: main_scale.comment, builder: main_scale.operational.builder,
-              announce: announce
+            if equivalent = TradingRules::ScaleRepository.new(conn_memory).find_equivalent(main_scale.operational)
+              scale_id = equivalent.id
+            else
+              scale_id = TradingRules::ScaleCreator.new(conn_memory).restore name: main_scale.name,
+                comment: main_scale.comment, builder: main_scale.operational.builder,
+                announce: announce
+            end
           end
         else
           # Yes, already in memory database

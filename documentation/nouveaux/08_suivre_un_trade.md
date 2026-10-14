@@ -14,7 +14,7 @@ Trois informations restent distinctes :
 
 Un changement de cours ne modifie pas le stock. Un ordre placé ou annulé chez le courtier ne modifie pas la base Jedi. Une exécution du courtier n'y apparaît qu'après votre enregistrement.
 
-Ce chapitre continue **le trade fictif Exa_01 ouvert au [chapitre 07](07_ouvrir_un_trade.md)** : 100 titres achetés à 10 €, barème `B2_vr10_ki10_v01`. Les commandes d'enregistrement sont des essais à effectuer dans la base séparée du [chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé).
+Ce chapitre continue **le trade fictif Exa_01 ouvert au [chapitre 07](07_ouvrir_un_trade.md)** : 100 titres achetés à 10 €, barème `B_vr_01`. Les commandes d'enregistrement sont des essais à effectuer dans la base séparée du [chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé).
 
 ## Disposer d'un cours pertinent
 

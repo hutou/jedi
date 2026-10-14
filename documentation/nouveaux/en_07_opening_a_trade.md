@@ -53,7 +53,7 @@ For an actual security, check its ISIN, name, ticker, quotation ticks and any ta
 
 For a trade, use **`<security_label>_<number>`**: `Exa_01`, then `Exa_02` if a separate new trade is created on the same security. A longer label such as `Airliquide_01` is also suitable. The number identifies the trade, not its settings. A split, scale change or reinitialisation retains the name.
 
-For a scale, use **`B<type>_<characteristics>_v<version>`**. Our example is `B2_vr10_ki10_v01`: type II, `vr=10%`, `ki=10%`, version 01. Supply the complete definition to `--builder`; the name configures no parameter. [Chapter 13](en_13_reading_the_structure_of_a_scale.md#name-and-version-a-scale) explains this convention.
+For a scale, let Jedi assign **`B_kc_NN` for type I or `B_vr_NN` for type II** by omitting `--name`. The type comes from the builder and the number is computed within that family. In our empty database, the first type II scale will be `B_vr_01`. [Chapter 13](en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) explains naming and refusal of equivalent definitions.
 
 Use unaccented letters, digits and underscores `_`, starting with a letter and using at least two characters. Names must be unique within their category and are case-insensitive. Jedi normalises their spelling: `EXA_01` becomes `Exa_01`.
 
@@ -64,10 +64,10 @@ This edition's examples adopt these names. A trade created under an older name r
 Trade settings require a permanent scale in the main database. Store the candidate's definition under a name:
 
 ~~~console
-jedidemo scale create --name=B2_vr10_ki10_v01 \
+jedidemo scale create \
   --comment="Exemple avec mouvements de 10 %" \
   --builder="vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
-jedidemo scale show B2_vr10_ki10_v01
+jedidemo scale show B_vr_01
 ~~~
 
 If the scale already exists, inspect and reuse it. When it comes from `score`, copy the builder without its display prefix `I:` or `II:`. The temporary name of a literal evaluation scale does not retain it permanently.
@@ -84,7 +84,7 @@ The name identifies this management history and must be unique. `--security` acc
 Then associate the trade with the scale:
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
 

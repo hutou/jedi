@@ -168,6 +168,8 @@ Les signatures reconnues par `scale create --builder=...` et par les outils sont
 | `vr,np,nn,ki,kb,kd` | Type II avec construction optimisée de `ks` |
 | `vr,np,sr,nn,mi,ki,kb` | Type II, constructeur de compatibilité |
 
+Sans `--name`, `scale create --comment=... --builder=...` attribue `B_kc_NN` pour le type I ou `B_vr_NN` pour le type II, Legacy compris. Le numéro suivant est calculé séparément dans chaque famille. Un nom explicite doit être conforme au type et avoir un numéro positif d’au moins deux chiffres. Les définitions opérationnelles équivalentes sont refusées à la création et à la modification, même avec `--force`. Le [chapitre 13](13_lire_la_structure_d_un_bareme.md#nommer-et-numéroter-un-barème) détaille les règles et la conservation des anciennes données.
+
 `kc` et `ks` sont des listes décimales ; `np`, `nn`, `kb` sont des entiers. `vr`, `sr`, `mi` et `ki` acceptent un coefficient décimal ou un pourcentage ; `kd` est décimal. Employer le point décimal : `kc:1.4,1.2,0.8,0.6`. Les virgules séparent les valeurs et les champs.
 
 Dans le constructeur de compatibilité, `sr` définit la fraction de stock visée au dernier échelon intérieur haussier ; `mi` règle le budget des achats intérieurs baissiers rapporté au montant initial. Les compteurs `np` et `nn` comprennent les bornes ; il reste `np-1` et `nn-1` échelons intérieurs. Cette forme a ses propres règles : examiner la définition opérationnelle et les ordres avec `scale show` et `play` avant de la comparer aux autres.

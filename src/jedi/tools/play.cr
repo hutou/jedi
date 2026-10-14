@@ -584,7 +584,7 @@ module Jedi
 
         @mem_trade = TradingSystem::Trade.new(conn_memory, trade_id)
 
-        scale_id = TradingRules::ScaleCreator.new(conn_memory).call(
+        scale_id = TradingRules::ScaleCreator.new(conn_memory).restore(
           name: source_settings.scale.name,
           comment: source_settings.scale.comment,
           builder: source_settings.scale.operational.builder

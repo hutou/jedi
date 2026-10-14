@@ -6,7 +6,7 @@ Adaptation changes rules or references used for subsequent operations. It must n
 
 Before intervening, check stock, recent operations and active broker orders. Cancel orders made obsolete by the change and confirm cancellation. Back up the database as described in [chapter 02](en_02_installing_and_preparing_jedi.md#back-up-and-recover-data).
 
-Apart from the separate 1,790-share consolidation example below, the examples are **separate choices**, each starting from fictional trade Exa_01 at the end of [chapter 08](en_08_monitoring_a_trade.md): 94 shares, €934 net investment, position `0:0:+1` and scale `B2_vr10_ki10_v01`. Do not execute all variants successively on that same state. To compare them, retain a backup of this state and restore it into an empty experiment database before each variant.
+Apart from the separate 1,790-share consolidation example below, the examples are **separate choices**, each starting from fictional trade Exa_01 at the end of [chapter 08](en_08_monitoring_a_trade.md): 94 shares, €934 net investment, position `0:0:+1` and scale `B_vr_01`. Do not execute all variants successively on that same state. To compare them, retain a backup of this state and restore it into an empty experiment database before each variant.
 
 ## Choose the required change
 
@@ -30,10 +30,10 @@ From this Jedi 1.1 change onwards, **`--split` may accompany `--reinit=reset,pri
 In this variant, record a scale with 12% movements, then create the new settings:
 
 ~~~console
-jedidemo scale create --name=B2_vr12_ki10_v01 \
+jedidemo scale create --name=B_vr_02 \
   --comment="Exemple avec mouvements de 12 %" \
   --builder="vr:12%,np:3,nn:3,ki:10%,kb:1,kd:0"
-jedidemo settings create Exa_01 --scale=B2_vr12_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_02 \
   --date=2026-09-23 --time=09:00:00
 jedidemo settings list Exa_01
 jedidemo trade status Exa_01
@@ -51,7 +51,7 @@ The new scale must accommodate the retained step; otherwise Jedi refuses the cha
 This variant retains 94 shares and chooses a fictional €11 reference price:
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-23 --time=09:00:00 --reinit=reset,11
 jedidemo settings list Exa_01
 jedidemo trade orders Exa_01
@@ -66,7 +66,7 @@ Choose the new price under an explicit rule, such as the observed price at inter
 This other variant assumes an **actual** manual purchase of 6 shares at €11. Create settings, then record execution:
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-23 --time=09:00:00 --reinit=merge,11
 jedidemo operation create Exa_01 \
   --date=2026-09-23 --time=09:01:00 \
@@ -84,7 +84,7 @@ Use `merge` when the transaction is part of the reinitialisation decision. Until
 A split changes share count and price units without a purchase or sale. For two new shares per old share:
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B2_vr10_ki10_v01 \
+jedidemo settings create Exa_01 --scale=B_vr_01 \
   --date=2026-09-23 --time=09:00:00 --split=2:1
 jedidemo quote set FR4487601001 --price=5.50
 jedidemo trade status Exa_01
@@ -108,12 +108,12 @@ After the event, also check quotation ticks and every order. The ratio and effec
 
 This case is **separate from the variants involving Exa_01's 94 shares**. Assume an already recorded fictional trade named `Exr_01`, retaining **1,790 shares** after its latest transaction. The security is consolidated at one new share for ten old shares, then resumed monitoring calls for a new reference. The chosen post-consolidation price is **€12**; do not divide it by ten in the command.
 
-For illustration, the stored scale is `B2_vr10_ki00_v01`, defined by `vr:10%,ks:0.8,1.2,ki:0%,kb:0`. Use the scale actually selected for your trade and dates respecting the whole database. [Chapter 19](en_19_checking_with_tools_calc_and_play.md#simulate-a-consolidation-with-reset-or-merge) reproduces this case in memory without creating `Exr_01`.
+For illustration, the stored scale is `B_vr_03`, defined by `vr:10%,ks:0.8,1.2,ki:0%,kb:0`. Use the scale actually selected for your trade and dates respecting the whole database. [Chapter 19](en_19_checking_with_tools_calc_and_play.md#simulate-a-consolidation-with-reset-or-merge) reproduces this case in memory without creating `Exr_01`.
 
 With **reset**, create one settings entry:
 
 ~~~console
-jedidemo settings create Exr_01 --scale=B2_vr10_ki00_v01 \
+jedidemo settings create Exr_01 --scale=B_vr_03 \
   --date=2026-10-12 --time=09:00:00 \
   --split=1:10 --reinit=reset,12
 jedidemo settings list Exr_01
@@ -126,7 +126,7 @@ The effective holding and `q0` become **179 shares**, `c0` is **€12**, positio
 With **merge**, choose this alternative from the same starting state:
 
 ~~~console
-jedidemo settings create Exr_01 --scale=B2_vr10_ki00_v01 \
+jedidemo settings create Exr_01 --scale=B_vr_03 \
   --date=2026-10-12 --time=09:00:00 \
   --split=1:10 --reinit=merge,12
 ~~~
@@ -156,10 +156,10 @@ Interrupted monitoring or a large gap can lead to resuming management at another
 `--sync` is restricted to **type I scales**. This fictional variant explicitly uses such a scale:
 
 ~~~console
-jedidemo scale create --name=B1_sync_v01 \
+jedidemo scale create --name=B_kc_02 \
   --comment="Exemple de type I pour sync" \
   --builder="kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0"
-jedidemo settings create Exa_01 --scale=B1_sync_v01 \
+jedidemo settings create Exa_01 --scale=B_kc_02 \
   --date=2026-09-23 --time=09:00:00 --sync=1:0:+1
 jedidemo settings list Exa_01
 jedidemo trade orders Exa_01

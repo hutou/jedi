@@ -3,20 +3,40 @@ module Jedi
     class ScaleCreator
       getter ref = ""
 
-      def initialize(@conn_db : DB::Connection)
-        @repo = ScaleRepository.new(@conn_db)
+      def initialize(@transaction_source : DB::Connection | DB::Transaction)
       end
 
-      def call(*, name : String, comment : String, builder : String, announce : Bool = true) : PkId
-        @ref = Core::Utils.ref(name)
-        ensure_name_available!(name)
+      def call(*, comment : String, builder : String, name : String? = nil, announce : Bool = true) : PkId
         operational = decode_builder!(builder)
-        state = ScaleState.new(
-          name: name,
-          comment: comment,
-          opscale: operational)
+        explicit_name = name.try { |value| ScaleNaming.validate!(value, operational) }
+        persist!(explicit_name, comment, operational, announce, restoring: false)
+      end
 
-        scale_id = @repo.insert!(state)
+      # Backup replay preserves historical names and pre-existing duplicates.
+      # This path is deliberately separate from normal creation.
+      def restore(*, name : String, comment : String, builder : String, announce : Bool = true) : PkId
+        persist!(name, comment, decode_builder!(builder), announce, restoring: true)
+      end
+
+      private def persist!(name : String?, comment : String, operational : Scale::Operational,
+                           announce : Bool, *, restoring : Bool) : PkId
+        chosen_name = ""
+        scale_id = @transaction_source.transaction do |transaction|
+          connection = transaction.connection
+          repository = ScaleRepository.new(connection)
+          repository.ensure_definition_available!(operational) unless restoring
+          chosen_name = name || ScaleNaming.next_name(connection, operational)
+          ensure_name_available!(chosen_name, connection, restoring)
+          repository.insert!(ScaleState.new(
+            name: chosen_name, comment: comment, opscale: operational))
+        end
+        unless scale_id
+          raise LowLevelError.new(
+            "Scale persistence transaction was rolled back",
+            kind: LowLevelError::Kind::Technical,
+            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+        end
+        @ref = Core::Utils.ref(chosen_name)
         if announce
           App.info(
             key: "scale.create.success",
@@ -26,14 +46,21 @@ module Jedi
         scale_id
       end
 
-      private def ensure_name_available!(name : String) : Nil
-        exists = @conn_db.scalar(
+      private def ensure_name_available!(name : String, connection : DB::Connection, restoring : Bool) : Nil
+        unless restoring
+          return unless ScaleNaming.name_in_use?(connection, name)
+          raise LowLevelError.new(
+            key: "scale.create.name_exists",
+            context: {:ref => Core::Utils.ref(name)},
+            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+        end
+        exists = connection.scalar(
           "SELECT EXISTS(SELECT 1 FROM scale WHERE name = ?)",
           name).as(PkId)
         return if exists.zero?
         raise LowLevelError.new(
           key: "scale.create.name_exists",
-          context: {:ref => ref},
+          context: {:ref => Core::Utils.ref(name)},
           log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
       end
 

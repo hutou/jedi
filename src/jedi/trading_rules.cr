@@ -1,6 +1,7 @@
 require "./trading_rules/position.cr"
 require "./trading_rules/coefficient.cr"
 require "./trading_rules/scale_operational.cr"
+require "./trading_rules/scale_naming.cr"
 require "./trading_rules/scale_builder_input.cr"
 require "./trading_rules/scale_builder.cr"
 require "./trading_rules/scale_validator.cr"

@@ -11,7 +11,7 @@ français et anglais ; elle accompagne une version en développement.
 |---|---|
 | 00 et README | Périmètre de next-version, distinction avec la version publiée 1.0.0 et les anciens PDF. |
 | 02 | Compilation rapide vers `bin/jedi-dev`, compilation optimisée vers `bin/jedi`, sélection par `jedidev`. |
-| 07 et 13 | Conventions de nommage ; différence entre numéro de trade, version de barème et paramétrage. |
+| 07 et 13 | Conventions de nommage ; différence entre numéro de trade, numéro de barème dans sa famille et paramétrage. |
 | 09 | Combinaisons autorisées et refusées ; prix après split ; cas de 1 790 → 179 actions ; reset et merge ; rompus. |
 | 15 | Prix de référence utilisé immédiatement après un reset de type II. |
 | 16 | Conversion du stock avant réinitialisation ; nouvelles références ; conservation de l'historique. |
@@ -34,22 +34,42 @@ de mise à jour et les deux versions de l’annexe 05 sont ajoutées.
 |---|---|
 | `EXA01` | `Exa_01` |
 | `EXA_LONG` | `Exemplea_01` — variante de correction d'un repère |
-| `EXA-10` | `B2_vr10_ki10_v01` |
-| `EXA-12` | `B2_vr12_ki10_v01` |
-| `EXA-I` | `B1_sync_v01` |
-| `PEDA-I` | `B1_example_v01` |
-| `PEDA-I-AUTO` | `B1_example_auto_v01` |
-| `PEDA-II-AUTO` | `B2_example_auto_v01` |
+| `EXA-10` | `B_vr_01` |
+| `EXA-12` | `B_vr_02` |
+| `EXA-I` | `B_kc_02` |
+| `PEDA-I` | `B_kc_01` |
+| `PEDA-I-AUTO` | `B_kc_02` |
+| `PEDA-II-AUTO` | `B_vr_04` |
 
 Ces changements concernent les textes et les commandes du manuel. Une base
 existante conserve ses noms enregistrés : utiliser ces noms réels ou effectuer
 un renommage explicite. Les tickers EXA, EXB, EXC et GAP et les noms des fichiers
 de cotations restent ceux des données fictives fournies.
 
-Les conventions restent un choix de nommage : Jedi lit les paramètres du
-constructeur, pas ceux qui semblent figurer dans le nom. Un split ou un reinit
-conserve l'identité du trade. Une nouvelle définition d'un barème déjà utilisé
-reçoit un autre nom ou une autre version.
+Le nom d'un barème indique son type et son numéro ; ses règles proviennent du
+constructeur. Le nom est désormais calculé ou contrôlé par Jedi. Un split ou un
+reinit conserve l'identité du trade. Créer un autre barème pour une nouvelle
+définition déjà utilisée préserve les références des anciennes opérations.
+
+## Nommage automatique et définitions uniques
+
+La convention comporte désormais deux familles : `B_kc_NN` pour le type I et `B_vr_NN` pour le type II, Legacy compris. Le type du builder détermine le préfixe ; le plus grand numéro présent dans cette famille, augmenté de 1, détermine le suffixe quand `--name` est omis. Les noms explicitement fournis sont contrôlés et normalisés. Les exemples des variantes fixent certains numéros pour conserver leurs références dans des bases d'essai indépendantes ; le chapitre 07 utilise la création automatique dans une base vide.
+
+Les créations et modifications refusent les définitions opérationnelles équivalentes, en comparant les règles consommées par le moteur, indépendamment du texte du builder. Le message identifie le barème à réutiliser. Le contrôle et l'écriture sont dans une même transaction ; `--force` ne contourne pas l'unicité. Les simulations réutilisent une définition déjà présente en mémoire.
+
+Les anciens noms et doublons restent conservés. La restauration d'une sauvegarde historique dispose d'un chemin spécifique qui préserve ses noms, ses barèmes et ses références sans perte de données. Les nouveaux contrôles s'appliquent aux créations et changements ordinaires de définition. Aucun renommage global ni suppression de doublon existant n'est effectué.
+
+Vingt-deux nouveaux exemples de régression couvrent l'identité opérationnelle,
+les cinq constructeurs, la numérotation indépendante, les collisions de noms,
+les modifications refusées sans écriture et la compatibilité des historiques.
+La suite applicative compte désormais **559 exemples, 0 échec, 0 erreur,
+0 en attente**, sous `TZ=UTC`. Les neuf tests des lanceurs restent exclus ici,
+car leurs scripts ne figurent pas dans l'archive de sources. Le binaire est
+recompilé ; **111 invocations CLI** sont vérifiées : 63 pour les parcours du
+manuel et 48 pour les commandes de barèmes en français et en anglais, y compris
+les refus attendus. Les 70 Markdown et leurs 220 tableaux sont analysés ; aucun
+nouveau lien interne invalide n'est introduit. Les deux annexes 05 restent
+identiques à l'édition précédente corrigée pour les tableaux Web.
 
 ## Vérifications
 
@@ -71,7 +91,7 @@ nouveaux liens internes sont valides. Les dépendances extérieures à l'archive
 (fichiers d'installation, exemples et fichiers de génération PDF du dépôt complet)
 doivent être disponibles lors de l'utilisation de ces renvois.
 
-Les tests du correctif sont validés dans le dépôt complet par **527 exemples,
+Les tests du correctif split + reinit ont été validés dans le dépôt complet par **527 exemples,
 0 échec, 0 erreur, 0 en attente**, résultat communiqué par l'auteur après intégration.
 
 ## Vérification de la configuration
@@ -183,3 +203,14 @@ Backtest maximum investment now equals the largest individual trade peak, becaus
 `operation fees OPERATION_ID AMOUNT` replaces total fees on any recorded operation, including an earlier operation or one in a closed trade. Zero cancels fees. Orders and investment excluding fees remain identical; net results, lists, exports and historical fees copied into a new play use the correction. Sixteen regression examples were added; 20 targeted and 537 application examples pass, excluding nine launcher examples whose scripts are absent from the source archive. The executable is built and 34 real CLI calls pass in both languages.
 
 Appendix 05 Web-provider tables now use short cells, with detailed descriptions, addresses and regexes below them. Long configuration paths are split by their shared prefix. YAML line continuations preserve every regex and built-in value exactly, also verified through Jedi's configuration reader. French and English Web excerpts are rendered and visually checked on four PDF pages; rebuild the complete manuals using the full repository's PDF scripts.
+
+
+New scale names are automatically assigned as B_kc_NN or B_vr_NN from the builder’s operational type. Equivalent effective definitions are refused at creation and update, even with force. Explicit names must match the type. Historical names, duplicates and backup references are preserved; simulations reuse equivalent memory scales.
+
+Twenty-two regression examples are added for scale identity and automatic naming.
+The application suite now passes 559 examples, excluding the nine launcher
+examples whose scripts are absent from the source archive. The executable is
+rebuilt; 111 CLI invocations are checked, including expected rejections, with
+scale commands exercised in both languages. All 70 Markdown files and 220
+tables parse successfully, with no new invalid internal link. Both corrected
+Web-provider appendices remain byte-identical to the preceding edition.

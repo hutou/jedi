@@ -277,7 +277,7 @@ module Jedi
           when /^scale$/i
             scale += 1
             name, comment, builder = args.split(us_sep)
-            TradingRules::ScaleCreator.new(load_conn).call(
+            TradingRules::ScaleCreator.new(load_transaction).restore(
               name: name,
               comment: comment,
               builder: builder)

@@ -81,11 +81,13 @@ Le contrôle structurel optimisé n'assure donc pas des ordres assez grands apr�
 
 Le constructeur compact remplace la liste `ks` par `kd` :
 
+Cet exemple reprend `B_kc_02`, également utilisé pour la synchronisation du chapitre 09. Si ce nom existe déjà dans votre base d'essai, consulter sa définition avec `scale show` et réutiliser le barème correspondant. La commande de création ci-dessous sert à l'enregistrer une seule fois.
+
 ~~~console
-jedidemo scale create --name=B1_example_auto_v01 \
+jedidemo scale create --name=B_kc_02 \
   --comment="Construction pédagogique" \
   --builder="kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0"
-jedidemo scale show B1_example_auto_v01
+jedidemo scale show B_kc_02
 ~~~
 
 Créer ce nom une seule fois dans la base d'essai. Avec `kd:0`, la répartition est régulière entre les intervalles. Jedi produit **`ks:0.89,1.25`** : les stocks cibles intérieurs sont 89 et 125 pour `q0=100`.

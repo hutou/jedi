@@ -65,10 +65,10 @@ Price rounding affects subsequent calculations. An unrounded calculation and a t
 ## Build the holding with np, nn and kd
 
 ~~~console
-jedidemo scale create --name=B2_example_auto_v01 \
+jedidemo scale create --name=B_vr_04 \
   --comment="Teaching builder" \
   --builder="vr:20%,np:2,nn:2,ki:10%,kb:1,kd:0"
-jedidemo scale show B2_example_auto_v01
+jedidemo scale show B_vr_04
 ~~~
 
 Create this name once. `np:2,nn:2` sets two movements to each boundary, with one interior step per side. `kd:0` distributes changes evenly. The expanded definition contains **`ks:0.88,1.2`**.

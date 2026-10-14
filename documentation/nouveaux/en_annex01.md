@@ -168,6 +168,8 @@ Signatures recognised by `scale create --builder=...` and the tools are:
 | `vr,np,nn,ki,kb,kd` | Type II with optimised construction of `ks` |
 | `vr,np,sr,nn,mi,ki,kb` | Type II compatibility builder |
 
+Without `--name`, `scale create --comment=... --builder=...` assigns `B_kc_NN` for type I or `B_vr_NN` for type II, including Legacy. The next number is computed separately within each family. An explicit name must match the type and use a positive number of at least two digits. Equivalent operational definitions are refused at creation and update, even with `--force`. [Chapter 13](en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) details these rules and preservation of historical data.
+
 `kc` and `ks` are decimal lists; `np`, `nn`, `kb` are integers. `vr`, `sr`, `mi` and `ki` accept a decimal coefficient or percentage; `kd` is decimal. Use a decimal point: `kc:1.4,1.2,0.8,0.6`. Commas separate values and fields.
 
 In the compatibility builder, `sr` sets the target stock fraction at the final internal upward step; `mi` sets the budget for internal downward purchases relative to the initial amount. `np` and `nn` include boundaries, leaving `np-1` and `nn-1` internal steps. This form has its own rules: examine its operational definition and orders through `scale show` and `play` before comparing it with others.

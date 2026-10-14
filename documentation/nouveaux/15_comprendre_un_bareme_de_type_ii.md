@@ -65,10 +65,10 @@ Les arrondis de prix influencent les calculs suivants. Un calcul sans arrondi et
 ## Construire le stock avec np, nn et kd
 
 ~~~console
-jedidemo scale create --name=B2_example_auto_v01 \
+jedidemo scale create --name=B_vr_04 \
   --comment="Construction pédagogique" \
   --builder="vr:20%,np:2,nn:2,ki:10%,kb:1,kd:0"
-jedidemo scale show B2_example_auto_v01
+jedidemo scale show B_vr_04
 ~~~
 
 Créer ce nom une seule fois. `np:2,nn:2` fixe deux mouvements jusqu'à chaque borne, avec un échelon intérieur par côté. `kd:0` répartit régulièrement les variations. La définition développée contient **`ks:0.88,1.2`**.

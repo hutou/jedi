@@ -44,7 +44,7 @@ describe Jedi::Database::Main do
         quotation_price: 57.3456,
         quotation_variation: -1.25
       )
-      Jedi::TradingRules::ScaleCreator.new(source).call(
+      Jedi::TradingRules::ScaleCreator.new(source).restore(
         name: "ACTIVE_SCALE",
         comment: "Active scale",
         builder: JediSpec.type_two_scale.builder,
@@ -127,7 +127,8 @@ describe Jedi::Database::Main do
         name: "JEDI UNTICKERED SECURITY",
         ticker: ""
       )
-      Jedi::TradingRules::ScaleCreator.new(source).call(
+      # Historical backups can contain distinct names for equivalent scales.
+      Jedi::TradingRules::ScaleCreator.new(source).restore(
         name: "UNUSED_SCALE",
         comment: "Unused scale",
         builder: JediSpec.type_two_scale.builder,
