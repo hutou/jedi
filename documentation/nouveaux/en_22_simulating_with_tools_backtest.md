@@ -99,9 +99,23 @@ Net gain / maximum investment: 41.86%
 Shares held at the end: 122; value 1578.97 €
 ~~~
 
-Gross gain adds sales, subtracts purchases and adds remaining shares valued at the last close. Net gain deducts fees. Maximum investment is the peak of purchases minus sales, excluding fees, over the simulated path.
+Gross gain adds sales, subtracts purchases and adds remaining shares valued at the last close. Net gain deducts fees. Maximum investment is the largest of the individual trades’ peaks of purchases minus sales, excluding fees. Backtest trades run sequentially without overlap, so the global maximum must occur in at least one trade.
 
 The 41.86% covers the whole period; it is not an annual rate. The final €1,578.97 value is part of the gain, not another gain to add to €627.97. The 122 shares are not artificially sold at the end: the report charges no final liquidation that did not occur.
+
+## Understand the maximum when a trade reopens
+
+Another invented example illustrates the calculation: the first trade buys 100 shares at €10 and sells all of them at €8.50. Its gross loss is €150. The next trade buys 100 shares at €10 again.
+
+| Trade | Peak investment before fees | State |
+|---|---:|---|
+| Trade_01 | €1,000 | Closed, with a €150 gross loss. |
+| Trade_02 | €1,000 | Opened after the previous trade closed. |
+| Backtest maximum | **€1,000** | The larger of the two peaks. |
+
+Cumulative purchases minus sales then total €1,150: the €150 loss remains in the financial balance. This balance is used to calculate cumulative gain; it is not an individual trade’s maximum. Detailed and technical reports label it the **buy-sell balance**. It can exceed the maximum, particularly after an earlier loss.
+
+The financial table requested with `-c f` now follows **trade creation order**, first to last. Compact summary r, the technical summary and the f total use the same maximum. Returns and ratios based on that maximum are recalculated using this value.
 
 ## Examine operations and gaps
 

@@ -123,7 +123,8 @@ Freshness is not measured against today's date. A file, historical selection or 
 | Gross gain | Sales − purchases + final holdings valued at the last close, excluding fees. |
 | Net gain | Gross gain − charged fees. |
 | Current investment | Cumulative purchases − sales, excluding fees. |
-| Maximum investment | Peak current investment over the path. |
+| Maximum investment | A trade’s peak purchases minus sales; in backtest and score, the largest such peak among successive trades, excluding fees. |
+| Backtest buy-sell balance | Cumulative balance retaining closed trades’ gains and losses; used to calculate cumulative gain. |
 | Fitness | In `score`, gross gain / first purchase amount, covering the entire period. |
 | Max.inv | In `score`, maximum investment / first purchase, excluding fees. |
 | Op/mo | All operations, including openings, normalised to 21 sessions from the first operation. |

@@ -358,8 +358,10 @@ en:
           pct_portf: "Pct.\nPortf."
           pct_inv: "Pct.\nInv."
           current_invest: "Current\nInvest."
+          cash_investment_balance: "Balance\nBuy-Sell"
           maximum_invest: "Maximum\nInvest."
           return_rate: "Return\n↓ Rate"
+          return_rate_unsorted: "Return\nRate"
           total: "Total"
           net: "(net)"
     #trade:

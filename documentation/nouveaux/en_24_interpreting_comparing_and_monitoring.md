@@ -9,8 +9,8 @@ A result belongs with its dates, scale, first purchase and conventions. Compact 
 | Gross gain | What is sales − purchases + final holdings value? |
 | Fees | What brokerage cost was charged to operations? |
 | Net gain | What remains after those fees? |
-| Maximum investment | What peak of purchases minus sales did the path require, excluding fees? |
-| Net gain / maximum investment | What net result does that peak funding represent? |
+| Maximum investment | What is the largest peak of purchases minus sales within any successive trade, excluding fees? |
+| Net gain / maximum investment | How does the net result compare with the largest amount committed within a trade? |
 | Activity | How many operations and interventions does the path entail? |
 | Final holdings | How much of the result still depends on shares held? |
 

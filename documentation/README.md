@@ -1,8 +1,8 @@
 # Documentation Jedi — next-version / préparation v1.1
 
-Cette édition Markdown accompagne la préparation de **Jedi 1.1**. La combinaison `split + reinit` exige le binaire de `next-version` intégrant le correctif. [La note de mise à jour](MISE_A_JOUR_v1_1.md) liste les chapitres concernés, les nouveaux noms et les contrôles réalisés. Cette archive contient les Markdown ; les PDF de 1.0 doivent être régénérés à partir du dépôt complet pour refléter ces changements.
+Cette édition Markdown accompagne la préparation de **Jedi 1.1**. Elle décrit aussi le maximum d’investissement des trades successifs du backtest et leur affichage chronologique. La combinaison `split + reinit` exige le binaire de `next-version` intégrant le correctif. [La note de mise à jour](MISE_A_JOUR_v1_1.md) liste les chapitres concernés, les nouveaux noms et les contrôles réalisés. Cette archive contient les Markdown ; les PDF de 1.0 doivent être régénérés à partir du dépôt complet pour refléter ces changements.
 
-This Markdown edition accompanies preparation of **Jedi 1.1**. The `split + reinit` combination requires the updated `next-version` executable. [The update note](MISE_A_JOUR_v1_1.md) lists affected chapters, new names and completed checks. This archive contains Markdown files; rebuild the 1.0 PDFs from the complete repository to reflect these changes.
+This Markdown edition accompanies preparation of **Jedi 1.1**. It also documents the investment maximum of successive backtest trades and their chronological display. The `split + reinit` combination requires the updated `next-version` executable. [The update note](MISE_A_JOUR_v1_1.md) lists affected chapters, new names and completed checks. This archive contains Markdown files; rebuild the 1.0 PDFs from the complete repository to reflect these changes.
 
 Le manuel comprend un avant-propos, la philosophie de Jedi, trois introductions de parties, 24 chapitres et cinq annexes dans chaque langue. Les 68 textes actuels sont dans `nouveaux/` ; les titres Markdown restent sans numéro.
 

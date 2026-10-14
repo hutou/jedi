@@ -123,7 +123,8 @@ La fraîcheur n'est pas calculée par rapport à la date du jour. Un fichier, un
 | Gain brut | Ventes − achats + stock final valorisé à la dernière clôture, hors frais. |
 | Gain net | Gain brut − frais imputés. |
 | Investissement courant | Achats − ventes cumulés, hors frais. |
-| Investissement maximal | Pic de l'investissement courant sur le parcours. |
+| Investissement maximal | Pic achats moins ventes d’un trade ; pour `backtest` et `score`, plus grand de ces pics sur les trades successifs, hors frais. |
+| Solde achats–ventes du backtest | Bilan cumulé conservant les gains et pertes des trades clos ; il sert au calcul du gain cumulé. |
 | Fitness | Dans `score`, gain brut / montant du premier achat ; couvre toute la période. |
 | Inv.max | Dans `score`, investissement maximal / premier achat, hors frais. |
 | Op/mois | Toutes les opérations, ouvertures comprises, ramenées à 21 séances à partir de la première opération. |

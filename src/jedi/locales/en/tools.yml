@@ -246,7 +246,7 @@ en:
         holdings: "Shares held at the end: %{quantity}; value %{value} €"
         note: >-
           Gain includes the valuation of remaining shares at the last closing price.
-          Maximum investment is the peak of purchases minus sales, excluding fees.
+          Maximum investment is the largest peak of purchases minus sales within one trade, excluding fees.
       plot:
         title: "Jedi backtest:"
         indices_and_ratios: "Base-one indices and ratios"
@@ -310,7 +310,7 @@ en:
           cumulative_gain: "Cumulative gain .......: gross %.2f / net %.2f"
           return_on_maximum: "Return on maximum .....: gross %.2f%% / net %.2f%%"
           annualized_return: "Annualized return .....: gross %.2f%% / net %.2f%%"
-          investment: "Investment ............: current %.2f / maximum %.2f (%.2f%%)"
+          investment: "Buy-sell balance ......: %.2f / maximum %.2f (%.2f%%)"
           capital_utilization: "Capital utilization ...: %.2f%%"
           position: "Final position .........: %s"
     #

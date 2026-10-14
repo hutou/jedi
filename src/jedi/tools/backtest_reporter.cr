@@ -65,6 +65,8 @@ module Jedi
           else
             TradingSystem::TradeResults.new(conn_memory).list(
               option_update_now: false,
+              option_chronological: true,
+              option_global_maximum_investment: result.maximum_investment_cents,
             )
           end
         when 'd'

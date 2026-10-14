@@ -9,8 +9,8 @@ Un résultat se lit avec ses dates, son barème, son premier achat et ses conven
 | Gain brut | Quel est le solde ventes − achats + valeur finale des titres ? |
 | Frais | Quel coût de courtage a été imputé aux opérations ? |
 | Gain net | Que reste-t-il après ces frais ? |
-| Investissement maximal | Quel pic des achats moins les ventes le parcours a-t-il demandé, hors frais ? |
-| Gain net / investissement maximal | Quel résultat net représente ce pic de financement ? |
+| Investissement maximal | Quel est le plus grand pic des achats moins ventes d’un des trades successifs, hors frais ? |
+| Gain net / investissement maximal | Que représente le résultat net par rapport au plus grand montant engagé dans un trade ? |
 | Activité | Combien d'opérations et d'interventions le parcours entraîne-t-il ? |
 | Stock final | Quelle part du résultat dépend encore de titres détenus ? |
 

@@ -19,10 +19,11 @@ français et anglais ; elle accompagne une version en développement.
 | 19 | Simulations complètes et reproductibles du regroupement avec reset ou merge. |
 | Annexes 01 et 04 | Référence des options, restrictions et nouvelles définitions du glossaire. |
 | Annexe 05 FR/EN | Configuration intégrée complète, valeur et usage de chaque entrée, champs non utilisés, distinction entre capital personnel et valeur intégrée. |
+| 05, 22–24 et annexe 04 | Maximum d’investissement des trades successifs, distinction avec le solde financier cumulé, résultats du backtest dans l’ordre de création. |
 
 Les exemples des chapitres 08, 11, 14, 20 et de l'introduction de partie II reprennent
-les nouveaux noms pour conserver la cohérence du parcours. Les 37 fichiers
-existants modifiés comprennent 18 paires français/anglais et le README. La note
+les nouveaux noms pour conserver la cohérence du parcours. Les 45 fichiers
+existants modifiés comprennent 22 paires français/anglais et le README. La note
 de mise à jour et les deux versions de l’annexe 05 sont ajoutées.
 
 ## Nouveaux noms des exemples
@@ -63,7 +64,7 @@ Le parcours d'ouverture et de suivi des chapitres 07–08 est également rejoué
 avec les nouveaux noms, ainsi que les variantes du chapitre 09 dans des copies
 séparées d'une base fictive. Les contrôles comprennent **63 commandes CLI**, dont
 la préparation des bases d'essai et dix commandes `play` distinctes des chapitres
-16 et 19. Pandoc analyse les **70 fichiers Markdown et leurs 216 tableaux** ; les
+16 et 19. Pandoc analyse les **70 fichiers Markdown et leurs 218 tableaux** ; les
 nouveaux liens internes sont valides. Les dépendances extérieures à l'archive
 (fichiers d'installation, exemples et fichiers de génération PDF du dépôt complet)
 doivent être disponibles lors de l'utilisation de ces renvois.
@@ -88,6 +89,29 @@ Un parcours `play` confirme que modifier `simulation.distance` ou
 capital simulé ; les commandes de consultation et de style sont vérifiées.
 Les fournisseurs externes ne sont pas interrogés pour cette vérification.
 
+## Maximum d’investissement du backtest
+
+Le maximum utilise les pics individuels des trades qui se succèdent sans
+chevauchement. Les gains et pertes passés restent dans le bilan cumulé, avec
+les frais et les valorisations utilisés pour les résultats financiers. Le
+rapport compact, le rapport technique et le total du tableau `f` partagent
+le même maximum ; `f` suit l’ordre de création des trades. Le solde financier
+est nommé « solde achats–ventes » dans ces rapports.
+
+Les mesures dérivées du maximum changent également dans `score`, qui réutilise
+le même moteur : Inv.max, rendements sur le maximum et critères liés à ce
+montant. Les captures des études des chapitres 05 et 23 restent identifiées
+comme références de l’édition 1.0 ; les fichiers de cotations correspondants
+ne sont pas dans l’archive Markdown, et ces études doivent être relancées
+avec le binaire corrigé pour obtenir leurs chiffres actualisés.
+
+Trois nouveaux exemples de régression couvrent une perte avant réouverture,
+un gain avant un trade plus important, la cohérence des rapports et le tri.
+Avant correction, les vérifications correspondantes échouaient. La suite
+applicative vérifiée sous `TZ=UTC` contient **521 exemples,
+0 échec, 0 erreur, 0 en attente**. Les neuf tests des lanceurs ne sont pas
+exécutés ici, car leurs scripts ne figurent pas dans l’archive de sources.
+
 ## PDF et publication
 
 Les fichiers de cette archive sont les Markdown. Les PDF de Jedi 1.0 ne reflètent
@@ -111,3 +135,5 @@ Rebuild PDFs from the full repository after these changes. Installation examples
 retain 1.0.0 until the actual 1.1 publication.
 
 Appendix 05 in both languages documents all built-in configuration entries, their actual uses and currently unused fields. It distinguishes the built-in capitals of 20,000 from personal overrides of 50,000, and explains why play uses money.r and the scale’s n-step projection rather than simulation.risk_rate or simulation.distance.
+
+Backtest maximum investment now equals the largest individual trade peak, because simulated trades do not overlap. Compact, technical and per-trade totals use it consistently. Financial trade rows follow creation order, and cumulative buy-sell balances remain separate from that maximum. Shared score metrics also use the correction; rerun historical studies to update investment figures, returns and rankings.
