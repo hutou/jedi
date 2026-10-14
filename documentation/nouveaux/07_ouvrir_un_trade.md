@@ -72,11 +72,15 @@ Pour un titre réel, vérifier son ISIN, son libellé, son ticker, ses pas de co
 
 ## Choisir des noms lisibles
 
-Pour un trade, utiliser **`<repère_du_titre>_<numéro>`** : `Exa_01`, puis `Exa_02` si un nouveau trade distinct est créé sur ce titre. Un repère plus long, comme `Airliquide_01`, convient aussi. Le numéro identifie le trade, pas ses paramétrages. Un split, un changement de barème ou une réinitialisation conserve ce nom.
+Pour un trade, utiliser **`T_<ticker>_<numéro>`** : `T_exa_01`, puis `T_exa_02` si un nouveau trade distinct est créé sur le titre fictif EXA. Avec le ticker ERF, le repère serait `T_erf_01`. Le préfixe `T_` permet de reconnaître un trade ; les barèmes utilisent `B_`. Le ticker fournit un repère court, tandis que le libellé complet et l'ISIN restent associés au titre.
+
+À la création, saisir ce nom dans `--name` et choisir un numéro encore disponible, affiché sur au moins deux chiffres. Il s'agit d'une convention proposée à l'utilisateur ; le nom du trade et son numéro ne sont pas calculés automatiquement par Jedi. Le numéro identifie le trade, pas ses paramétrages. Un split, un changement de barème ou une réinitialisation conserve ce nom.
 
 Pour un barème, laisser Jedi attribuer **`B_kc_NN` pour le type I ou `B_vr_NN` pour le type II**, en omettant `--name`. Le type est déduit du builder et le numéro est calculé dans cette famille. Dans notre base vide, le premier barème de type II sera `B_vr_01`. Le [chapitre 13](13_lire_la_structure_d_un_bareme.md#nommer-et-numéroter-un-barème) explique le nommage et le refus des définitions équivalentes.
 
-Employer des lettres sans accents, des chiffres et des soulignés `_`, avec une lettre au début et au moins deux caractères. Les noms doivent être uniques dans leur catégorie et sont insensibles à la casse. Jedi normalise leur écriture : `EXA_01` devient `Exa_01`.
+Employer des lettres sans accents, des chiffres et des soulignés `_`, avec une lettre au début et au moins deux caractères. Les noms doivent être uniques dans leur catégorie et sont insensibles à la casse. Jedi normalise leur écriture : `T_EXA_01` devient `T_exa_01`.
+
+Si le ticker contient un point, un tiret ou un autre caractère non admis dans le nom, adapter ce repère avec les caractères autorisés. Cette adaptation du nom du trade ne change pas le ticker enregistré dans la fiche du titre.
 
 Les exemples de cette édition adoptent ces noms. Un trade déjà créé sous un ancien nom reste utilisable ; employer son nom réel dans les commandes ou le corriger avec `trade update --name`, selon le chapitre 09.
 
@@ -96,8 +100,8 @@ Si le barème existe déjà, le consulter et le réutiliser. Lorsqu'il vient de 
 ## Créer le trade et son paramétrage initial
 
 ~~~console
-jedidemo trade create --name=Exa_01 --security=FR4487601001
-jedidemo trade show Exa_01
+jedidemo trade create --name=T_exa_01 --security=FR4487601001
+jedidemo trade show T_exa_01
 ~~~
 
 Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN ou l'identifiant interne du titre, pas son ticker. Si le projet utilise la gestion du capital, ajouter la définition évaluée, par exemple `--money="r:1%,o:1,n:2"`, à la commande de création.
@@ -105,7 +109,7 @@ Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN
 Associer ensuite le trade au barème :
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B_vr_01 \
+jedidemo settings create T_exa_01 --scale=B_vr_01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
 
@@ -120,7 +124,7 @@ Avant l'achat, ce premier paramétrage possède une position `0:0:0`, avec `q0` 
 Passer vous-même l'ordre d'achat, suivre son exécution et reprendre les valeurs confirmées par le courtier. Notre exemple suppose l'exécution de 100 titres à 10 €, avec 3,50 € de frais :
 
 ~~~console
-jedidemo operation create Exa_01 \
+jedidemo operation create T_exa_01 \
   --date=2026-09-21 --time=09:01:00 \
   --type=Buy --mode=Limit --quantity=100 --price=10 --fees=3.50
 ~~~
@@ -134,10 +138,10 @@ Un achat non exécuté ne crée aucune opération. S'il est exécuté en plusieu
 ## Contrôler l'ouverture et les premiers ordres
 
 ~~~console
-jedidemo settings list Exa_01
-jedidemo operation list Exa_01 -c 0,6-14,17
-jedidemo trade status Exa_01
-jedidemo trade orders Exa_01
+jedidemo settings list T_exa_01
+jedidemo operation list T_exa_01 -c 0,6-14,17
+jedidemo trade status T_exa_01
+jedidemo trade orders T_exa_01
 ~~~
 
 Le stock doit être de **100 titres**, `q0` de 100, `c0` de 10 € et la position `0:0:0`. L'investissement net hors frais vaut 1 000 €. Comparer le stock et l'opération au relevé du courtier.

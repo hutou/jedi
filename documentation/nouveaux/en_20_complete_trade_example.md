@@ -1,6 +1,6 @@
 # Follow a complete trade example
 
-Bring the calculations together in one path: size an opening, observe flows, change settings, compare two continuations and close the holding. This fictional security is separate from Exa_01 in part I. All paths below run in memory with `tools play`; they create no trade.
+Bring the calculations together in one path: size an opening, observe flows, change settings, compare two continuations and close the holding. This fictional security is separate from T_exa_01 in part I. All paths below run in memory with `tools play`; they create no trade.
 
 The example uses type I, an initial €10 price, a €0.01 tick and 0.35% fees with no minimum. Reproduce `candidate` commands in an experiment database with no open trades.
 

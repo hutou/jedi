@@ -14,7 +14,7 @@ Trois informations restent distinctes :
 
 Un changement de cours ne modifie pas le stock. Un ordre placé ou annulé chez le courtier ne modifie pas la base Jedi. Une exécution du courtier n'y apparaît qu'après votre enregistrement.
 
-Ce chapitre continue **le trade fictif Exa_01 ouvert au [chapitre 07](07_ouvrir_un_trade.md)** : 100 titres achetés à 10 €, barème `B_vr_01`. Les commandes d'enregistrement sont des essais à effectuer dans la base séparée du [chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé).
+Ce chapitre continue **le trade fictif T_exa_01 ouvert au [chapitre 07](07_ouvrir_un_trade.md)** : 100 titres achetés à 10 €, barème `B_vr_01`. Les commandes d'enregistrement sont des essais à effectuer dans la base séparée du [chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé).
 
 ## Disposer d'un cours pertinent
 
@@ -51,11 +51,11 @@ Les commandes de suivi peuvent tenter d'actualiser un cours dont la durée de co
 ## Lire l'état et les ordres
 
 ~~~console
-jedidemo trade status Exa_01
-jedidemo trade orders Exa_01
+jedidemo trade status T_exa_01
+jedidemo trade orders T_exa_01
 ~~~
 
-Comparer le stock affiché au stock du courtier. Lire pour chaque ordre son type `Buy` ou `Sell`, son mode, sa quantité, son prix et son montant. Avec le cours de 11 € et sans nouvelle opération, Exa_01 conserve encore 100 titres et propose les ordres du chapitre précédent.
+Comparer le stock affiché au stock du courtier. Lire pour chaque ordre son type `Buy` ou `Sell`, son mode, sa quantité, son prix et son montant. Avec le cours de 11 € et sans nouvelle opération, T_exa_01 conserve encore 100 titres et propose les ordres du chapitre précédent.
 
 | Mode | Sens pratique |
 |---|---|
@@ -82,12 +82,12 @@ Lorsqu'un StopLoss et une vente Limit doivent coexister, `trade orders --net-sto
 Notre exemple suppose la vente confirmée de 6 titres à 11 €, avec 0,23 € de frais. L'enregistrer :
 
 ~~~console
-jedidemo operation create Exa_01 \
+jedidemo operation create T_exa_01 \
   --date=2026-09-22 --time=10:15:00 \
   --type=Sell --mode=Limit --quantity=6 --price=11 --fees=0.23
-jedidemo operation list Exa_01 -c 0,6-14,17
-jedidemo trade status Exa_01
-jedidemo trade orders Exa_01
+jedidemo operation list T_exa_01 -c 0,6-14,17
+jedidemo trade status T_exa_01
+jedidemo trade orders T_exa_01
 ~~~
 
 Le stock passe à **94 titres**. L'investissement net hors frais passe de 1 000 € à **934 €**, puisque la vente a rapporté 66 €. La position devient `0:0:+1`.
@@ -128,15 +128,15 @@ L'avis d'opéré peut préciser des frais différents du montant saisi ou calcul
 Retrouver d'abord son numéro en affichant les opérations avec les frais, colonne `16` :
 
 ~~~console
-jedidemo operation list Exa_01 -c 0,5-9,16,17
+jedidemo operation list T_exa_01 -c 0,5-9,16,17
 ~~~
 
 Dans notre base fictive préparée sans opération préalable, la vente de 6 titres porte le numéro `2`. Si ses frais avaient été enregistrés à tort à 0,20 €, les corriger au montant confirmé de 0,23 € :
 
 ~~~console
 jedidemo operation fees 2 0.23
-jedidemo operation list Exa_01 -c 0,5-9,16,17
-jedidemo trade results Exa_01
+jedidemo operation list T_exa_01 -c 0,5-9,16,17
+jedidemo trade results T_exa_01
 ~~~
 
 Utiliser **l'identifiant de l'opération réellement affiché**, qui peut être différent dans votre base. Le montant est exprimé dans la monnaie du trade, avec un point décimal, puis arrondi au centime. `0` annule les frais. Le montant remplace la valeur précédente ; ce n'est pas une différence à ajouter.
@@ -152,7 +152,7 @@ Les opérations donnent les mouvements du stock et de trésorerie. `note` permet
 Pour écrire plusieurs lignes, ouvrir les guillemets du contenu et les fermer seulement après la dernière ligne :
 
 ~~~console
-$ jedidemo note create 2026-09-22 "Exa_01 - vente partielle" "Vente de 6 titres :
+$ jedidemo note create 2026-09-22 "T_exa_01 - vente partielle" "Vente de 6 titres :
 > 2 puis 4 titres à 11 EUR. Exécution terminée à 10:15.
 > Frais totaux : 0,23 EUR. Une seule opération consolidée enregistrée."
 ~~~
@@ -160,7 +160,7 @@ $ jedidemo note create 2026-09-22 "Exa_01 - vente partielle" "Vente de 6 titres 
 `$` et `>` représentent les invites du terminal : ne pas les saisir. Tant que les guillemets restent ouverts, le terminal continue la même commande ; les retours à la ligne sont conservés dans la note. Cette syntaxe convient aussi aux textes longs qui seraient coupés à l'impression sur une seule ligne.
 
 ~~~console
-jedidemo note list Exa_01
+jedidemo note list T_exa_01
 ~~~
 
 Dans une base sans note préalable, cette note porte le numéro 1. Utiliser le numéro réellement affiché pour la consulter ou la compléter :
@@ -196,7 +196,7 @@ L'éditeur ouvre un modèle contenant trois repères, à conserver dans cet ordr
 2026-09-22
 
 # Summary
-Exa_01 - vente partielle
+T_exa_01 - vente partielle
 
 # Contents
 Vente de 6 titres : 2 puis 4 titres à 11 EUR.
@@ -208,4 +208,4 @@ Dans nano, enregistrer avec **Ctrl+O**, confirmer le nom avec **Entrée**, puis 
 
 Les notes constituent un journal général ; indiquer le nom du trade dans le résumé ou le texte permet de les retrouver. Il n'existe pas de rattachement automatique au trade. Une note ne remplace ni l'opération exécutée ni son enregistrement.
 
-Après ce suivi, l'exemple Exa_01 possède 94 titres. Le [chapitre 09](09_adapter_ou_terminer_un_trade.md) part de cet état pour présenter les adaptations possibles et la clôture.
+Après ce suivi, l'exemple T_exa_01 possède 94 titres. Le [chapitre 09](09_adapter_ou_terminer_un_trade.md) part de cet état pour présenter les adaptations possibles et la clôture.

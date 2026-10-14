@@ -8,7 +8,7 @@ Chapters 11 and 12 explain flows, positions, steps and levels. Chapters 13–15 
 
 ## Prepare the mechanics examples
 
-Most examples start with **100 fictional shares at €10**, a type I scale and a €0.01 tick. This scale differs from Exa_01's type II in part I. Chapter 15 compares a type II at 20%. Chapters 18 and 20 also use 125 shares to illustrate sizing.
+Most examples start with **100 fictional shares at €10**, a type I scale and a €0.01 tick. This scale differs from T_exa_01's type II in part I. Chapter 15 compares a type II at 20%. Chapters 18 and 20 also use 125 shares to illustrate sizing.
 
 Paths are calculated with `tools play` and, for type I, `tools calc`. They require neither downloads nor quotation file imports. Movements are chosen to show the calculation, without claiming to represent a real market.
 

@@ -34,7 +34,7 @@ simulation:
   capital: 20000
 ~~~
 
-Les frais restent à 0,35 %, sans minimum. Le capital de 5 000 € d'Exa_01 dans la partie I est un autre exemple. Modifier seulement `trading.capital` ne modifie pas le capital de `play`.
+Les frais restent à 0,35 %, sans minimum. Le capital de 5 000 € d'T_exa_01 dans la partie I est un autre exemple. Modifier seulement `trading.capital` ne modifie pas le capital de `play`.
 
 ## Dimensionner une ouverture
 

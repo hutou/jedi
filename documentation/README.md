@@ -1,6 +1,6 @@
 # Documentation Jedi — next-version / préparation v1.1
 
-Archive documentaire courante / Current documentation archive: **`jedi_documentation_20261012_v7.zip`**. Cette édition remplace la v6 et complète le glossaire avec `kcpc`, `kspc`, `emax`, `emin` et PRU. This edition replaces v6 and adds these five glossary definitions.
+Archive documentaire courante / Current documentation archive: **`jedi_documentation_20261012_v8.zip`**. Cette édition remplace la v7 et applique la convention `T_<ticker>_<numéro>` aux noms des trades. Elle conserve les ajouts du glossaire : `kcpc`, `kspc`, `emax`, `emin` et PRU. This edition replaces v7 and applies `T_<ticker>_<number>` to trade names, retaining the five glossary additions.
 
 Cette édition Markdown accompagne la préparation de **Jedi 1.1**. Elle décrit aussi le maximum d’investissement des trades successifs du backtest, leur affichage chronologique et la correction des frais avec `operation fees`. La combinaison `split + reinit` et la commande `operation fees` exigent le binaire de `next-version` intégrant leurs correctifs. Les tableaux des fournisseurs Web de l’annexe 05 utilisent des cellules courtes et des blocs YAML séparés pour les adresses et les regex. [La note de mise à jour](MISE_A_JOUR_v1_1.md) liste les chapitres concernés, les nouveaux noms et les contrôles réalisés. Cette archive contient les Markdown ; les PDF de 1.0 doivent être régénérés à partir du dépôt complet pour refléter ces changements.
 

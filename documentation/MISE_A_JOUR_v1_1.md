@@ -34,8 +34,8 @@ de mise à jour et les deux versions de l’annexe 05 sont ajoutées.
 
 | Ancien nom | Nom dans cette édition |
 |---|---|
-| `EXA01` | `Exa_01` |
-| `EXA_LONG` | `Exemplea_01` — variante de correction d'un repère |
+| `EXA01` | `T_exa_01` |
+| `EXA_LONG` | `T_exa_01` — même repère fondé sur le ticker pour la variante de renommage |
 | `EXA-10` | `B_vr_01` |
 | `EXA-12` | `B_vr_02` |
 | `EXA-I` | `B_kc_02` |
@@ -223,6 +223,24 @@ définitions sont vérifiées dans le code, sauf PRU, notion extérieure à la
 mécanique de Jedi dont la définition au comptant est sourcée chez BoursoBank.
 Les renvois et le rendu des deux glossaires sont contrôlés.
 
+## Convention des noms de trades — édition v8
+
+Les noms des trades suivent désormais la convention **`T_<ticker>_<numéro>`**,
+par exemple `T_erf_01`. Le chapitre 07 précise sa saisie manuelle, la
+numérotation et la normalisation de la casse. Les exemples français et anglais
+utilisent `T_exa_01` pour le titre fictif EXA et `T_exr_01` pour EXR. Le chapitre
+09 illustre le renommage d'un ancien `Exa_01` en `T_exa_01`, dans une base qui
+possède encore cet ancien nom. Ce renommage conserve l'identité du trade.
+
+La convention concerne les textes et les exemples. Les noms déjà enregistrés
+restent utilisables et l'ISIN du titre reste inchangé. La création automatique
+des noms de barèmes `B_kc_NN` ou `B_vr_NN` conserve ses règles.
+
+L'archive complète est **`jedi_documentation_20261012_v8.zip`**, en remplacement
+de la v7. Elle contient toujours les 70 Markdown, les 228 tableaux et les deux
+figures PNG. Les renvois sont vérifiés et les parcours de commandes des
+chapitres 07 à 09 sont rejoués en français et en anglais avec les nouveaux noms.
+
 ## PDF et publication
 
 Les fichiers de cette archive sont les Markdown. Les PDF de Jedi 1.0 ne reflètent
@@ -285,3 +303,10 @@ are checked.
 The adjacent `kc/ks` and `kb` entries are also clarified: `ks` applies to both
 scale types, and `kb` selects the capital-coefficient calculation convention
 at level changes.
+
+Archive `jedi_documentation_20261012_v8.zip` replaces v7 and applies the
+`T_<ticker>_<number>` convention throughout the French and English examples.
+Trade names and numbers are entered by the user. Chapter 09 demonstrates
+renaming an old `Exa_01` to `T_exa_01` while retaining trade identity. Existing
+stored names remain usable. All 70 Markdown files, 228 tables and both figures
+are retained; links and both languages' chapter 07–09 command paths are checked.

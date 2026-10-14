@@ -34,7 +34,7 @@ simulation:
   capital: 20000
 ~~~
 
-Fees remain 0.35%, without a minimum. Part I's €5,000 capital for Exa_01 belongs to another example. Changing only `trading.capital` does not change `play` capital.
+Fees remain 0.35%, without a minimum. Part I's €5,000 capital for T_exa_01 belongs to another example. Changing only `trading.capital` does not change `play` capital.
 
 ## Size an opening
 

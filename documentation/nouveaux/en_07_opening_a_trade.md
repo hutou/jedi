@@ -72,11 +72,15 @@ For an actual security, check its ISIN, name, ticker, quotation ticks and any ta
 
 ## Choose readable names
 
-For a trade, use **`<security_label>_<number>`**: `Exa_01`, then `Exa_02` if a separate new trade is created on the same security. A longer label such as `Airliquide_01` is also suitable. The number identifies the trade, not its settings. A split, scale change or reinitialisation retains the name.
+For a trade, use **`T_<ticker>_<number>`**: `T_exa_01`, then `T_exa_02` if a separate new trade is created on fictional security EXA. With ticker ERF, the label would be `T_erf_01`. The `T_` prefix identifies a trade; scales use `B_`. The ticker provides a short reference, while the full name and ISIN remain associated with the security.
+
+At creation, supply this name through `--name` and choose an available number, displayed with at least two digits. This is a suggested naming convention; Jedi does not automatically derive the trade's name or number. The number identifies the trade, not its settings. A split, scale change or reinitialisation retains the name.
 
 For a scale, let Jedi assign **`B_kc_NN` for type I or `B_vr_NN` for type II** by omitting `--name`. The type comes from the builder and the number is computed within that family. In our empty database, the first type II scale will be `B_vr_01`. [Chapter 13](en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) explains naming and refusal of equivalent definitions.
 
-Use unaccented letters, digits and underscores `_`, starting with a letter and using at least two characters. Names must be unique within their category and are case-insensitive. Jedi normalises their spelling: `EXA_01` becomes `Exa_01`.
+Use unaccented letters, digits and underscores `_`, starting with a letter and using at least two characters. Names must be unique within their category and are case-insensitive. Jedi normalises their spelling: `T_EXA_01` becomes `T_exa_01`.
+
+If the ticker contains a dot, hyphen or another character not accepted in the name, adapt this label using allowed characters. Adapting the trade's name does not change the ticker stored in the security's record.
 
 This edition's examples adopt these names. A trade created under an older name remains usable; use its actual name in commands or correct it with `trade update --name`, as in chapter 09.
 
@@ -96,8 +100,8 @@ If the scale already exists, inspect and reuse it. When it comes from `score`, c
 ## Create the trade and its initial settings
 
 ~~~console
-jedidemo trade create --name=Exa_01 --security=FR4487601001
-jedidemo trade show Exa_01
+jedidemo trade create --name=T_exa_01 --security=FR4487601001
+jedidemo trade show T_exa_01
 ~~~
 
 The name identifies this management history and must be unique. `--security` accepts the security's ISIN or internal ID, not its ticker. If the proposal uses capital management, add the evaluated definition, such as `--money="r:1%,o:1,n:2"`, to the creation command.
@@ -105,7 +109,7 @@ The name identifies this management history and must be unique. `--security` acc
 Then associate the trade with the scale:
 
 ~~~console
-jedidemo settings create Exa_01 --scale=B_vr_01 \
+jedidemo settings create T_exa_01 --scale=B_vr_01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
 
@@ -120,7 +124,7 @@ At this point Jedi knows the proposal, but no purchase is recorded yet.
 Place the purchase yourself, monitor execution and use the broker's confirmed values. Our example assumes 100 shares executed at €10, with €3.50 fees:
 
 ~~~console
-jedidemo operation create Exa_01 \
+jedidemo operation create T_exa_01 \
   --date=2026-09-21 --time=09:01:00 \
   --type=Buy --mode=Limit --quantity=100 --price=10 --fees=3.50
 ~~~
@@ -134,10 +138,10 @@ An unexecuted purchase creates no operation. If executed in several fragments, w
 ## Check the opening and initial orders
 
 ~~~console
-jedidemo settings list Exa_01
-jedidemo operation list Exa_01 -c 0,6-14,17
-jedidemo trade status Exa_01
-jedidemo trade orders Exa_01
+jedidemo settings list T_exa_01
+jedidemo operation list T_exa_01 -c 0,6-14,17
+jedidemo trade status T_exa_01
+jedidemo trade orders T_exa_01
 ~~~
 
 Stock must be **100 shares**, `q0` 100, `c0` €10 and position `0:0:0`. Net investment excluding fees is €1,000. Compare stock and the operation with the broker's statement.
