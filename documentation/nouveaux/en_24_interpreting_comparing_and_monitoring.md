@@ -79,3 +79,5 @@ A note describes an event; it changes neither operations nor orders. Record each
 | Follow-up | Practical decision, later changes and exceptional events |
 
 This record lets you reread a study, explain differences between reports and distinguish the initial choice from later modifications. For an actual project, return to `candidate` with the current price, then to the monitoring of executed operations described in part I.
+
+For actual operations, check fees against execution statements. Correct an error with `operation fees ID AMOUNT`, as described in [chapter 08](en_08_monitoring_a_trade.md#correct-fees-on-a-recorded-operation), then check `trade results`. This changes the recorded portfolio's net results; `backtest` and `score` recreate their operations and fees from their own settings.

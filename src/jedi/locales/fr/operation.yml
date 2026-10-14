@@ -70,6 +70,31 @@ fr:
       zero_price_requires_full_liquidation: "Un prix nul n'est autorisé que pour une opération Sell soldant intégralement la position."
       invalid_fees: "Les frais de l'opération doivent être finis et positifs ou nuls (valeur reçue : %{fees})."
     #
+    # --- fees ---
+    #
+    fees:
+      header: "Corrige les frais d'une opération enregistrée"
+      banner: |
+        Description :
+          Remplace le montant total des frais d'une opération enregistrée
+      usage: |
+        Usage :
+          jedi operation fees <operation_id> <amount>
+      notes: |
+        Notes :
+          operation_id est l'identifiant numérique d'une opération, pas d'un trade.
+          Toute opération peut être corrigée, même ancienne ou d'un trade clôturé.
+          amount remplace le total des frais, taxe éventuelle comprise ; ce n'est pas un supplément.
+          Le montant doit être positif ou nul, avec un point décimal ; il est arrondi au centime.
+          Un montant nul annule les frais. Les ordres et l'investissement hors frais restent identiques.
+      examples: |
+        Exemples :
+          jedi operation fees 42 3.50
+          jedi operation fees 42 0
+      invalid_id: "Identifiant d'opération invalide : %{id}. Un entier strictement positif est requis."
+      invalid_amount: "Montant des frais invalide : %{amount}. Utiliser un nombre fini positif ou nul, avec un point décimal, représentable en centimes (maximum 21474836.47)."
+      success: "Frais de l'opération %{ref} fixés à %{amount}."
+    #
     # --- delete ---
     #
     delete:

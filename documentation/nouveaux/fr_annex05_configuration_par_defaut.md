@@ -55,6 +55,8 @@ Les entrées suivantes sont sous `fees`.
 
 Avec les valeurs intégrées, une opération de 1 000 € supporte 3,50 € de frais proportionnels. Pour un achat, la taxe éventuelle du titre s’ajoute au taux avant la comparaison avec le minimum. Un montant explicite `operation create --fees=...` remplace le calcul automatique. Les projections de financement de `candidate` sont hors frais. Les frais simulés entrent dans les résultats de `play`, `backtest` et `score`; ils ne changent pas les coefficients du barème.
 
+Une modification de `fees.rate` ou `fees.min` concerne les nouvelles opérations ; elle ne recalcule pas les frais déjà enregistrés. Pour corriger une opération existante, utiliser `operation fees ID MONTANT`, expliqué au [chapitre 08](08_suivre_un_trade.md#corriger-les-frais-dune-opération-enregistrée). Le montant remplace directement le total enregistré ; les paramètres de frais et la taxe ne lui sont pas ajoutés.
+
 ## Capital réel et limites de money
 
 Sous `trading` :
@@ -168,7 +170,7 @@ Un chemin tel que `["Global Quote", "05. price"]` signifie : ouvrir l’objet `G
 
 ## Fournisseurs Web intégrés
 
-Les longues expressions de recherche sont reproduites exactement dans le bloc YAML complet. Chaque site possède sa propre adresse, ses modèles d’identifiants et ses motifs de capture. Leur présence ne garantit pas que le site répondra ou que son HTML restera compatible.
+Chaque site possède sa propre adresse, ses modèles d’identifiants et ses motifs de capture. Les tableaux indiquent les entrées et leur usage ; les adresses et les regex sont placées sous chaque tableau, sur toute la largeur de la page. Dans les chaînes YAML entre guillemets, l’antislash final permet de poursuivre la même chaîne à la ligne suivante sans ajouter de caractère. Les valeurs sont identiques à celles du code. Leur présence ne garantit pas que le site répondra ou que son HTML restera compatible.
 
 ### ABC Bourse
 
@@ -176,16 +178,27 @@ Sous `market_data.websites.abcbourse` :
 
 | Entrée | Valeur intégrée | Usage effectif |
 |---|---|---|
-| `url` | `"https://www.abcbourse.com/cotation/{key}"` | Adresse de la page : `{key}` est remplacé par chaque identifiant candidat. |
-| `regex_price` | Motif du bloc YAML complet | Motif de recherche du prix dans le HTML. Le groupe nommé `price` fournit le nombre extrait. |
-| `regex_variation` | Motif du bloc YAML complet | Motif de recherche de la variation en pourcentage dans le HTML. Le groupe nommé `variation` fournit le nombre extrait. |
+| `url` | Adresse ci-dessous | Page du titre. |
+| `regex_price` | Motifs ci-dessous | Extraction du prix. |
+| `regex_variation` | Motifs ci-dessous | Extraction de la variation. |
 
-Sous `key_strategy.candidates`, les indices `[0]`, `[1]` désignent le premier et le second modèle :
+Dans l’adresse, `{key}` est remplacé par chaque identifiant candidat. Les regex recherchent les nombres dans le HTML : le groupe nommé `price` fournit le prix ; `variation` fournit la variation en pourcentage.
+
+~~~yaml
+url: "https://www.abcbourse.com/cotation/{key}"
+regex_price: "id=\"lastcx\">(?<price>\\d+(?:[.,]\\d+)*)\\s*&#x20AC;"
+regex_variation: "id=\"varcx\"\\s+class=\"quote_(up|down)b\">(?<variati\
+  on>(&#x2B;|&#x2D;|\\+|-)?\\d+(?:[.,]\\d+)*)%"
+~~~
+
+Sous `key_strategy.candidates` :
 
 | Entrée | Valeur intégrée | Usage effectif |
 |---|---|---|
-| `[0].template` | `"{ticker}p"` | Premier identifiant : ticker suivi de la lettre `p`. Écarté si le ticker est indisponible. |
-| `[1].template` | `"{isin}"` | Second identifiant : ISIN seul. |
+| `[0].template` | `"{ticker}p"` | Ticker suivi de `p`. |
+| `[1].template` | `"{isin}"` | ISIN seul. |
+
+Les modèles sont essayés dans cet ordre. Le premier est écarté si le ticker est indisponible.
 
 ### Tradingsat
 
@@ -193,21 +206,37 @@ Sous `market_data.websites.tradingsat` :
 
 | Entrée | Valeur intégrée | Usage effectif |
 |---|---|---|
-| `url` | `"https://www.tradingsat.com/{key}"` | Adresse de la page : `{key}` est remplacé par chaque identifiant candidat. |
-| `regex_price` | Motif du bloc YAML complet | Motif de recherche du prix dans le HTML. Le groupe nommé `price` fournit le nombre extrait. |
-| `regex_variation` | Motif du bloc YAML complet | Motif de recherche de la variation en pourcentage dans le HTML. Le groupe nommé `variation` fournit le nombre extrait. |
+| `url` | Adresse ci-dessous | Page du titre. |
+| `regex_price` | Motifs ci-dessous | Extraction du prix. |
+| `regex_variation` | Motifs ci-dessous | Extraction de la variation. |
+
+Dans l’adresse, `{key}` est remplacé par chaque identifiant candidat. Les regex recherchent les nombres dans le HTML : le groupe nommé `price` fournit le prix ; `variation` fournit la variation en pourcentage.
+
+~~~yaml
+url: "https://www.tradingsat.com/{key}"
+regex_price: "class=\"price\">(?<price>\\d+(?:[,.]\\d+)*)\\s*€"
+regex_variation: "class=\"variation var-(down|neutral|up)\">(?<variatio\
+  n>[+-]?\\d+(?:[,.]\\d+)*)\\s*%"
+~~~
 
 Sous `key_strategy.candidates` :
 
 | Entrée | Valeur intégrée | Usage effectif |
 |---|---|---|
-| `[0].template` | `"{name_slug}-{isin}"` | Identifiant composé du nom transformé et de l’ISIN. Écarté si le nom nécessaire n’est pas disponible. |
-| `[0].vars.name_slug.from` | `"name"` | Le nom du titre sert de texte de départ à la variable `name_slug`. |
-| `[0].vars.name_slug.ops[0]` | `"downcase"` | Passe le nom en minuscules. |
-| `[0].vars.name_slug.ops[1].gsub.pattern` | `"\\."` | Recherche les points dans le nom. Le motif est une expression régulière. |
-| `[0].vars.name_slug.ops[1].gsub.replace` | `""` | Remplace ces points par une chaîne vide, donc les supprime. |
-| `[0].vars.name_slug.ops[2].gsub.pattern` | `" "` | Recherche les espaces ordinaires. |
-| `[0].vars.name_slug.ops[2].gsub.replace` | `"-"` | Remplace ces espaces par des tirets. |
+| `[0].template` | `"{name_slug}-{isin}"` | Nom transformé et ISIN. |
+
+Ce modèle est écarté si le nom nécessaire est indisponible. `name_slug` est construit par les transformations ci-dessous.
+
+Sous `key_strategy.candidates[0].vars.name_slug` :
+
+| Entrée | Valeur intégrée | Usage effectif |
+|---|---|---|
+| `from` | `"name"` | Nom du titre. |
+| `ops[0]` | `"downcase"` | Passage en minuscules. |
+| `ops[1].gsub.pattern` | `"\\."` | Recherche des points. |
+| `ops[1].gsub.replace` | `""` | Supprime les points. |
+| `ops[2].gsub.pattern` | `" "` | Recherche des espaces. |
+| `ops[2].gsub.replace` | `"-"` | Remplace les espaces par des tirets. |
 
 ### Boursorama
 
@@ -215,18 +244,30 @@ Sous `market_data.websites.boursorama` :
 
 | Entrée | Valeur intégrée | Usage effectif |
 |---|---|---|
-| `url` | `"https://www.boursorama.com/cours/{key}/"` | Adresse de la page : `{key}` est remplacé par chaque identifiant candidat. |
-| `regex_price` | Motif du bloc YAML complet | Motif de recherche du prix dans le HTML. Le groupe nommé `price` fournit le nombre extrait. |
-| `regex_variation` | Motif du bloc YAML complet | Motif de recherche de la variation en pourcentage dans le HTML. Le groupe nommé `variation` fournit le nombre extrait. |
+| `url` | Adresse ci-dessous | Page du titre. |
+| `regex_price` | Motifs ci-dessous | Extraction du prix. |
+| `regex_variation` | Motifs ci-dessous | Extraction de la variation. |
+
+Dans l’adresse, `{key}` est remplacé par chaque identifiant candidat. Les regex recherchent les nombres dans le HTML : le groupe nommé `price` fournit le prix ; `variation` fournit la variation en pourcentage.
+
+~~~yaml
+url: "https://www.boursorama.com/cours/{key}/"
+regex_price: "c-faceplate__info.+?price.+?ist-last>(?<price>\\d+(?:[,.]\
+  \\d+)*)<"
+regex_variation: "c-faceplate__info.+?fluctuation.+?ist-variation>(?<va\
+  riation>[+-]?\\d+(?:[.,]\\d+)*)%"
+~~~
 
 Sous `key_strategy.candidates` :
 
 | Entrée | Valeur intégrée | Usage effectif |
 |---|---|---|
-| `[0].template` | `"1rP{ticker}"` | Premier identifiant : `1rP` suivi du ticker. |
-| `[1].template` | `"1rEP{ticker}"` | Second identifiant : `1rEP` suivi du ticker. |
-| `[2].template` | `"{ticker}"` | Troisième identifiant : ticker seul. Ces trois modèles sont écartés si le ticker est indisponible. |
-| `[2].ops.ticker` | `["upcase", "trim"]` | **Non utilisé à cet emplacement** par le constructeur actuel. Les transformations `upcase` et `trim` de cette entrée ne sont donc pas appliquées. Les opérations prises en charge se trouvent sous `vars.<variable>.ops`. |
+| `[0].template` | `"1rP{ticker}"` | Préfixe `1rP` et ticker. |
+| `[1].template` | `"1rEP{ticker}"` | Préfixe `1rEP` et ticker. |
+| `[2].template` | `"{ticker}"` | Ticker seul. |
+| `[2].ops.ticker` | `["upcase", "trim"]` | **Non appliqué.** |
+
+Les trois modèles sont essayés dans cet ordre et écartés si le ticker est indisponible. **Les transformations `upcase` et `trim` sous `[2].ops.ticker` ne sont pas utilisées à cet emplacement** par le constructeur actuel. Les opérations prises en charge se trouvent sous `vars.<variable>.ops`.
 
 ## Configuration intégrée complète
 
@@ -288,8 +329,10 @@ market_data:
         candidates:
         - template: '{ticker}p'
         - template: '{isin}'
-      regex_price: id="lastcx">(?<price>\d+(?:[.,]\d+)*)\s*&#x20AC;
-      regex_variation: id="varcx"\s+class="quote_(up|down)b">(?<variation>(&#x2B;|&#x2D;|\+|-)?\d+(?:[.,]\d+)*)%
+      regex_price: "id=\"lastcx\">(?<price>\\d+(?:[.,]\\d+)*)\\s*&#x20A\
+        C;"
+      regex_variation: "id=\"varcx\"\\s+class=\"quote_(up|down)b\">(?<v\
+        ariation>(&#x2B;|&#x2D;|\\+|-)?\\d+(?:[.,]\\d+)*)%"
     tradingsat:
       url: https://www.tradingsat.com/{key}
       key_strategy:
@@ -306,8 +349,9 @@ market_data:
               - gsub:
                   pattern: ' '
                   replace: '-'
-      regex_price: class="price">(?<price>\d+(?:[,.]\d+)*)\s*€
-      regex_variation: class="variation var-(down|neutral|up)">(?<variation>[+-]?\d+(?:[,.]\d+)*)\s*%
+      regex_price: "class=\"price\">(?<price>\\d+(?:[,.]\\d+)*)\\s*€"
+      regex_variation: "class=\"variation var-(down|neutral|up)\">(?<va\
+        riation>[+-]?\\d+(?:[,.]\\d+)*)\\s*%"
     boursorama:
       url: https://www.boursorama.com/cours/{key}/
       key_strategy:
@@ -319,8 +363,10 @@ market_data:
             ticker:
             - upcase
             - trim
-      regex_price: c-faceplate__info.+?price.+?ist-last>(?<price>\d+(?:[,.]\d+)*)<
-      regex_variation: c-faceplate__info.+?fluctuation.+?ist-variation>(?<variation>[+-]?\d+(?:[.,]\d+)*)%
+      regex_price: "c-faceplate__info.+?price.+?ist-last>(?<price>\\d+(\
+        ?:[,.]\\d+)*)<"
+      regex_variation: "c-faceplate__info.+?fluctuation.+?ist-variation\
+        >(?<variation>[+-]?\\d+(?:[.,]\\d+)*)%"
 fees:
   rate: 0.0035
   min: 0.0

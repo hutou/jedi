@@ -10,7 +10,7 @@ module Jedi
     @raw_fees : String? = nil
 
     def parser_on_operation
-      subcommands = ["create", "delete", "list"]
+      subcommands = ["create", "fees", "delete", "list"]
       self.command = "operation"
       operation_parser = OptionParser.new do |parser|
         parser.summary_indent = "  "
@@ -21,6 +21,7 @@ module Jedi
             parser.banner = I18n.t("#{prefix}.banner")
             case subcommand
             when "create" then create(parser, prefix)
+            when "fees"   then fees(parser, prefix)
             when "delete" then delete(parser, prefix)
             when "list"   then list(parser, prefix)
             end
@@ -53,6 +54,7 @@ module Jedi
     private def operation_run
       case subcommand
       when "create" then create
+      when "fees"   then fees
       when "delete" then delete
       when "list"   then list
       end
@@ -120,6 +122,42 @@ module Jedi
       TradingLife::OperationCreator.new(conn_main).call trade_ident: trade_ident,
         timestamp: timestamp, type: type, mode: mode, quantity: quantity,
         price: price, cfees: fees, tickcheck: tickcheck
+    rescue ex : LowLevelError
+      raise_from_low_level(ex)
+    end
+
+    private def fees(parser, prefix)
+      parser.separator I18n.t("#{prefix}.usage")
+      parser.separator I18n.t("#{prefix}.notes")
+      parser.separator I18n.t("infra.options")
+      help(parser)
+      parser.separator ""
+      parser.separator I18n.t("#{prefix}.examples")
+    end
+
+    private def fees
+      Core::Input.ensure_argument_count!(2, 2, key: "infra.positional_arguments")
+      raw_id, raw_amount = ARGV.shift(2)
+      operation_id = raw_id.to_i64?
+      unless raw_id =~ POSITIVE_INTEGER && operation_id && operation_id > 0
+        raise LowLevelError.new(
+          key: "operation.fees.invalid_id",
+          context: {:id => raw_id},
+          kind: LowLevelError::Kind::UserInput,
+          log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+      end
+
+      amount = raw_amount.to_f?
+      unless raw_amount =~ NON_NEGATIVE_DECIMAL && amount
+        raise LowLevelError.new(
+          key: "operation.fees.invalid_amount",
+          context: {:amount => raw_amount},
+          kind: LowLevelError::Kind::UserInput,
+          log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+      end
+
+      TradingLife::OperationFeesUpdater.new(conn_main).call(
+        operation_id: operation_id, amount: amount)
     rescue ex : LowLevelError
       raise_from_low_level(ex)
     end

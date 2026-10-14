@@ -106,7 +106,7 @@ jedidemo operation create Exa_01 \
 
 La première opération est un achat de mode `Limit` ou `Market`, selon l'ordre réellement exécuté. Sa date est distincte de celle du paramétrage. La quantité et le prix sont ceux de l'exécution ; ils peuvent différer de l'évaluation préalable.
 
-`--fees` donne le total des frais de cette opération, taxe éventuelle comprise. Si l'option est omise, Jedi applique les frais configurés et la taxe du titre pour un achat. Lorsque l'avis d'opéré donne les frais définitifs, les saisir explicitement.
+`--fees` donne le total des frais de cette opération, taxe éventuelle comprise. Si l'option est omise, Jedi applique les frais configurés et la taxe du titre pour un achat. Lorsque l'avis d'opéré donne les frais définitifs, les saisir explicitement. Après enregistrement, `operation fees ID MONTANT` permet de corriger ce total sur toute opération ; le [chapitre 08](08_suivre_un_trade.md#corriger-les-frais-dune-opération-enregistrée) explique comment retrouver son identifiant et vérifier la correction.
 
 Un achat non exécuté ne crée aucune opération. S'il est exécuté en plusieurs fragments, attendre de pouvoir enregistrer une exécution consolidée ; le [chapitre 08](08_suivre_un_trade.md#traiter-une-exécution-partielle) explique la procédure.
 

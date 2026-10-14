@@ -121,6 +121,30 @@ Si vous décidez de conserver et d'enregistrer seulement la partie exécutée, *
 
 Un prix moyen de plusieurs exécutions peut ne pas respecter le pas de cotation. Jedi contrôle normalement ce pas. Pour enregistrer un prix moyen attesté par le courtier sans l'arrondir artificiellement, le préfixe `+` désactive ce contrôle pour cette saisie : par exemple `--price=+11.013333`. Il ne majore pas le prix. Cette forme sert à reporter une exécution réelle, pas à contourner le contrôle des prix d'ordre.
 
+## Corriger les frais d'une opération enregistrée
+
+L'avis d'opéré peut préciser des frais différents du montant saisi ou calculé automatiquement. La commande `operation fees` remplace le **montant total des frais** d'une opération déjà enregistrée, taxe éventuelle comprise.
+
+Retrouver d'abord son numéro en affichant les opérations avec les frais, colonne `16` :
+
+~~~console
+jedidemo operation list Exa_01 -c 0,5-9,16,17
+~~~
+
+Dans notre base fictive préparée sans opération préalable, la vente de 6 titres porte le numéro `2`. Si ses frais avaient été enregistrés à tort à 0,20 €, les corriger au montant confirmé de 0,23 € :
+
+~~~console
+jedidemo operation fees 2 0.23
+jedidemo operation list Exa_01 -c 0,5-9,16,17
+jedidemo trade results Exa_01
+~~~
+
+Utiliser **l'identifiant de l'opération réellement affiché**, qui peut être différent dans votre base. Le montant est exprimé dans la monnaie du trade, avec un point décimal, puis arrondi au centime. `0` annule les frais. Le montant remplace la valeur précédente ; ce n'est pas une différence à ajouter.
+
+La correction peut porter sur n'importe quelle opération, même ancienne ou appartenant à un trade clôturé. Les quantités, prix, stock, position, investissement hors frais et ordres restent identiques. Les listes et exports reprennent les frais corrigés ; `trade results` recalcule les frais cumulés et les résultats nets. Un nouveau `tools play` démarrant depuis cette opération ou une opération ultérieure du même trade reprend les frais historiques corrigés. `backtest` et `score` calculent leurs propres opérations simulées à partir de la configuration.
+
+Si nécessaire, conserver le motif et l'ancien montant dans une note. Pour la suite de notre exemple, les frais de la vente restent **0,23 €**.
+
 ## Garder une trace avec note
 
 Les opérations donnent les mouvements du stock et de trésorerie. `note` permet de conserver le contexte d'un événement exceptionnel : exécution partielle, annulation, interruption du suivi, incident ou décision particulière.

@@ -55,6 +55,8 @@ The following entries are under fees.
 
 With built-in values, a €1,000 transaction incurs €3.50 in proportional fees. For a purchase, any security tax is added to the rate before comparison with the minimum. An explicit operation create --fees amount replaces automatic calculation. Candidate funding projections exclude fees. Simulated fees enter play, backtest and score results; they do not change scale coefficients.
 
+Changing `fees.rate` or `fees.min` affects new operations; it does not recalculate recorded fees. For an existing operation, use `operation fees ID AMOUNT`, explained in [chapter 08](en_08_monitoring_a_trade.md#correct-fees-on-a-recorded-operation). The amount directly replaces the recorded total; configured fees and tax are not added to it.
+
 ## Real capital and money limits
 
 Under trading:
@@ -168,65 +170,104 @@ A path such as ["Global Quote", "05. price"] means: open the Global Quote object
 
 ## Built-in Web providers
 
-Long extraction patterns are reproduced exactly in the complete YAML block. Each site has its own address, identifier templates and capture patterns. Their presence does not guarantee a response or lasting HTML compatibility.
+Each site has its own address, identifier templates and capture patterns. Tables describe entries and their uses; addresses and regexes appear below each table across the full page width. In double-quoted YAML strings, a trailing backslash continues the same string on the next line without adding a character. Values are identical to those in the code. Their presence does not guarantee that the site will respond or that its HTML will remain compatible.
 
 ### ABC Bourse
 
-Under market_data.websites.abcbourse:
+Under `market_data.websites.abcbourse` :
 
 | Entry | Built-in value | Actual use |
 |---|---|---|
-| `url` | `"https://www.abcbourse.com/cotation/{key}"` | Page address: `{key}` is replaced with each candidate identifier. |
-| `regex_price` | Pattern in the complete YAML block | Pattern locating the price in HTML. The named price group supplies the extracted number. |
-| `regex_variation` | Pattern in the complete YAML block | Pattern locating percentage change in HTML. The named variation group supplies the extracted number. |
+| `url` | Address below | Security page. |
+| `regex_price` | Patterns below | Price extraction. |
+| `regex_variation` | Patterns below | Change extraction. |
 
-Under key_strategy.candidates, indexes [0] and [1] denote the first and second templates:
+In the address, `{key}` is replaced with each candidate identifier. Regexes locate numbers in HTML: the named `price` group supplies the price; `variation` supplies percentage change.
+
+~~~yaml
+url: "https://www.abcbourse.com/cotation/{key}"
+regex_price: "id=\"lastcx\">(?<price>\\d+(?:[.,]\\d+)*)\\s*&#x20AC;"
+regex_variation: "id=\"varcx\"\\s+class=\"quote_(up|down)b\">(?<variati\
+  on>(&#x2B;|&#x2D;|\\+|-)?\\d+(?:[.,]\\d+)*)%"
+~~~
+
+Under `key_strategy.candidates` :
 
 | Entry | Built-in value | Actual use |
 |---|---|---|
-| `[0].template` | `"{ticker}p"` | First identifier: ticker followed by p. Skipped if the ticker is unavailable. |
-| `[1].template` | `"{isin}"` | Second identifier: ISIN alone. |
+| `[0].template` | `"{ticker}p"` | Ticker followed by `p`. |
+| `[1].template` | `"{isin}"` | ISIN alone. |
+
+Templates are tried in this order. The first is skipped if the ticker is unavailable.
 
 ### Tradingsat
 
-Under market_data.websites.tradingsat:
+Under `market_data.websites.tradingsat` :
 
 | Entry | Built-in value | Actual use |
 |---|---|---|
-| `url` | `"https://www.tradingsat.com/{key}"` | Page address: `{key}` is replaced with each candidate identifier. |
-| `regex_price` | Pattern in the complete YAML block | Pattern locating the price in HTML. The named price group supplies the extracted number. |
-| `regex_variation` | Pattern in the complete YAML block | Pattern locating percentage change in HTML. The named variation group supplies the extracted number. |
+| `url` | Address below | Security page. |
+| `regex_price` | Patterns below | Price extraction. |
+| `regex_variation` | Patterns below | Change extraction. |
 
-Under key_strategy.candidates:
+In the address, `{key}` is replaced with each candidate identifier. Regexes locate numbers in HTML: the named `price` group supplies the price; `variation` supplies percentage change.
+
+~~~yaml
+url: "https://www.tradingsat.com/{key}"
+regex_price: "class=\"price\">(?<price>\\d+(?:[,.]\\d+)*)\\s*€"
+regex_variation: "class=\"variation var-(down|neutral|up)\">(?<variatio\
+  n>[+-]?\\d+(?:[,.]\\d+)*)\\s*%"
+~~~
+
+Under `key_strategy.candidates` :
 
 | Entry | Built-in value | Actual use |
 |---|---|---|
-| `[0].template` | `"{name_slug}-{isin}"` | Identifier combining the transformed name and ISIN. Skipped if the required name is unavailable. |
-| `[0].vars.name_slug.from` | `"name"` | The security name is the input text for name_slug. |
-| `[0].vars.name_slug.ops[0]` | `"downcase"` | Converts the name to lowercase. |
-| `[0].vars.name_slug.ops[1].gsub.pattern` | `"\\."` | Finds periods in the name. The pattern is a regular expression. |
-| `[0].vars.name_slug.ops[1].gsub.replace` | `""` | Replaces those periods with an empty string, removing them. |
-| `[0].vars.name_slug.ops[2].gsub.pattern` | `" "` | Finds ordinary spaces. |
-| `[0].vars.name_slug.ops[2].gsub.replace` | `"-"` | Replaces those spaces with hyphens. |
+| `[0].template` | `"{name_slug}-{isin}"` | Transformed name and ISIN. |
+
+This template is skipped if the required name is unavailable. `name_slug` is built by the transformations below.
+
+Under `key_strategy.candidates[0].vars.name_slug` :
+
+| Entry | Built-in value | Actual use |
+|---|---|---|
+| `from` | `"name"` | Security name. |
+| `ops[0]` | `"downcase"` | Conversion to lowercase. |
+| `ops[1].gsub.pattern` | `"\\."` | Period matching. |
+| `ops[1].gsub.replace` | `""` | Removes the periods. |
+| `ops[2].gsub.pattern` | `" "` | Space matching. |
+| `ops[2].gsub.replace` | `"-"` | Replaces spaces with hyphens. |
 
 ### Boursorama
 
-Under market_data.websites.boursorama:
+Under `market_data.websites.boursorama` :
 
 | Entry | Built-in value | Actual use |
 |---|---|---|
-| `url` | `"https://www.boursorama.com/cours/{key}/"` | Page address: `{key}` is replaced with each candidate identifier. |
-| `regex_price` | Pattern in the complete YAML block | Pattern locating the price in HTML. The named price group supplies the extracted number. |
-| `regex_variation` | Pattern in the complete YAML block | Pattern locating percentage change in HTML. The named variation group supplies the extracted number. |
+| `url` | Address below | Security page. |
+| `regex_price` | Patterns below | Price extraction. |
+| `regex_variation` | Patterns below | Change extraction. |
 
-Under key_strategy.candidates:
+In the address, `{key}` is replaced with each candidate identifier. Regexes locate numbers in HTML: the named `price` group supplies the price; `variation` supplies percentage change.
+
+~~~yaml
+url: "https://www.boursorama.com/cours/{key}/"
+regex_price: "c-faceplate__info.+?price.+?ist-last>(?<price>\\d+(?:[,.]\
+  \\d+)*)<"
+regex_variation: "c-faceplate__info.+?fluctuation.+?ist-variation>(?<va\
+  riation>[+-]?\\d+(?:[.,]\\d+)*)%"
+~~~
+
+Under `key_strategy.candidates` :
 
 | Entry | Built-in value | Actual use |
 |---|---|---|
-| `[0].template` | `"1rP{ticker}"` | First identifier: 1rP followed by the ticker. |
-| `[1].template` | `"1rEP{ticker}"` | Second identifier: 1rEP followed by the ticker. |
-| `[2].template` | `"{ticker}"` | Third identifier: ticker alone. All three templates are skipped if the ticker is unavailable. |
-| `[2].ops.ticker` | `["upcase", "trim"]` | **Unused at this location** by the current builder. This entry’s upcase and trim transformations are therefore not applied. Supported operations are under vars.<variable>.ops. |
+| `[0].template` | `"1rP{ticker}"` | `1rP` prefix and ticker. |
+| `[1].template` | `"1rEP{ticker}"` | `1rEP` prefix and ticker. |
+| `[2].template` | `"{ticker}"` | Ticker alone. |
+| `[2].ops.ticker` | `["upcase", "trim"]` | **Not applied.** |
+
+The three templates are tried in this order and skipped if the ticker is unavailable. **The `upcase` and `trim` transformations under `[2].ops.ticker` are unused at this location** by the current builder. Supported operations are under `vars.<variable>.ops`.
 
 ## Complete built-in configuration
 
@@ -288,8 +329,10 @@ market_data:
         candidates:
         - template: '{ticker}p'
         - template: '{isin}'
-      regex_price: id="lastcx">(?<price>\d+(?:[.,]\d+)*)\s*&#x20AC;
-      regex_variation: id="varcx"\s+class="quote_(up|down)b">(?<variation>(&#x2B;|&#x2D;|\+|-)?\d+(?:[.,]\d+)*)%
+      regex_price: "id=\"lastcx\">(?<price>\\d+(?:[.,]\\d+)*)\\s*&#x20A\
+        C;"
+      regex_variation: "id=\"varcx\"\\s+class=\"quote_(up|down)b\">(?<v\
+        ariation>(&#x2B;|&#x2D;|\\+|-)?\\d+(?:[.,]\\d+)*)%"
     tradingsat:
       url: https://www.tradingsat.com/{key}
       key_strategy:
@@ -306,8 +349,9 @@ market_data:
               - gsub:
                   pattern: ' '
                   replace: '-'
-      regex_price: class="price">(?<price>\d+(?:[,.]\d+)*)\s*€
-      regex_variation: class="variation var-(down|neutral|up)">(?<variation>[+-]?\d+(?:[,.]\d+)*)\s*%
+      regex_price: "class=\"price\">(?<price>\\d+(?:[,.]\\d+)*)\\s*€"
+      regex_variation: "class=\"variation var-(down|neutral|up)\">(?<va\
+        riation>[+-]?\\d+(?:[,.]\\d+)*)\\s*%"
     boursorama:
       url: https://www.boursorama.com/cours/{key}/
       key_strategy:
@@ -319,8 +363,10 @@ market_data:
             ticker:
             - upcase
             - trim
-      regex_price: c-faceplate__info.+?price.+?ist-last>(?<price>\d+(?:[,.]\d+)*)<
-      regex_variation: c-faceplate__info.+?fluctuation.+?ist-variation>(?<variation>[+-]?\d+(?:[.,]\d+)*)%
+      regex_price: "c-faceplate__info.+?price.+?ist-last>(?<price>\\d+(\
+        ?:[,.]\\d+)*)<"
+      regex_variation: "c-faceplate__info.+?fluctuation.+?ist-variation\
+        >(?<variation>[+-]?\\d+(?:[.,]\\d+)*)%"
 fees:
   rate: 0.0035
   min: 0.0

@@ -121,6 +121,30 @@ If you decide to retain and record only the executed part, **immediately cancel 
 
 The average price of several executions may not match the quotation tick. Jedi normally checks that tick. To record a broker-confirmed average without artificial rounding, prefixing the price with `+` disables this check for that entry: for example, `--price=+11.013333`. It does not increase the price. Use this form to report actual execution, rather than bypassing order-price checks.
 
+## Correct fees on a recorded operation
+
+The broker's execution statement may show fees different from the entered or automatically calculated amount. `operation fees` replaces the **total fees** of a recorded operation, including any transaction tax.
+
+First find its identifier by displaying operations with fees, column `16`:
+
+~~~console
+jedidemo operation list Exa_01 -c 0,5-9,16,17
+~~~
+
+In our fictional database prepared without earlier operations, the sale of 6 shares has ID `2`. If its fees had incorrectly been recorded as €0.20, correct them to the confirmed €0.23:
+
+~~~console
+jedidemo operation fees 2 0.23
+jedidemo operation list Exa_01 -c 0,5-9,16,17
+jedidemo trade results Exa_01
+~~~
+
+Use **the operation identifier actually displayed**, which may differ in your database. The amount uses the trade's currency and a decimal point, then is rounded to cents. `0` cancels the fees. The amount replaces the previous value; it is not a difference to add.
+
+Any operation can be corrected, including an earlier operation or one in a closed trade. Quantities, prices, holdings, position, investment excluding fees and orders remain identical. Lists and exports show corrected fees; `trade results` recalculates total fees and net results. A new `tools play` starting from this operation or a later operation in the same trade copies the corrected historical fees. `backtest` and `score` calculate their own simulated operations using configuration.
+
+If needed, retain the reason and previous amount in a note. For the remainder of our example, the sale's fees remain **€0.23**.
+
 ## Retain context with note
 
 Operations record stock and cash movements. `note` retains the context of exceptional events: partial execution, cancellation, interrupted monitoring, an incident or a particular decision.

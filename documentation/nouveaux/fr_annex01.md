@@ -28,13 +28,23 @@ L'option globale `--border=PRESET` précède la famille de commande. Les styles 
 | `trade` | `create`, `update`, `delete`, `show`, `list` | Identité du trade et gestion du capital |
 | `trade` | `orders`, `status`, `results`, `plot` | Ordres, situation, résultats et graphique |
 | `settings` | `create`, `delete`, `show`, `list` | Barème applicable à une date et une heure, split, synchronisation, réinitialisation |
-| `operation` | `create`, `delete`, `list` | Exécutions réellement réalisées |
+| `operation` | `create`, `fees`, `delete`, `list` | Exécutions réellement réalisées ; correction des frais par identifiant d'opération |
 | `note` | `create`, `update`, `delete`, `show`, `list` | Journal et événements exceptionnels ; `--edit` pour l'éditeur |
 | `database` | `dump`, `load`, `schema` | Sauvegarde, restauration et schéma de la base principale |
 
 Les champs obligatoires sont décrits par chaque aide. La suppression d'une entité utilisée peut être refusée ; une suppression d'opération n'est pas son remplacement automatique. Les exemples de correction et d'adaptation figurent aux chapitres 08 et 09.
 
 `quote get ISIN` affiche un cours externe sans enregistrer de titre ou de cotation. `quote set` enregistre un cours manuel. `quote update` actualise un titre enregistré ; `quote refresh` traite une sélection et, par défaut, les titres des trades en cours. `--mode=live|eod` s'applique à `update` et `refresh`, pas à `get`. `--force` appartient à `refresh` ; il permet de forcer la mise à jour selon son filtrage.
+
+## Corriger les frais d'une opération
+
+~~~console
+jedidemo operation fees 42 3.50
+jedidemo operation fees 42 0
+jedidemo operation fees --help
+~~~
+
+La syntaxe est `jedi operation fees <operation_id> <amount>`. L'identifiant numérique est celui de l'opération, à lire avec `operation list`, et non celui du trade. Le montant remplace le **total** des frais, taxe éventuelle comprise ; un montant nul les annule. Utiliser un point décimal et une valeur positive ou nulle, arrondie au centime. Une opération ancienne ou d'un trade clôturé peut être corrigée. Les résultats nets, listes et exports reprennent la nouvelle valeur. Les frais historiques sont aussi repris lors d'un nouveau `play` depuis une opération du même trade. Le [chapitre 08](08_suivre_un_trade.md#corriger-les-frais-dune-opération-enregistrée) donne la procédure complète.
 
 ## Adapter un paramétrage : split, reinit et sync
 

@@ -79,3 +79,5 @@ Une note décrit l'événement ; elle ne modifie ni les opérations ni les ordre
 | Suites | Décision pratique, changements ultérieurs et événements exceptionnels |
 
 Cette fiche permet de relire une étude, d'expliquer une différence entre deux rapports et de distinguer le choix initial des modifications suivantes. Pour un projet réel, revenir à `candidate` avec le prix actuel, puis au suivi des opérations exécutées décrit dans la partie I.
+
+Pour les opérations réelles, contrôler les frais contre les avis d'opéré. Une erreur peut être corrigée avec `operation fees ID MONTANT`, selon le [chapitre 08](08_suivre_un_trade.md#corriger-les-frais-dune-opération-enregistrée), puis vérifier `trade results`. Cette correction change le bilan net du portefeuille enregistré ; les études `backtest` et `score` recréent leurs opérations et leurs frais à partir de leurs propres paramètres.

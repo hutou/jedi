@@ -18,6 +18,7 @@ Avant d'intervenir, vérifier le stock, les dernières opérations et les ordres
 | Prendre en compte un fractionnement ou regroupement | `--split=NOUVEAUX:ANCIENS`. |
 | Reprendre exceptionnellement une position de type I | `--sync=x:y:e`. |
 | Modifier le nom ou la gestion du capital | `trade update`. |
+| Corriger les frais d'une opération, même ancienne | `operation fees ID MONTANT`, selon le chapitre 08. |
 | Terminer le trade | Enregistrer la vente réelle de tout le stock restant. |
 
 À partir de cette évolution de Jedi 1.1, **`--split` peut accompagner `--reinit=reset,prix` ou `--reinit=merge,prix` dans un seul paramétrage**. Le split s'applique d'abord au stock ; le prix fourni à `reinit` est exprimé dans la nouvelle unité du titre. `--sync` reste incompatible avec `--split` et avec `--reinit`. Un nouveau paramétrage doit respecter la chronologie globale rappelée au chapitre 07.
@@ -196,7 +197,9 @@ Lire la demande de confirmation. Cette option efface le stop mémorisé dans Jed
 
 ## Corriger la fin de l'historique
 
-Il n'existe pas de modification libre d'une ancienne opération. La correction remonte la fin de l'historique global dans l'ordre inverse, puis recrée les enregistrements corrects.
+Pour une erreur portant uniquement sur les frais, utiliser `operation fees ID MONTANT` : cette correction est possible sur toute opération, même d'un trade clôturé, sans remonter l'historique. Le [chapitre 08](08_suivre_un_trade.md#corriger-les-frais-dune-opération-enregistrée) décrit la procédure.
+
+Pour corriger les autres données d'une opération, il n'existe pas de modification libre d'un ancien enregistrement. La correction remonte la fin de l'historique global dans l'ordre inverse, puis recrée les enregistrements corrects.
 
 ~~~console
 jedidemo operation delete

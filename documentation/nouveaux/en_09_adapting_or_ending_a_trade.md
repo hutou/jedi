@@ -18,6 +18,7 @@ Apart from the separate 1,790-share consolidation example below, the examples ar
 | Account for a split or consolidation | `--split=NEW:OLD`. |
 | Exceptionally resume a type I position | `--sync=x:y:e`. |
 | Change the name or capital management | `trade update`. |
+| Correct fees on any operation, including an earlier one | `operation fees ID AMOUNT`, as described in chapter 08. |
 | End the trade | Record the actual sale of all remaining stock. |
 
 From this Jedi 1.1 change onwards, **`--split` may accompany `--reinit=reset,price` or `--reinit=merge,price` in one settings entry**. The split first adjusts the holding; the price supplied to `reinit` uses the security's new unit. `--sync` remains incompatible with `--split` and with `--reinit`. New settings must respect global chronology as explained in chapter 07.
@@ -196,7 +197,9 @@ Read the confirmation prompt. This option clears the stop stored in Jedi; it can
 
 ## Correct the end of the history
 
-There is no arbitrary editing of an earlier operation. Correction steps backwards from the end of global history, then recreates correct records.
+For an error affecting fees alone, use `operation fees ID AMOUNT`: any operation can be corrected, even in a closed trade, without stepping back through history. [Chapter 08](en_08_monitoring_a_trade.md#correct-fees-on-a-recorded-operation) describes the procedure.
+
+For other operation data, there is no arbitrary editing of an earlier record. Correction steps backwards from the end of global history, then recreates correct records.
 
 ~~~console
 jedidemo operation delete

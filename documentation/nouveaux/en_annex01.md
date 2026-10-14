@@ -28,13 +28,23 @@ Global `--border=PRESET` precedes the command family. Styles are `ascii`, `reduc
 | `trade` | `create`, `update`, `delete`, `show`, `list` | Trade identity and capital management |
 | `trade` | `orders`, `status`, `results`, `plot` | Orders, state, results and chart |
 | `settings` | `create`, `delete`, `show`, `list` | Scale applying at a date/time, split, synchronisation and reset |
-| `operation` | `create`, `delete`, `list` | Executions actually performed |
+| `operation` | `create`, `fees`, `delete`, `list` | Actual executions; fee correction by operation identifier |
 | `note` | `create`, `update`, `delete`, `show`, `list` | Journal and exceptional events; `--edit` for an editor |
 | `database` | `dump`, `load`, `schema` | Main database backup, restore and schema |
 
 Each help page describes required fields. Deleting an entity in use may be refused; deleting an operation does not automatically replace it. Chapters 08 and 09 show corrections and adaptations.
 
 `quote get ISIN` displays an external price without recording a security or quotation. `quote set` records a manual price. `quote update` updates one registered security; `quote refresh` handles a selection, defaulting to securities of running trades. `--mode=live|eod` applies to `update` and `refresh`, not `get`. `--force` belongs to `refresh` and forces updates according to its filtering.
+
+## Correct operation fees
+
+~~~console
+jedidemo operation fees 42 3.50
+jedidemo operation fees 42 0
+jedidemo operation fees --help
+~~~
+
+Syntax is `jedi operation fees <operation_id> <amount>`. The numeric identifier belongs to the operation, found with `operation list`, rather than the trade. The amount replaces **total** fees, including any transaction tax; zero cancels them. Use a decimal point and a non-negative value, rounded to cents. An earlier operation or one in a closed trade can be corrected. Net results, lists and exports use the new value. Historical fees are also copied into a new `play` starting from an operation in the same trade. [Chapter 08](en_08_monitoring_a_trade.md#correct-fees-on-a-recorded-operation) gives the complete procedure.
 
 ## Adapt settings: split, reinit and sync
 

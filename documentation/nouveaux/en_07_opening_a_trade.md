@@ -106,7 +106,7 @@ jedidemo operation create Exa_01 \
 
 The first operation is a `Limit` or `Market` purchase according to the order actually executed. Its timestamp differs from the settings timestamp. Quantity and price are execution values; they can differ from the prior evaluation.
 
-`--fees` supplies the operation's total fees, including any tax. If omitted, Jedi applies configured fees and the security's purchase tax. Enter definitive fees explicitly when provided by the execution statement.
+`--fees` supplies the operation's total fees, including any tax. If omitted, Jedi applies configured fees and the security's purchase tax. Enter definitive fees explicitly when provided by the execution statement. After recording, `operation fees ID AMOUNT` can correct this total on any operation; [chapter 08](en_08_monitoring_a_trade.md#correct-fees-on-a-recorded-operation) explains how to find its identifier and check the correction.
 
 An unexecuted purchase creates no operation. If executed in several fragments, wait until you can record consolidated execution; [chapter 08](en_08_monitoring_a_trade.md#handle-partial-execution) explains how.
 
