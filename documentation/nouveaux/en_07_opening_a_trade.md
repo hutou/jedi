@@ -8,6 +8,27 @@ Opening has three stages: prepare the trade in Jedi, execute the purchase throug
 
 This chapter uses **EXA, an entirely fictional security**: an initial purchase of 100 shares at €10, a scale with 10% movements and €5,000 reference capital. Use an empty experiment database prepared in [chapter 02](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment). Historical EXA files can exist in a market database; they do not create this security in the main database.
 
+## Prepare an entry on a rebound near support
+
+[Chapter 03](en_03_choosing_a_security.md#read-the-chart-trend-support-and-resistance) describes chart-based security selection. A retained security can remain on watch until the chosen entry signal appears. Within a sideways or rising channel with oscillations, one scenario is to seek the first observable rebound after a return near support.
+
+Before that return, record the support area, time frame and recovery criterion. One possible rule to test is to wait for a daily close above the high of the session that tested support. Touching the line followed by a small intraday movement does not meet this closing criterion.
+
+These two sessions are entirely invented, within a channel from an area near €9.50 to resistance near €12:
+
+| Session | Low | High | Close |
+|---|---:|---:|---:|
+| A: support test | €9.50 | €9.85 | €9.65 |
+| B: start of recovery | €9.65 | €10.10 | €10.00 |
+
+At B's close, the price exceeds A's high: the proposed criterion is met. The recovery can still fail. Waiting for this signal leads here to examining an entry around €10, above the €9.50 low. These observations are not taken from the EXA historical file.
+
+Then check the proposal at a price at which the purchase can be executed. A later execution may differ from the signal's closing price. The teaching example below assumes actual execution at €10: the first scale sale will be at €11, below the observed resistance. Check this remaining room against the scale's levels; the following level may already exceed the channel.
+
+Also examine a continued decline below support: proposed purchases, required reserve and the proposal's protection. A drawn channel does not cap losses or fund subsequent purchases. `candidate` evaluates rules and funding; it detects neither the channel nor the rebound.
+
+Retain the reference areas and opening criterion with the proposal's records. Once the first purchase is recorded, its actual price becomes `c0` and its quantity becomes `q0`. Operating orders then follow the scale and capital rules. Jedi does not record the chart's support and resistance lines as orders or protection.
+
 ## Check the proposal at the chosen price
 
 ~~~console

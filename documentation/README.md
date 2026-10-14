@@ -51,6 +51,10 @@ Jedi nomme automatiquement les nouveaux barèmes `B_kc_NN` (type I) ou `B_vr_NN`
 
 Jedi automatically names new scales `B_kc_NN` (type I) or `B_vr_NN` (type II, including Legacy) and refuses equivalent operational definitions. [Chapter 13](nouveaux/en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) describes numbering and explicit names constrained by the builder. These behaviours require the new change; historical names and duplicates are retained.
 
+Les chapitres 03 et 07 présentent aussi la sélection visuelle d'un titre, les canaux latéraux ou haussiers, quelques indicateurs et une entrée sur rebond près du support. ProRealTime, TradingView, Boursorama et Zonebourse sont donnés comme exemples de sites à consulter. Deux figures PNG entièrement fictives accompagnent les Markdown, une dans chaque langue.
+
+Chapters 03 and 07 also cover visual security selection, sideways or rising channels, a few indicators and entry on a rebound near support. ProRealTime, TradingView, Boursorama and Zonebourse are examples of websites to consult. Two entirely fictional PNG figures accompany the Markdown files, one in each language.
+
 ## Utiliser les exemples / Use the examples
 
 Installer Jedi selon [le guide français](../INSTALL.fr.md) ou [the English guide](../INSTALL.md). Lire [le guide des exemples](../examples/README.md) puis commencer avec `jedidemo`. Toutes les cotations fournies sont fictives. Le chapitre 10 prépare la base Demo ; le chapitre 23 prépare une base figée pour l’étude historique.
@@ -73,3 +77,11 @@ The defaults files are [pdf/fr.yaml](../pdf/fr.yaml) and [pdf/en.yaml](../pdf/en
 Pour inclure l’annexe 05 dans les PDF, vérifier que les listes de fichiers utilisées par la génération comprennent `documentation/nouveaux/fr_annex05_configuration_par_defaut.md` et `documentation/nouveaux/en_annex05_default_configuration.md`, chacune dans sa langue. Les fichiers de génération du dépôt ne sont pas fournis dans cette archive Markdown.
 
 To include appendix 05 in the PDFs, ensure that the build’s input lists include `documentation/nouveaux/fr_annex05_configuration_par_defaut.md` and `documentation/nouveaux/en_annex05_default_configuration.md` in their respective languages. Repository build files are not included in this Markdown archive.
+
+Les figures du chapitre 03 sont dans `documentation/nouveaux/figures/`. Conserver ce dossier avec les Markdown. Leurs chemins sont relatifs aux chapitres. Si Pandoc est lancé depuis la racine du dépôt, inclure `--resource-path=.:documentation/nouveaux` dans son appel pour trouver ces images. Cette option accepte aussi les ressources déjà accessibles depuis la racine. Les figures sont au format PNG, directement lisible par XeLaTeX.
+
+Le rendu contrôlé des chapitres utilise le lecteur Markdown standard de Pandoc (`--from=markdown`), qui permet le retour à la ligne dans les cellules des tableaux.
+
+Chapter 03 figures are in `documentation/nouveaux/figures/`; keep this folder with the Markdown files. Their paths are relative to the chapters. When running Pandoc from the repository root, include `--resource-path=.:documentation/nouveaux` in its invocation to find the images. This option also retains resources accessible from the root. The PNG figures can be read directly by XeLaTeX.
+
+The checked chapter rendering uses Pandoc's standard Markdown reader (`--from=markdown`), allowing text to wrap inside table cells.

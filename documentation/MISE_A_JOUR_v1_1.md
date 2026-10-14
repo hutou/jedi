@@ -22,10 +22,11 @@ français et anglais ; elle accompagne une version en développement.
 | 05, 22–24 et annexe 04 | Maximum d’investissement des trades successifs, distinction avec le solde financier cumulé, résultats du backtest dans l’ordre de création. |
 | 07–09, 24 et annexes 01/05 | Correction du total des frais de toute opération avec `operation fees`, effets sur les résultats nets, les exports et la reprise dans `play`. |
 | Annexe 05 FR/EN | Tableaux Web avec cellules courtes, adresses et regex dans des blocs séparés, chemins de configuration décomposés. |
+| 03 et 07 FR/EN | Choix externe du titre, lecture des tendances et canaux, indicateurs simples et préparation de l'achat initial sur un rebond près du support. |
 
 Les exemples des chapitres 08, 11, 14, 20 et de l'introduction de partie II reprennent
-les nouveaux noms pour conserver la cohérence du parcours. Les 45 fichiers
-existants modifiés comprennent 22 paires français/anglais et le README. La note
+les nouveaux noms pour conserver la cohérence du parcours. Les 47 fichiers
+existants modifiés comprennent 23 paires français/anglais et le README. La note
 de mise à jour et les deux versions de l’annexe 05 sont ajoutées.
 
 ## Nouveaux noms des exemples
@@ -174,6 +175,33 @@ leurs quatre pages sont contrôlées visuellement, sans débordement des colonne
 ou des marges. Le PDF complet sera régénéré avec les fichiers de génération
 du dépôt, qui ne sont pas fournis dans l'archive Markdown.
 
+## Sélection visuelle et entrée sur rebond
+
+Les chapitres 03 et 07 des deux langues sont complétés. Le chapitre 03 présente
+plusieurs voies de sélection et plusieurs sites boursiers : ProRealTime,
+TradingView, Boursorama et Zonebourse. La méthode de lecture est indépendante
+de la plateforme. Elle couvre les canaux latéraux ou haussiers avec oscillations,
+les supports et résistances, la durée d'observation, les vues hebdomadaire et
+journalière, la moyenne mobile, l'ATR et le RSI. Le chapitre 07 distingue le
+titre retenu du moment de l'achat initial : retour près du support, puis premier
+rebond reconnu selon un critère observable choisi à l'avance.
+
+Le canal et les deux séances de l'exemple sont entièrement fictifs ; ils ne
+proviennent pas du fichier historique EXA. Le cours d'exécution reste distinct
+de la clôture qui a permis d'observer le signal. À 10 €, le barème déjà décrit
+propose une première vente à 11 €, sous la résistance fictive de 12 €.
+La poursuite d'une baisse sous le support doit rester financée. Les tracés de
+la plateforme ne deviennent pas des règles d'ordres ou de protection dans Jedi.
+
+Deux figures PNG, français et anglais, montrent le canal et la reprise ; elles
+accompagnent les **70 fichiers Markdown**. L'archive comporte désormais
+**228 tableaux**. Les chemins des images et les nouveaux renvois sont contrôlés.
+Les exemples de commandes existants restent identiques. Un parcours `play`
+vérifie les deux niveaux de vente à 11 € puis 12,11 € avec le pas de 0,01 € de
+l'exemple. Les chapitres 03/07 sont rendus et contrôlés en PDF dans chaque langue ;
+le PDF complet reste à régénérer avec les fichiers du dépôt. Le README indique
+le chemin de ressources nécessaire aux figures dans Pandoc.
+
 ## PDF et publication
 
 Les fichiers de cette archive sont les Markdown. Les PDF de Jedi 1.0 ne reflètent
@@ -214,3 +242,14 @@ rebuilt; 111 CLI invocations are checked, including expected rejections, with
 scale commands exercised in both languages. All 70 Markdown files and 220
 tables parse successfully, with no new invalid internal link. Both corrected
 Web-provider appendices remain byte-identical to the preceding edition.
+
+Chapters 03 and 07 now cover external and visual selection, with ProRealTime,
+TradingView, Boursorama and Zonebourse as examples of market websites. They
+explain channels, support and resistance, simple indicators and entry on the
+first observable rebound near support. The entry criterion is chosen beforehand;
+the actual execution price sets the initial references. Both channel figures and
+the two example sessions are entirely fictional. There are now 70 Markdown
+files, 228 tables and two PNG figures. Existing CLI examples are preserved, the
+scale's price levels are checked through play, and both chapter pairs are
+rendered and visually checked in PDF. Rebuild the full manuals from the repository;
+the README explains Pandoc's image resource path.

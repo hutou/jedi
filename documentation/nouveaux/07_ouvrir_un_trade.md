@@ -8,6 +8,27 @@ L'ouverture comporte trois moments : préparer le trade dans Jedi, exécuter l'a
 
 Ce chapitre reprend **EXA, un titre entièrement fictif** : achat initial de 100 titres à 10 €, barème avec mouvements de 10 %, capital de référence de 5 000 €. Utiliser une base principale d'essai vide, préparée au [chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé). Les fichiers historiques EXA peuvent exister dans une base de marché ; ils ne créent pas ce titre dans la base principale.
 
+## Préparer l'entrée sur un rebond près du support
+
+Le [chapitre 03](03_choisir_un_titre_support.md#lire-le-graphe-et-ses-repères) décrit le choix d'un titre à partir de son graphe. Un titre retenu peut rester en attente jusqu'à l'apparition du signal d'entrée choisi. Dans un canal latéral ou haussier avec oscillations, un scénario consiste à rechercher le premier rebond observable après un retour près du support.
+
+Avant ce retour, noter la zone de support, l'unité de temps et le critère de reprise. Une règle possible, à tester, est d'attendre une clôture journalière au-dessus du plus haut de la séance ayant testé le support. Le contact avec la ligne, puis un petit mouvement en cours de séance, ne suffisent pas à remplir ce critère de clôture.
+
+Voici deux séances entièrement inventées, dans un canal allant d'une zone proche de 9,50 € à une résistance proche de 12 € :
+
+| Séance | Plus bas | Plus haut | Clôture |
+|---|---:|---:|---:|
+| A : test du support | 9,50 € | 9,85 € | 9,65 € |
+| B : début de reprise | 9,65 € | 10,10 € | 10,00 € |
+
+À la clôture de B, le cours dépasse le plus haut de A : le critère proposé est rempli. La reprise peut cependant échouer. Attendre ce signal conduit ici à examiner une entrée vers 10 €, au-dessus du point bas de 9,50 €. Ces observations ne sont pas extraites du fichier historique EXA.
+
+Vérifier alors le projet au prix auquel l'achat peut être exécuté. Une exécution ultérieure peut avoir un autre prix que la clôture du signal. La suite pédagogique du chapitre suppose une exécution effective à 10 € : la première vente du barème sera à 11 €, sous la résistance observée. Vérifier cette place disponible avec les niveaux du barème ; le niveau suivant peut déjà dépasser le canal.
+
+Examiner également une poursuite de la baisse sous le support : achats proposés, réserve nécessaire et protections du projet. Un canal tracé ne plafonne pas la perte et ne finance pas les achats suivants. `candidate` évalue les règles et le financement ; il ne détecte ni le canal ni le rebond.
+
+Conserver les repères et le critère d'ouverture avec les éléments du projet. Une fois le premier achat enregistré, son prix réel devient `c0` et sa quantité devient `q0`. Les ordres de fonctionnement suivent ensuite le barème et les règles de capital. Les lignes de support et de résistance du graphe ne sont pas enregistrées comme des ordres ou des protections par Jedi.
+
 ## Vérifier le projet au prix retenu
 
 ~~~console
