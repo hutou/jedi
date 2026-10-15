@@ -164,4 +164,46 @@ jedidemo tools play -c o0,6-14,17 -- \
 
 Le parcours calculé vend 6 titres à 11 €, puis en rachète 6 à 9,90 € : le stock revient à 100. `play` sert ici à comprendre le barème ; il ne décrit pas des exécutions réelles et ne garantit pas ce parcours.
 
+## Reconnaître le statut d'un trade
+
+La commande suivante affiche tous les trades. La colonne **Statut**, juste après
+leur nom, indique l'étape atteinte :
+
+~~~console
+jedidemo trade list
+~~~
+
+| Statut | Situation enregistrée dans Jedi |
+|---|---|
+| créé | Le trade est associé à un titre, sans paramétrage ni opération. |
+| paramétré | Le paramétrage initial avec un barème existe, sans achat enregistré. |
+| ouvert | Seul l'achat initial est enregistré et des titres sont détenus. |
+| en cours | Au moins une opération a suivi l'achat initial et des titres sont encore détenus. |
+| clôturé | Des opérations existent et le stock de la dernière vaut zéro. |
+
+Le statut est calculé sur tout l'historique. Un changement de barème ne ramène
+pas un trade à « paramétré ». Une opération décidée personnellement compte aussi
+pour le passage d'« ouvert » à « en cours ». L'annulation d'une opération peut
+faire revenir à l'étape précédente.
+
+Pour afficher uniquement les trades détenant des titres, donc les statuts
+**ouvert** et **en cours** :
+
+~~~console
+jedidemo trade list -r
+~~~
+
+Le tableau simple utilise les indices `0=id`, `1=nom`, `2=statut`, `3=money` et
+`4=stop`. Avec `--extended`, il ajoute `5=id du titre`, `6=ISIN` et `7=nom du titre`.
+Pour ne voir que le nom et le statut :
+
+~~~console
+jedidemo trade list -c 1,2
+~~~
+
+Ces indices concernent `trade list` ; ceux de `operation list` restent ceux de
+ses propres colonnes. En CSV, `status` est aussi placé après `name`, avec les
+codes stables `created`, `configured`, `opened`, `running` et `closed`, quelle
+que soit la langue d'affichage.
+
 Conserver la définition du barème et le rapport d'ouverture. Le [chapitre 08](08_suivre_un_trade.md) reprend ce trade pour montrer le suivi d'une vente réelle et son enregistrement.

@@ -216,7 +216,7 @@ jedidemo settings delete
 jedidemo operation delete
 ~~~
 
-Après contrôle des confirmations, recréer les éléments corrigés dans leur chronologie réelle et vérifier les ordres. Une suppression peut annuler un état de clôture ; elle doit servir à corriger une saisie, pas à réécrire une exécution. Consigner le motif et les valeurs corrigées dans une note.
+Après contrôle des confirmations, recréer les éléments corrigés dans leur chronologie réelle et vérifier les ordres. Une suppression peut annuler un état de clôture ; elle doit servir à corriger une saisie, pas à réécrire une exécution. Si la vente annulée avait clôturé le trade, `money` et `stop` restent à `nil` : renseigner à nouveau les paramètres de `money` retenus pour reprendre la gestion du capital, puis vérifier les ordres de protection. Consigner le motif et les valeurs corrigées dans une note.
 
 ## Terminer le trade par sa vente réelle
 
@@ -233,6 +233,12 @@ jedidemo trade results T_exa_01
 
 Le stock devient **zéro** : le trade est clôturé. Il n'y a pas de commande administrative `trade close`. Selon l'ordre réellement exécuté, reporter le mode `Market`, `Limit`, `Stop` ou `StopLoss` approprié.
 
+À l'enregistrement de la vente totale, Jedi efface `money` et `stop` dans la
+même transaction que l'opération. Ces contrôles ne servent plus à gérer le trade
+terminé. Ses opérations, ses paramétrages et ses résultats sont conservés. Une
+vente partielle conserve la gestion du capital. Cette règle vaut aussi pour
+les clôtures simulées dans `play` et `backtest`.
+
 Les valeurs utiles de notre exemple sont :
 
 | Information | Valeur |
@@ -248,3 +254,13 @@ Après déduction des frais, le gain de cet exemple est 111,39 €. Le taux annu
 Si la vente finale reste partielle, appliquer la consolidation et l'annulation du reliquat expliquées au chapitre 08. Le trade reste ouvert tant qu'il possède des titres.
 
 Une fois le stock nul, Jedi refuse une nouvelle opération sur ce trade. Pour une nouvelle gestion du même titre, créer un autre trade. Conserver le trade terminé : ses opérations, ses réglages, ses notes de contexte et ses résultats servent au contrôle ultérieur. `trade delete` refuse la suppression d'un trade possédant un historique.
+
+Pour nettoyer les contrôles restés sur un trade déjà clôturé avec une version
+précédente, vérifier d'abord que son stock est nul, puis adapter son nom :
+
+~~~console
+jedidemo trade update T_exa_01 --money="" --reset-stop
+~~~
+
+Cette commande ne modifie ni les opérations ni les résultats et n'annule aucun
+ordre chez le courtier.

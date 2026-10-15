@@ -216,7 +216,7 @@ jedidemo settings delete
 jedidemo operation delete
 ~~~
 
-After checking confirmations, recreate corrected records in their actual chronology and check orders. Deleting an operation can undo closure; use it to correct an entry rather than rewrite execution. Record the reason and corrected values in a note.
+After checking confirmations, recreate corrected records in their actual chronology and check orders. Deleting an operation can undo closure; use it to correct an entry rather than rewrite execution. If the deleted sale had closed the trade, `money` and `stop` remain `nil`: re-enter the intended money parameters before resuming capital management, then check protective orders. Record the reason and corrected values in a note.
 
 ## End the trade through its actual sale
 
@@ -233,6 +233,12 @@ jedidemo trade results T_exa_01
 
 Stock becomes **zero**: the trade is closed. There is no administrative `trade close` command. Record the appropriate `Market`, `Limit`, `Stop` or `StopLoss` mode according to the order actually executed.
 
+When recording the full sale, Jedi clears `money` and `stop` in the same
+transaction as the operation. These controls no longer manage the completed
+trade. Its operations, settings and results are retained. A partial sale keeps
+money management active. This also applies to simulated closures in `play`
+and `backtest`.
+
 Useful values for our example are:
 
 | Information | Value |
@@ -248,3 +254,12 @@ After fees, this example's gain is €111.39. The annualised rate displayed for 
 If the final sale remains partial, apply consolidation and remainder cancellation as explained in chapter 08. The trade remains open while holding shares.
 
 Once stock is zero, Jedi refuses another operation on this trade. Create another trade for new management of the same security. Retain the completed trade: operations, settings, contextual notes and results support later checks. `trade delete` refuses to delete a trade with a history.
+
+To clear controls left on a trade closed with an earlier version, first check
+that its holding is zero, then use its actual name:
+
+~~~console
+jedidemo trade update T_exa_01 --money="" --reset-stop
+~~~
+
+This changes neither operations nor results and cancels no broker order.

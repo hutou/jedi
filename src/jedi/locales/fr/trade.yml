@@ -99,15 +99,25 @@ fr:
       notes: |
         Notes:
           Le filtrage est effectué dans l'ordre suivant :
-            1. Trades en cours
+            1. Trades détenant des titres (statuts ouvert ou en cours)
             2. Expression régulière
             3. Sélection d'enregistrements
+          Le statut est calculé sur tout l'historique du trade.
+          Colonnes du tableau : 0=id, 1=nom, 2=statut, 3=money, 4=stop.
+          Avec --extended : 5=id du titre, 6=ISIN, 7=nom du titre.
+          En CSV, status utilise created, configured, opened, running ou closed.
       examples: |
         Exemple:
           jedi trade list "g1 "
       option_extended: "Inclut les champs 'id', 'isin' et 'name' du titre"
       #
       option_csv_missing: "L'option --csv est obligatoire avec l'option --headers."
+      status:
+        created: "créé"
+        configured: "paramétré"
+        opened: "ouvert"
+        running: "en cours"
+        closed: "clôturé"
       table:
         title:
           all: "Liste des trades"
@@ -115,6 +125,7 @@ fr:
           some: "Liste des trades sélectionnés"
         id: "\nId"
         name: "\nNom"
+        status: "\nStatut"
         money: "Gestion\nCapital"
         stop: "Statut\ndu stop"
         security_id: "Id\nTitre"

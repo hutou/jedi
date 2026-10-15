@@ -241,6 +241,35 @@ de la v7. Elle contient toujours les 70 Markdown, les 228 tableaux et les deux
 figures PNG. Les renvois sont vérifiés et les parcours de commandes des
 chapitres 07 à 09 sont rejoués en français et en anglais avec les nouveaux noms.
 
+## Statut des trades et clôture — édition v9
+
+Le chapitre 07 FR/EN décrit les cinq étapes calculées à partir des paramétrages
+et des opérations : créé, paramétré, ouvert, en cours et clôturé. La colonne
+Statut suit immédiatement le nom dans `trade list`. `-r` conserve les trades
+ouverts ou en cours, qui détiennent des titres. Le calcul porte sur tout
+l'historique et suit les suppressions d'opérations, sans champ ni migration
+de base de données.
+
+Le tableau simple compte maintenant cinq colonnes (indices 0 à 4), et le
+tableau étendu huit (0 à 7). Les colonnes de `operation list` restent les mêmes.
+Le CSV insère `status` après `name`, avec les codes anglais stables `created`,
+`configured`, `opened`, `running`, `closed` ; il contient six champs en mode
+simple et huit en mode étendu. Adapter les sélections de colonnes et les scripts
+qui lisaient les positions des anciens exports.
+
+Le chapitre 09 FR/EN couvre aussi le correctif de clôture : une vente ramenant
+le stock à zéro efface `money` et `stop` dans la transaction d'enregistrement,
+y compris en simulation. L'historique et les résultats sont conservés. Si
+l'opération de clôture est annulée, renseigner de nouveau `money` avant de
+reprendre la gestion du capital. Une commande de nettoyage est donnée pour
+les anciens trades clos.
+
+Ces changements demandent le binaire intégrant les correctifs de clôture et
+de statut du trade. L'archive **`jedi_documentation_20261012_v9.zip`** remplace
+la v8 et conserve les 70 Markdown et les deux figures. Les deux nouveaux
+tableaux portent le total à **230 tableaux**. Glossaires, annexes de configuration
+et figures conservent exactement leurs octets de la v8.
+
 ## PDF et publication
 
 Les fichiers de cette archive sont les Markdown. Les PDF de Jedi 1.0 ne reflètent
@@ -310,3 +339,12 @@ Trade names and numbers are entered by the user. Chapter 09 demonstrates
 renaming an old `Exa_01` to `T_exa_01` while retaining trade identity. Existing
 stored names remain usable. All 70 Markdown files, 228 tables and both figures
 are retained; links and both languages' chapter 07–09 command paths are checked.
+
+
+Archive `jedi_documentation_20261012_v9.zip` replaces v8. Chapter 07 documents
+the five derived lifecycle states, the Status column directly after Name,
+the holding-only `-r` filter, table indexes and stable CSV status codes.
+Chapter 09 documents transactional clearing of money and stop at closure,
+manual cleanup of older closed trades, and money reconfiguration if closure
+is undone. The archive retains 70 Markdown files and two figures, with 230
+tables. Glossaries, default-configuration appendices and figures are unchanged.

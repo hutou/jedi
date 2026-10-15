@@ -164,4 +164,44 @@ jedidemo tools play -c o0,6-14,17 -- \
 
 The calculated path sells 6 shares at €11, then buys 6 at €9.90: stock returns to 100. `play` helps understand the scale here; it describes no actual execution and does not guarantee that path.
 
+## Recognise a trade's status
+
+The following command lists all trades. The **Status** column, directly after
+the name, identifies the recorded stage:
+
+~~~console
+jedidemo trade list
+~~~
+
+| Status | Situation recorded in Jedi |
+|---|---|
+| created | The trade is associated with a security, with no settings or operation. |
+| configured | Initial settings with a scale exist, with no recorded purchase. |
+| opened | Only the initial purchase is recorded and shares are held. |
+| in progress | At least one operation follows the initial purchase and shares are still held. |
+| closed | Operations exist and the last operation's holding is zero. |
+
+Status is calculated from the complete history. A scale change does not return
+a trade to configured. A personally decided operation also counts towards the
+transition from opened to in progress. Deleting an operation can return the
+trade to its previous stage.
+
+To show only trades holding shares, covering both **opened** and **in progress**:
+
+~~~console
+jedidemo trade list -r
+~~~
+
+The basic table uses indexes `0=id`, `1=name`, `2=status`, `3=money` and `4=stop`.
+With `--extended`, it adds `5=security id`, `6=ISIN` and `7=security name`.
+To show just the name and status:
+
+~~~console
+jedidemo trade list -c 1,2
+~~~
+
+These indexes apply to `trade list`; `operation list` keeps its own column
+indexes. CSV also places `status` after `name`, using the stable codes `created`,
+`configured`, `opened`, `running` and `closed`, regardless of display language.
+
 Retain the scale definition and opening report. [Chapter 08](en_08_monitoring_a_trade.md) continues this trade with monitoring and recording of an actual sale.

@@ -98,15 +98,25 @@ en:
       notes: |
         Notes:
           Filtering is done in the following order:
-            1. Trades in progress
+            1. Trades holding shares (opened or in progress)
             2. Regular expression
             3. Record selection
+          Status is calculated from the trade's complete history.
+          Table columns: 0=id, 1=name, 2=status, 3=money, 4=stop.
+          With --extended: 5=security id, 6=ISIN, 7=security name.
+          CSV status uses created, configured, opened, running or closed.
       examples: |
         Example:
           jedi trade list "g1 "
       option_extended: "Includes security fields 'id', 'isin' and 'name'"
       #
       option_csv_missing: "--csv option is required with --headers option."
+      status:
+        created: "created"
+        configured: "configured"
+        opened: "opened"
+        running: "in progress"
+        closed: "closed"
       table:
         title:
           all: "List of trades"
@@ -114,6 +124,7 @@ en:
           some: "List of selected trades"
         id: "\nId"
         name: "\nName"
+        status: "\nStatus"
         money: "Money\nManagement"
         stop: "Stop\nStatus"
         security_id: "Id\nSecurity"
