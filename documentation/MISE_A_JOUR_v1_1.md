@@ -270,6 +270,44 @@ la v8 et conserve les 70 Markdown et les deux figures. Les deux nouveaux
 tableaux portent le total à **230 tableaux**. Glossaires, annexes de configuration
 et figures conservent exactement leurs octets de la v8.
 
+## Saisie de money et filtrage par statut — mise à jour du 15 octobre 2026
+
+Le fichier **`jedi_v1_1_money_status_20261015.patch`** met à jour le code,
+les tests et la documentation à partir du correctif de statut déjà intégré
+et de l'édition documentaire v9. Il s'applique depuis la racine du dépôt :
+
+~~~console
+git apply --check /chemin/jedi_v1_1_money_status_20261015.patch
+git apply /chemin/jedi_v1_1_money_status_20261015.patch
+~~~
+
+Les chapitres 07 et 09 FR/EN décrivent la nouvelle séquence : créer le trade,
+créer son paramétrage avec un barème, puis saisir `money` avec `trade update`
+avant l'achat si le projet utilise la gestion du capital. `trade create`
+n'accepte plus `--money`. Une valeur non vide est autorisée aux statuts
+paramétré, ouvert et en cours. L'effacement par `--money=""` reste possible
+à tous les statuts, avec réinitialisation explicite d'un éventuel stop selon
+les règles existantes.
+
+`play` et `backtest` respectent également cette séquence en mémoire. Le
+chargement d'une sauvegarde conserve les anciennes valeurs de `money`, même
+sur un trade créé ou clôturé ; il ne les efface pas rétroactivement. Leur
+syntaxe est toujours contrôlée et la restauration reste transactionnelle.
+
+Le chapitre 07 et l'annexe 01 FR/EN présentent `status` comme un champ de la
+regex existante : `status=^configured$`, `status=^(opened|running)$` ou
+`status=^closed$ && name=^T_erf`. Les codes anglais et les libellés affichés
+dans la langue active sont reconnus sans distinction de casse. Les opérateurs
+`&&` et `||`, le cumul avec `-r` et la sélection de lignes restent ceux du
+filtre existant. Le statut est toujours calculé, sans nouvelle colonne en base.
+
+Vingt et un exemples de régression sont ajoutés. Les **608 exemples
+applicatifs passent**, sans échec, erreur ni attente ; les neuf exemples des
+scripts de lancement restent exclus, car ces scripts sont absents de l'archive
+source reçue. Avec eux, le total attendu est de **617 exemples**. Les 70 Markdown,
+230 tableaux et deux figures sont conservés ; glossaires, annexes de
+configuration et figures restent identiques à la v9.
+
 ## PDF et publication
 
 Les fichiers de cette archive sont les Markdown. Les PDF de Jedi 1.0 ne reflètent
@@ -348,3 +386,17 @@ Chapter 09 documents transactional clearing of money and stop at closure,
 manual cleanup of older closed trades, and money reconfiguration if closure
 is undone. The archive retains 70 Markdown files and two figures, with 230
 tables. Glossaries, default-configuration appendices and figures are unchanged.
+
+The 15 October 2026 update is delivered as
+`jedi_v1_1_money_status_20261015.patch`, based on the integrated trade-status
+fix and documentation v9. Chapters 07/09 place nonempty `money` entry after
+initial settings, through `trade update`, for configured, opened or in-progress
+trades. Clearing remains allowed at every stage. Simulators follow the same
+sequence; backup loading preserves valid historical values transactionally.
+Chapter 07 and appendix 01 add `status` to the existing regex filter, with
+stable codes, active-language labels, AND/OR composition and the existing
+`-r`/record-selection pipeline. Twenty-one regression examples are added;
+608 application examples pass, excluding nine launcher examples whose scripts
+are absent from the received source archive. The expected total including
+those examples is 617. The 70 Markdown files, 230 tables and both figures
+are retained.

@@ -447,9 +447,9 @@ module Jedi
       ) : Nil
         saved_money_stop.each do |name, values|
           trade = TradingSystem::Trade.new(load_conn, name)
-          # Money validation belongs to TradeUpdater and remains inside the
-          # load transaction, so a failure rolls the complete import back.
-          TradingSystem::TradeUpdater.new(trade).call money: values[0]
+          # Replay keeps historical values while validating their syntax.
+          # A failure still rolls the complete import transaction back.
+          TradingSystem::TradeUpdater.new(trade).restore_money(values[0])
           begin
             stop = TradingSystem::TradeStop.parse(values[1])
           rescue ex : LowLevelError

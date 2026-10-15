@@ -84,9 +84,11 @@ Avec split + reinit, `PRICE` et les valeurs de l'opération suivante sont exprim
 
 ## Options communes de consultation
 
-Les filtres regex des listes qui les acceptent sont insensibles à la casse. `champ=motif` cible un champ ; `&&` signifie ET, `||` signifie OU, avec priorité de ET. Les parenthèses ne sont pas prises en charge. La liste des champs varie selon la commande : consulter son aide.
+Les filtres regex des listes qui les acceptent sont insensibles à la casse. `champ=motif` cible un champ ; `&&` signifie ET, `||` signifie OU, avec priorité de ET. Les parenthèses ne regroupent pas les conditions logiques, mais restent utilisables dans un motif regex. La liste des champs varie selon la commande : consulter son aide.
 
-`--running` limite certaines listes aux trades en cours. `--select` choisit des enregistrements après les filtres ; ses indices commencent à 1, les indices négatifs partent de la fin. `fN` et `lN` désignent les premières et dernières lignes ; `I:J` une plage ; la virgule combine les sélections.
+Pour `trade list`, le champ `status` reconnaît les codes `created`, `configured`, `opened`, `running`, `closed`, ainsi que les libellés de la langue active. Par exemple, `jedidemo trade list "status=^(opened|running)$"` retient les trades ouverts ou en cours ; `jedidemo trade list "status=^closed$ && name=^T_erf"` retient les trades clôturés dont le nom commence par `T_erf`. Le statut reste calculé à partir de l'historique.
+
+`--running` limite certaines listes aux trades détenant des titres ; pour `trade list`, il conserve les statuts ouvert et en cours et se cumule avec la regex. `--select` choisit des enregistrements après les filtres ; ses indices commencent à 1, les indices négatifs partent de la fin. `fN` et `lN` désignent les premières et dernières lignes ; `I:J` une plage ; la virgule combine les sélections.
 
 Les listes qui proposent `--csv` peuvent ajouter les entêtes avec `--headers`. `--extended` n'a pas un effet universel : pour `operation list` en CSV, il ajoute notamment les noms associés. `--column-indexes` sélectionne des colonnes d'affichage et ne se combine pas avec CSV.
 

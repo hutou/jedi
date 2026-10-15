@@ -48,7 +48,7 @@ Dans une base sans autre trade engagé, le résultat donne :
 
 L'opérabilité et le financement sont validés pour cet exemple. Vérifier à nouveau le projet si le prix, le montant, les paramètres ou les engagements du portefeuille changent avant l'exécution.
 
-Cet exemple fixe un montant avec `--amount` et laisse `money` désactivé. Si votre projet a été dimensionné avec `--money`, reprendre ses mêmes valeurs `r`, `o` et `n` lors de la création du trade. Le capital utilisé pendant le suivi vient de `trading.capital` : le `--capital` fourni à `candidate` n'est pas enregistré automatiquement pour le trade.
+Cet exemple fixe un montant avec `--amount` et laisse `money` désactivé. Si votre projet a été dimensionné avec `--money`, reprendre ses mêmes valeurs `r`, `o` et `n` après le paramétrage initial du trade, avant l'achat. Le capital utilisé pendant le suivi vient de `trading.capital` : le `--capital` fourni à `candidate` n'est pas enregistré automatiquement pour le trade.
 
 ## Enregistrer le titre et un cours courant
 
@@ -104,7 +104,7 @@ jedidemo trade create --name=T_exa_01 --security=FR4487601001
 jedidemo trade show T_exa_01
 ~~~
 
-Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN ou l'identifiant interne du titre, pas son ticker. Si le projet utilise la gestion du capital, ajouter la définition évaluée, par exemple `--money="r:1%,o:1,n:2"`, à la commande de création.
+Le nom identifie cette gestion et doit être unique. `--security` accepte l'ISIN ou l'identifiant interne du titre, pas son ticker. `trade create` crée le trade sans `money` ; cette commande n'accepte plus l'option `--money`.
 
 Associer ensuite le trade au barème :
 
@@ -112,6 +112,8 @@ Associer ensuite le trade au barème :
 jedidemo settings create T_exa_01 --scale=B_vr_01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
+
+Le trade est maintenant **paramétré**. Si le projet utilise la gestion du capital, activer à ce stade la définition évaluée avec `trade update`, par exemple `jedidemo trade update T_exa_01 --money="r:1%,o:1,n:2"`. L'exemple chiffré de ce chapitre conserve `money` désactivé.
 
 Avant l'achat, ce premier paramétrage possède une position `0:0:0`, avec `q0` et `c0` à zéro. La première opération renseignera la quantité et le prix de référence. Les options d'adaptation `--split`, `--sync` et `--reinit` concernent un trade possédant déjà un paramétrage.
 
@@ -192,6 +194,16 @@ Pour afficher uniquement les trades détenant des titres, donc les statuts
 ~~~console
 jedidemo trade list -r
 ~~~
+
+Pour choisir les statuts, utiliser le champ `status` dans la regex existante :
+
+~~~console
+jedidemo trade list "status=^configured$"
+jedidemo trade list "status=^(opened|running)$"
+jedidemo trade list "status=^closed$ && name=^T_exa"
+~~~
+
+Les codes `created`, `configured`, `opened`, `running` et `closed` fonctionnent dans les deux langues. Le libellé affiché dans la langue active est également reconnu, par exemple `status=^clôturé$` en français. Le filtre est insensible à la casse ; `&&` et `||` permettent de le combiner avec les autres champs. Avec `-r`, les deux filtres se cumulent. `--select` s'applique ensuite aux lignes retenues.
 
 Le tableau simple utilise les indices `0=id`, `1=nom`, `2=statut`, `3=money` et
 `4=stop`. Avec `--extended`, il ajoute `5=id du titre`, `6=ISIN` et `7=nom du titre`.

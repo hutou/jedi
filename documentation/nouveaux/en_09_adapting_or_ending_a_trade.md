@@ -179,7 +179,9 @@ jedidemo trade update Exa_01 --name=T_exa_01
 
 Chapter 07 already uses `T_exa_01`, so this correction is unnecessary in that path. Renaming preserves the same trade, its operations and settings. Check that the new name is available in the database.
 
-To enable or change `money`:
+Enabling or changing `money` is allowed for **configured**, **opened** and **in progress** trades. A trade that has only been created must first receive initial settings with a scale. A closed trade cannot receive a nonempty value; `--money=""` always allows clearing a historical value, regardless of status.
+
+To enable or change `money` on an eligible trade:
 
 ~~~console
 jedidemo trade update T_exa_01 --money="r:1%,o:1,n:2"

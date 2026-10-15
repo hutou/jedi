@@ -33,12 +33,11 @@ describe Jedi::Command, "CLI smoke workflow" do
       JediCliSpec.run(conn,
         "trade", "create",
         "--name=T_CLI",
-        "--security=1",
-        "--money=r:1.5%,o:2,n:2")
+        "--security=1")
 
       trade = Jedi::TradingSystem::Trade.new(conn, "T_CLI")
       trade.security.id.should eq(security.id)
-      trade.money.to_s.should eq("r:1.5%, o:2.0, n:2")
+      trade.money.should be_nil
 
       JediCliSpec.run(conn,
         "settings", "create",
@@ -46,6 +45,10 @@ describe Jedi::Command, "CLI smoke workflow" do
         "--date=2026-01-01",
         "--time=09:00:00",
         "T_CLI")
+
+      JediCliSpec.run(conn, "trade", "update", "T_CLI", "--money=r:1.5%,o:2,n:2")
+      trade.reload!(trade.id)
+      trade.money.to_s.should eq("r:1.5%, o:2.0, n:2")
 
       settings = trade.last_settings.not_nil!
       settings.scale.name.should eq("B_vr_01")

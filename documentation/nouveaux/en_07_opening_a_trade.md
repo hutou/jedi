@@ -48,7 +48,7 @@ In a database without other committed trades, the result gives:
 
 Operability and funding pass for this example. Recheck if price, amount, settings or portfolio commitments change before execution.
 
-This example fixes an amount with `--amount` and leaves `money` disabled. If your proposal was sized with `--money`, use the same `r`, `o` and `n` when creating the trade. Capital used during management comes from `trading.capital`: the `--capital` supplied to `candidate` is not automatically stored for the trade.
+This example fixes an amount with `--amount` and leaves `money` disabled. If your proposal was sized with `--money`, use the same `r`, `o` and `n` after creating the trade's initial settings, before the purchase. Capital used during management comes from `trading.capital`: the `--capital` supplied to `candidate` is not automatically stored for the trade.
 
 ## Record the security and a current price
 
@@ -104,7 +104,7 @@ jedidemo trade create --name=T_exa_01 --security=FR4487601001
 jedidemo trade show T_exa_01
 ~~~
 
-The name identifies this management history and must be unique. `--security` accepts the security's ISIN or internal ID, not its ticker. If the proposal uses capital management, add the evaluated definition, such as `--money="r:1%,o:1,n:2"`, to the creation command.
+The name identifies this management history and must be unique. `--security` accepts the security's ISIN or internal ID, not its ticker. `trade create` creates the trade without `money`; this command no longer accepts `--money`.
 
 Then associate the trade with the scale:
 
@@ -112,6 +112,8 @@ Then associate the trade with the scale:
 jedidemo settings create T_exa_01 --scale=B_vr_01 \
   --date=2026-09-21 --time=09:00:00
 ~~~
+
+The trade is now **configured**. If the proposal uses capital management, enable the evaluated definition at this stage with `trade update`, for example `jedidemo trade update T_exa_01 --money="r:1%,o:1,n:2"`. This chapter's numerical example keeps `money` disabled.
 
 Before the purchase, these initial settings have position `0:0:0`, with `q0` and `c0` at zero. The first operation fills the reference quantity and price. Adaptation options `--split`, `--sync` and `--reinit` apply to a trade already having settings.
 
@@ -191,6 +193,16 @@ To show only trades holding shares, covering both **opened** and **in progress**
 ~~~console
 jedidemo trade list -r
 ~~~
+
+To select statuses, use the `status` field in the existing regex filter:
+
+~~~console
+jedidemo trade list "status=^configured$"
+jedidemo trade list "status=^(opened|running)$"
+jedidemo trade list "status=^closed$ && name=^T_exa"
+~~~
+
+The codes `created`, `configured`, `opened`, `running` and `closed` work in both languages. The displayed label in the active language is also recognised, such as `status=^in progress$` in English. Matching is case-insensitive; `&&` and `||` combine it with other fields. With `-r`, both filters apply. `--select` then selects from the retained rows.
 
 The basic table uses indexes `0=id`, `1=name`, `2=status`, `3=money` and `4=stop`.
 With `--extended`, it adds `5=security id`, `6=ISIN` and `7=security name`.

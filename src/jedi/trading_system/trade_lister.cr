@@ -84,18 +84,20 @@ module Jedi
                                   regex,
                                   option_extended) : Array(Trade)
         return trades if regex.nil?
-        allowed_fields = ["id", "name", "money", "stop"]
+        allowed_fields = ["id", "name", "status", "money", "stop"]
         if option_extended
           allowed_fields += ["isin", "security"]
         end
         tree = Jedi::Core::FilterExpression.compile(regex, allowed_fields)
 
         trades.select do |trade|
+          status = trade.lifecycle_status.to_s.underscore
           named_fields = {
-            "id"    => [trade.id.to_s],
-            "name"  => [trade.name],
-            "money" => [trade.money.to_s],
-            "stop"  => [trade.stop.to_s],
+            "id"     => [trade.id.to_s],
+            "name"   => [trade.name],
+            "status" => [status, I18n.t("trade.list.status.#{status}")],
+            "money"  => [trade.money.to_s],
+            "stop"   => [trade.stop.to_s],
           }
           if option_extended
             named_fields["isin"] = [trade.security.isin]

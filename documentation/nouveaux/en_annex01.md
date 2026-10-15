@@ -84,9 +84,11 @@ With split + reinit, `PRICE` and values of the following operation use **post-sp
 
 ## Common listing options
 
-Regex filters in lists supporting them are case-insensitive. `field=pattern` targets a field; `&&` means AND, `||` means OR, with AND precedence. Parentheses are unsupported. Available fields vary by command: read its help.
+Regex filters in lists supporting them are case-insensitive. `field=pattern` targets a field; `&&` means AND, `||` means OR, with AND precedence. Parentheses cannot group logical conditions, but remain valid within a regex pattern. Available fields vary by command: read its help.
 
-`--running` limits some lists to running trades. `--select` chooses records after filtering; indices start at 1 and negative indices count from the end. `fN` and `lN` mean first and last rows, `I:J` is a range, and commas combine selections.
+For `trade list`, the `status` field recognises the codes `created`, `configured`, `opened`, `running`, `closed`, as well as labels in the active language. For example, `jedidemo trade list "status=^(opened|running)$"` retains opened and in-progress trades; `jedidemo trade list "status=^closed$ && name=^T_erf"` retains closed trades whose names start with `T_erf`. Status remains calculated from history.
+
+`--running` limits some lists to trades holding shares; for `trade list`, it retains opened and in-progress trades and combines with the regex. `--select` chooses records after filtering; indices start at 1 and negative indices count from the end. `fN` and `lN` mean first and last rows, `I:J` is a range, and commas combine selections.
 
 Lists offering `--csv` may add headings with `--headers`. `--extended` is not universal: for `operation list` CSV, it adds associated names. `--column-indexes` chooses display columns and cannot be combined with CSV.
 

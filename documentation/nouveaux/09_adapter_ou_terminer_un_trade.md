@@ -179,7 +179,9 @@ jedidemo trade update Exa_01 --name=T_exa_01
 
 Le parcours du chapitre 07 utilise déjà `T_exa_01` ; cette correction y est donc inutile. Un renommage conserve le même trade, ses opérations et ses paramétrages. Vérifier que le nouveau nom est disponible dans la base.
 
-Pour activer ou modifier `money` :
+L'activation ou la modification de `money` est autorisée aux statuts **paramétré**, **ouvert** et **en cours**. Un trade seulement créé doit d'abord recevoir son paramétrage initial avec un barème. Un trade clôturé ne peut plus recevoir de valeur non vide ; `--money=""` permet toujours d'effacer une ancienne valeur, quel que soit le statut.
+
+Pour activer ou modifier `money` sur un trade autorisé :
 
 ~~~console
 jedidemo trade update T_exa_01 --money="r:1%,o:1,n:2"

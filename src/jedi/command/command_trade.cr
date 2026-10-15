@@ -81,8 +81,6 @@ module Jedi
       parser.on("--security=ID", I18n.t("#{prefix}.id")) { |v| @raw_security = v }
       parser.on("--security=ISIN", I18n.t("#{prefix}.isin")) { |v| @raw_security = v }
       parser.separator ""
-      parser.separator I18n.t("infra.optional_fields")
-      parser.on("--money=MONEY", I18n.t("#{prefix}.money")) { |v| @raw_money = v }
       parser.separator I18n.t("infra.options")
       help(parser)
       parser.separator ""
@@ -102,20 +100,9 @@ module Jedi
         regex: ALPHANUM, key: "infra.field_required")
       security_ident = ident(Core::Input.ensure_present!(@raw_security,
         field: "Security(id | isin)"))
-      money =
-        begin
-          TradingSystem::Money.parse(@raw_money)
-        rescue ex : LowLevelError
-          raise LowLevelError.new(
-            key: "trade.invalid_money",
-            context: {:money => @raw_money.to_s},
-            kind: LowLevelError::Kind::UserInput,
-            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)},
-            cause: ex)
-        end
       Core::Input.ensure_argv_empty!
       TradingSystem::TradeCreator.new(conn_main).call name: name,
-        security_ident: security_ident, money: money
+        security_ident: security_ident
     rescue ex : LowLevelError
       raise_from_low_level(ex)
     end

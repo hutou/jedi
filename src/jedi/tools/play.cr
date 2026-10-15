@@ -520,8 +520,6 @@ module Jedi
 
         trade_id = TradingSystem::TradeCreator.new(conn_memory).call(
           name: "PLAY",
-          money: trade_params.money,
-          stop: trade_params.stop,
           security_ident: security_id
           # security_ident: SIMULATION_SECURITY_ISIN
         )
@@ -535,6 +533,11 @@ module Jedi
           scale_ident: scale_id,
           timestamp: timestamp
         )
+
+        if money = trade_params.money
+          TradingSystem::TradeUpdater.new(mem_trade).call(money: money.to_s)
+        end
+        mem_trade.stop_update(trade_params.stop) unless trade_params.stop.nil?
 
         op_id = TradingLife::OperationCreator.new(conn_memory).call(
           trade_ident: trade_id,

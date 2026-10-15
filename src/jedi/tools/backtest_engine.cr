@@ -178,7 +178,6 @@ module Jedi
         trade_id = TradingSystem::TradeCreator.new(conn_memory).call(
           name: trade_name,
           security_ident: quote_history.isin,
-          money: money,
         )
 
         TradingSystem::SettingsCreator.new(conn_memory).call(
@@ -186,6 +185,11 @@ module Jedi
           scale_ident: scale.id,
           timestamp: quote[:date],
         )
+
+        if active_money = money
+          TradingSystem::TradeUpdater.new(TradingSystem::Trade.new(conn_memory, trade_id))
+            .call(money: active_money.to_s)
+        end
 
         TradingLife::OperationCreator.new(conn_memory).call(
           trade_ident: trade_id,
