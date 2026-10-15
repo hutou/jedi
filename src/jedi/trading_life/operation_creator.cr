@@ -83,7 +83,7 @@ module Jedi
           end
 
         validate_zero_price_liquidation!(state)
-        operation_id = persist_operation!(settings.id, state)
+        operation_id = persist_operation!(context.trade.id, settings.id, state)
 
         if App.simulation.none?
           App.log_info(:operation_creator_context, "", operation_prerecording_context)
@@ -93,7 +93,8 @@ module Jedi
         operation_id
       end
 
-      private def persist_operation!(settings_id : PkId, state : OperationState) : PkId
+      private def persist_operation!(trade_id : PkId, settings_id : PkId,
+                                     state : OperationState) : PkId
         operation_id = @transaction_source.transaction do |transaction|
           connection = transaction.connection
           id = OperationsRepository.new(connection).insert!(settings_id, state)
@@ -103,6 +104,11 @@ module Jedi
           if q0 && c0
             TradingSystem::SettingsRepository.new(connection)
               .update_q0_c0!(settings_id, q0, c0)
+          end
+
+          if state.stock.zero?
+            TradingSystem::TradeRepository.new(connection)
+              .clear_money_and_stop!(trade_id)
           end
 
           id

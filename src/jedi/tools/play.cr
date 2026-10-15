@@ -993,7 +993,7 @@ module Jedi
         quantity : Int32,
         price : Float64,
       ) : PkId
-        TradingLife::OperationCreator.new(conn_memory).call(
+        operation_id = TradingLife::OperationCreator.new(conn_memory).call(
           trade_ident: mem_trade.id,
           timestamp: context.timestamp,
           type: type,
@@ -1003,6 +1003,8 @@ module Jedi
           cfees: App.fees,
           tickcheck: false
         )
+        mem_trade.reload!(mem_trade.id)
+        operation_id
       end
 
       # ============================================================
