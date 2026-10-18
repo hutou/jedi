@@ -20,12 +20,14 @@ module Jedi
         net_annualized_return : Float64
 
       def list(*, regex : String? = nil, option_running : Bool = false,
-               option_update_now : Bool = true) : String
+               option_update_now : Bool = true, option_chronological : Bool = false,
+               option_global_maximum_investment : Int32? = nil) : String
         filter = Core::FilterExpression.compile(regex, ["name", "security"])
         operations = TradingLife::Operations.new(conn_db).fetch
         return no_match if operations.empty?
 
-        global_maximum_investment = calculate_global_maximum_investment(operations)
+        global_maximum_investment = option_global_maximum_investment ||
+                                    calculate_global_maximum_investment(operations)
         summary_days = positive_duration(
           (Time.local - operations.first.timestamp).total_days.to_i
         )
@@ -35,9 +37,14 @@ module Jedi
           option_running: option_running,
           option_update_now: option_update_now
         )
-        display_data = collection.display_data.sort do |a, b|
-          b.annualized_return <=> a.annualized_return
-        end
+        display_data = if option_chronological
+                         # collect_data loads trades in creation order (id).
+                         collection.display_data
+                       else
+                         collection.display_data.sort do |a, b|
+                           b.annualized_return <=> a.annualized_return
+                         end
+                       end
         return no_match if display_data.empty?
 
         title, has_summary = table_title(display_data.size, collection.trade_count)
@@ -47,7 +54,8 @@ module Jedi
           summary_days
         )
 
-        render(display_data, summary_data, title, has_summary)
+        render(display_data, summary_data, title, has_summary,
+          option_chronological: option_chronological)
       end
 
       private def collect_data(*, filter : Core::FilterExpression::FilterTree?, option_running : Bool,
@@ -168,13 +176,14 @@ module Jedi
       private def render(display_data : Array(DisplayData),
                          summary_data : SummaryData,
                          title : String,
-                         has_summary : Bool) : String
+                         has_summary : Bool,
+                         *, option_chronological : Bool) : String
         table = Tablo::Table.new(
           display_data,
           omit_last_rule: has_summary,
           title: Tablo::Heading.new(title, framed: true)
         ) do |t|
-          add_columns(t, summary_data)
+          add_columns(t, summary_data, option_chronological: option_chronological)
         end.pack
         return table.to_s unless has_summary
         table.add_summary(summary_def(table, summary_data), masked_headers: true)
@@ -183,7 +192,8 @@ module Jedi
       end
 
       private def add_columns(table : Tablo::Table(DisplayData),
-                              summary_data : SummaryData) : Nil
+                              summary_data : SummaryData,
+                              *, option_chronological : Bool) : Nil
         table.add_column(:trade_name, header: I18n.t("trade.results.list.table.trade_name"),
           &.trade_name)
         table.add_column(:security_name, header: I18n.t("trade.results.list.table.security_name"),
@@ -212,7 +222,12 @@ module Jedi
             pct == 0 ? "" : "%.1f%%" % pct
           end
         }
-        table.add_column(:current_invest, header: I18n.t("trade.results.list.table.current_invest"),
+        investment_header = if option_chronological
+                              I18n.t("trade.results.list.table.cash_investment_balance")
+                            else
+                              I18n.t("trade.results.list.table.current_invest")
+                            end
+        table.add_column(:current_invest, header: investment_header,
           body_formatter: ->(value : Tablo::CellType) {
             "%.2f" % (value.as(Int32) / 100)
           }, &.current_investment)
@@ -231,7 +246,12 @@ module Jedi
           body_formatter: ->(value : Tablo::CellType) {
             "%.2f" % (value.as(Int32) / 100)
           }, &.maximum_investment)
-        table.add_column(:return_rate, header: I18n.t("trade.results.list.table.return_rate"),
+        return_header = if option_chronological
+                          I18n.t("trade.results.list.table.return_rate_unsorted")
+                        else
+                          I18n.t("trade.results.list.table.return_rate")
+                        end
+        table.add_column(:return_rate, header: return_header,
           body_formatter: ->(value : Tablo::CellType) {
             "%.1f%%" % value.as(Float64)
           }, &.annualized_return)

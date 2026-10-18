@@ -1,0 +1,13 @@
+A FAIRE
+=======
+
+Jedi 1.1
+========
+
+
+Jedi-GUI
+========
+
+Francisation des commandes GUI (Titre au lieu de Security)
+
+Gestion du Help : comment ? (bulles, hypertext, ...)

@@ -69,6 +69,31 @@ en:
       zero_price_requires_full_liquidation: "A zero price is allowed only for a Sell operation that closes the entire position."
       invalid_fees: "Operation fees must be finite and non-negative (received: %{fees})."
     #
+    # --- fees ---
+    #
+    fees:
+      header: "Correct fees on a recorded operation"
+      banner: |
+        Description:
+          Replace the total fees on a recorded operation
+      usage: |
+        Usage:
+          jedi operation fees <operation_id> <amount>
+      notes: |
+        Notes:
+          operation_id is the numeric identifier of an operation, not a trade.
+          Any operation can be corrected, including an earlier one or one in a closed trade.
+          amount replaces the total fees, including any transaction tax; it is not an extra charge.
+          The amount must be non-negative, with a decimal point; it is rounded to cents.
+          Zero cancels the fees. Orders and investment excluding fees remain identical.
+      examples: |
+        Examples:
+          jedi operation fees 42 3.50
+          jedi operation fees 42 0
+      invalid_id: "Invalid operation identifier: %{id}. A positive integer is required."
+      invalid_amount: "Invalid fee amount: %{amount}. Use a finite non-negative number, with a decimal point, representable in cents (maximum 21474836.47)."
+      success: "Fees on operation %{ref} set to %{amount}."
+    #
     # --- delete ---
     #
     delete:

@@ -1,5 +1,7 @@
 # Euronext Growth study example
 
+Numerical captures in this chapter come from the 1.0 edition’s reference study. With the corrected maximum investment in v1.1, rerun the commands to obtain updated investment values, returns and rankings.
+
 ## A path to reproduce, then adapt
 
 This chapter shows how to organise a study of Euronext Growth securities: shortlisting at the end of 2024, searching earlier data, then checking 2025. Supplied files contain **three fictional securities**, EXA, EXB and EXC; they are not an Euronext Growth export. The dataset name demonstrates study organisation.

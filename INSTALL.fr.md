@@ -1,6 +1,6 @@
-# Installer Jedi 1.0
+# Installer Jedi 1.1
 
-Ce guide utilise l’archive **binaire** `jedi-1.0.0-linux-x86_64.tar.gz`. L’archive contenant les sources sert à la compilation ; elle ne contient pas l’exécutable déjà compilé.
+Ce guide utilise l’archive **binaire** `jedi-1.1.0-linux-x86_64.tar.gz`. L’archive contenant les sources sert à la compilation ; elle ne contient pas l’exécutable déjà compilé.
 
 ## Sous Linux
 
@@ -24,9 +24,9 @@ La bibliothèque SQLite est intégrée au binaire statique. Le programme `sqlite
 Depuis le dossier contenant l’archive et son fichier de contrôle téléchargés dans Releases :
 
 ```bash
-sha256sum -c jedi-1.0.0-linux-x86_64.tar.gz.sha256
-tar -xzf jedi-1.0.0-linux-x86_64.tar.gz
-cd jedi-1.0.0-linux-x86_64
+sha256sum -c jedi-1.1.0-linux-x86_64.tar.gz.sha256
+tar -xzf jedi-1.1.0-linux-x86_64.tar.gz
+cd jedi-1.1.0-linux-x86_64
 bash install.sh
 export PATH="$HOME/.local/bin:$PATH"
 hash -r

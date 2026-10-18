@@ -64,12 +64,14 @@ module Jedi
       parser.separator I18n.t("#{prefix}.usage")
       parser.separator I18n.t("#{prefix}.notes")
       parser.separator I18n.t("infra.required_fields")
-      parser.on("--name=NAME",
-        I18n.t("#{prefix}.required_name")) { |v| @raw_name = v }
       parser.on("--comment=COMMENT",
         I18n.t("#{prefix}.required_comment")) { |v| @raw_comment = v }
       parser.on("--builder=BUILDER",
         I18n.t("#{prefix}.required_builder")) { |v| @raw_builder = v }
+      parser.separator ""
+      parser.separator I18n.t("infra.optional_fields")
+      parser.on("--name=NAME",
+        I18n.t("#{prefix}.optional_name")) { |v| @raw_name = v }
       parser.separator ""
       parser.separator I18n.t("infra.options")
       help(parser)
@@ -80,17 +82,19 @@ module Jedi
     private def create
       unless ARGV.empty?
         if @raw_name.nil? && @raw_comment.nil? && @raw_builder.nil?
-          argc = Core::Input.ensure_argument_count!(3, 3,
+          argc = Core::Input.ensure_argument_count!(2, 3,
             key: "infra.positional_arguments")
-          @raw_name, @raw_comment, @raw_builder = ARGV.shift(3)
+          if argc == 3
+            @raw_name, @raw_comment, @raw_builder = ARGV.shift(3)
+          else
+            @raw_comment, @raw_builder = ARGV.shift(2)
+          end
         end
       end
-      name = Core::Input.ensure_string_valid!(@raw_name, field: "name",
-        regex: /\A[A-z][A-z0-9-]+\z/, key: "infra.field_required")
       comment = Core::Input.ensure_present!(@raw_comment, field: "comment")
       builder = Core::Input.ensure_present!(@raw_builder, field: "builder")
       Core::Input.ensure_argv_empty!
-      TradingRules::ScaleCreator.new(conn_main).call name: name,
+      TradingRules::ScaleCreator.new(conn_main).call name: @raw_name,
         comment: comment, builder: builder
     rescue ex : LowLevelError
       raise_from_low_level(ex)

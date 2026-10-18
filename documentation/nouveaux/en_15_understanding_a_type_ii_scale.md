@@ -1,6 +1,8 @@
 # Understand a type II scale
 
-Type II calculates the next price by applying rate `vr` to the **last executed operation's price**, adjusted for a split when necessary. It retains positions and holding coefficients, without a `kc` price coefficient list.
+In ordinary operation, type II calculates the next price by applying rate `vr` to the **last executed operation's price**, adjusted for a split when necessary. It retains positions and holding coefficients, without a `kc` price coefficient list.
+
+**After `reinit=reset`, the price supplied to reset immediately replaces the latest operation's price for the first orders.** If reset accompanies a split, this price already uses post-split units. Subsequent operations then resume using their actual execution price as the basis. With `merge`, Jedi first waits for the manual transaction establishing the new reference. [Chapters 09](en_09_adapting_or_ending_a_trade.md) and [16](en_16_continuity_between_settings.md) cover these cases.
 
 Our fictional example uses `vr:20%` to make the differences easy to see, with 100 shares at €10 and a €0.01 tick:
 
@@ -63,10 +65,10 @@ Price rounding affects subsequent calculations. An unrounded calculation and a t
 ## Build the holding with np, nn and kd
 
 ~~~console
-jedidemo scale create --name=PEDA-II-AUTO \
+jedidemo scale create --name=B_vr_04 \
   --comment="Teaching builder" \
   --builder="vr:20%,np:2,nn:2,ki:10%,kb:1,kd:0"
-jedidemo scale show PEDA-II-AUTO
+jedidemo scale show B_vr_04
 ~~~
 
 Create this name once. `np:2,nn:2` sets two movements to each boundary, with one interior step per side. `kd:0` distributes changes evenly. The expanded definition contains **`ks:0.88,1.2`**.

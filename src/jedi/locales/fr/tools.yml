@@ -120,6 +120,9 @@ fr:
                                              > 0 = achat)
                                            - Un nouveau jeu de paramètres, comprenant mots-clés et valeurs associées
                                              (scale=?, split=?, sync=?, reinit=?, loss=?, loss_trigger=?)
+                                             Split peut accompagner reinit=reset ou reinit=merge ; les prix
+                                             sont alors exprimés après le split. Merge nécessite ensuite
+                                             une transaction manuelle q@p. Sync reste une option séparée.
                                            - Une nouvelle définition de la gestion du capital avec money=?
                                            - Un nouveau statut de stop avec stop=?
                                            - Une marque définissant le début du calcul des résultats financiers de
@@ -246,7 +249,7 @@ fr:
         holdings: "Titres détenus en fin de test : %{quantity} ; valeur %{value} €"
         note: >-
           Le gain inclut la valorisation des titres restants au dernier cours de clôture.
-          L'investissement maximal est le pic des achats moins les ventes, hors frais.
+          L'investissement maximal est le plus grand pic des achats moins les ventes d'un trade, hors frais.
       plot:
         title: "Backtest Jedi :"
         indices_and_ratios: "Indices en base 1 et ratios"
@@ -310,7 +313,7 @@ fr:
           cumulative_gain: "Gain cumulé ............: brut %.2f / net %.2f"
           return_on_maximum: "Rendement sur maximum .: brut %.2f%% / net %.2f%%"
           annualized_return: "Rendement annualisé ...: brut %.2f%% / net %.2f%%"
-          investment: "Investissement .........: courant %.2f / maximum %.2f (%.2f%%)"
+          investment: "Solde achats-ventes ....: %.2f / maximum %.2f (%.2f%%)"
           capital_utilization: "Utilisation du capital : %.2f%%"
           position: "Position finale .........: %s"
     #

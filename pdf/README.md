@@ -8,23 +8,23 @@ La génération demande **Pandoc avec les filtres Lua**, **XeLaTeX**, les police
 
 Depuis la racine de l'archive extraite :
 
-~~~bash
+```bash
 bash pdf/build.sh both
 bash pdf/build.sh fr
 bash pdf/build.sh en
-~~~
+```
 
 La première commande génère les deux langues ; les deux autres sont des alternatives pour une seule langue. Le script peut également être appelé par son chemin depuis un autre dossier. Il crée `output/pdf/`, puis utilise les fichiers de paramètres.
 
 Pour utiliser directement Pandoc, se placer à la racine de l'archive et préparer le dossier de sortie :
 
-~~~bash
+```bash
 mkdir -p output/pdf
 pandoc --defaults=pdf/fr.yaml
 pandoc --defaults=pdf/en.yaml
-~~~
+```
 
-Les résultats sont `output/pdf/jedi-1.0-fr.pdf` et `output/pdf/jedi-1.0-en.pdf`.
+Les résultats sont `output/pdf/jedi-1.1-fr.pdf` et `output/pdf/jedi-1.1-en.pdf`.
 
 `book.lua` donne un identifiant unique aux titres de chaque chapitre et transforme les liens entre chapitres en renvois internes au PDF. Les titres H1 des sources Markdown restent sans numéro. Dans le PDF, le filtre ajoute les numéros des chapitres 1 à 24 et des annexes 1 à 4, d'après leurs noms de fichiers. Ces numéros apparaissent aussi dans le sommaire et les signets : les renvois restent donc utilisables après impression. L'avant-propos et les introductions des parties ne reçoivent pas de numéro de chapitre. Le filtre commence chaque texte sur une nouvelle page et fait revenir les lignes de code trop longues à la ligne ; il ne modifie pas les commandes dans les fichiers Markdown.
 
@@ -42,7 +42,7 @@ Requirements are **Pandoc with Lua filters**, **XeLaTeX**, **DejaVu Serif, DejaV
 
 From the extracted archive root, run `bash pdf/build.sh both`. Use `fr` or `en` instead of `both` for one language. The script also works when called by path from another directory. For direct Pandoc calls, create `output/pdf/`, then use `pandoc --defaults=pdf/fr.yaml` or `pandoc --defaults=pdf/en.yaml` from the archive root.
 
-Outputs are `output/pdf/jedi-1.0-fr.pdf` and `output/pdf/jedi-1.0-en.pdf`. `book.lua` gives chapter headings unique identifiers, resolves chapter links inside the PDF and starts each text on a fresh page. Markdown H1 titles remain unnumbered. For the PDF, the filter adds chapter numbers 1 to 24 and appendix numbers 1 to 4 from their filenames. These numbers also appear in the contents and bookmarks, so chapter references remain usable in print. The foreword and part introductions receive no chapter number. Code wraps rather than being clipped, without changing Markdown commands.
+Outputs are `output/pdf/jedi-1.1-fr.pdf` and `output/pdf/jedi-1.1-en.pdf`. `book.lua` gives chapter headings unique identifiers, resolves chapter links inside the PDF and starts each text on a fresh page. Markdown H1 titles remain unnumbered. For the PDF, the filter adds chapter numbers 1 to 24 and appendix numbers 1 to 4 from their filenames. These numbers also appear in the contents and bookmarks, so chapter references remain usable in print. The foreword and part introductions receive no chapter number. Code wraps rather than being clipped, without changing Markdown commands.
 
 TXT files, launchers and the example guide are supplied separately in the archive, not embedded as PDF attachments. Keep its directory structure to locate them. Web links remain external.
 

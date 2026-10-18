@@ -64,7 +64,7 @@ Pour le type II, la dernière opération intervient aussi dans le recentrage du 
 | `split=nouveau:ancien` | Adapter les références à une division ou un regroupement. |
 | `sync=x:y:e` | Imposer une position justifiée pour un type I. |
 
-Une réinitialisation remet à zéro la position de départ et les coefficients cumulés. Elle n'efface pas les pertes et gains enregistrés. `sync` conserve l'échelon imposé dans le nouveau repère ; ce n'est pas une transaction.
+Une réinitialisation remet la position de départ à `0:0:0` et les coefficients cumulés `kcpc` et `kspc` à **1**. Elle n'efface pas les pertes et gains enregistrés. `sync` conserve l'échelon imposé dans le nouveau repère ; ce n'est pas une transaction.
 
 Après la vente de 20 à 12 €, réinitialiser à 12 € utilise les **80 titres détenus** :
 
@@ -85,6 +85,24 @@ q0=100,c0=10,tick=0.01" 1 reinit=merge,12 "20@12.00" -1
 ~~~
 
 Les références deviennent 100 titres à 12 €. La baisse suivante achète 20 à 9,60 €, pour un stock de 120. L'achat complémentaire est bien une opération ; il ne résulte pas du seul changement de réglage.
+
+## Appliquer le split avant la réinitialisation
+
+`split + reinit=reset` et `split + reinit=merge` sont acceptés dans un même paramétrage à partir de cette évolution de Jedi 1.1. Le stock de la dernière opération est converti d'abord. Les prix fournis à `reinit` et à la transaction suivante sont déjà dans la nouvelle unité : ils ne subissent pas une conversion supplémentaire.
+
+Pour 1 790 anciens titres regroupés à raison de `1:10`, le stock effectif est de 179 titres. Avec un prix de reprise de 12 € :
+
+| État | Stock effectif | q0 | c0 | Position de départ |
+|---|---:|---:|---:|---|
+| Après `split=1:10,reinit=reset,12` | 179 | 179 | 12 € | `0:0:0` |
+| Après `split=1:10,reinit=merge,12`, avant transaction | 179 | 0 | 0 | `0:0:0` |
+| Merge, après achat de 21 nouveaux titres à 10 € | 200 | 200 | 11,79 € | `0:0:0` |
+
+Les coefficients cumulés repartent à 1 dans les deux réinitialisations. Pour merge, le prix de 12 € reste conservé dans l'option `reinit` pendant l'attente ; il sert au calcul pondéré de la transaction manuelle. Les ordres automatiques ne sont disponibles qu'après celle-ci.
+
+Les opérations anciennes gardent leurs unités et leurs positions. Avant la première transaction du nouveau paramétrage, la synthèse, les ordres et les projections utilisent son stock effectif et sa nouvelle position. Après cette transaction, le stock enregistré est déjà converti ; Jedi ne réapplique pas le split.
+
+`split + sync`, `sync + reinit` et les trois options réunies restent refusés. Un paramétrage doit toujours être utilisé par une opération avant d'en créer un autre. Les exemples pratiques figurent au chapitre 09 et les simulations complètes au [chapitre 19](19_verifier_avec_tools_calc_et_play.md#simuler-un-regroupement-avec-reset-ou-merge).
 
 ## Contrôler le changement
 

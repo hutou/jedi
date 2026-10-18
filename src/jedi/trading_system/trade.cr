@@ -1,6 +1,14 @@
 module Jedi
   module TradingSystem
     class Trade
+      enum LifecycleStatus
+        Created
+        Configured
+        Opened
+        Running
+        Closed
+      end
+
       #  Name and type of fields read from the trade table
       alias Fields = NamedTuple(id: PkId, name: String,
         money: String?, stop: String?, security_id: PkId)
@@ -103,6 +111,17 @@ module Jedi
         q = TradingSystem::TradeContextQueries.new(@conn_db)
         op_id = q.last_operation_id(id)
         op_id.nil? ? nil : TradingLife::Operation.new(@conn_db, op_id)
+      end
+
+      def lifecycle_status : LifecycleStatus
+        if operation = last_operation
+          return LifecycleStatus::Closed if operation.stock.zero?
+
+          q = TradingSystem::TradeContextQueries.new(@conn_db)
+          q.operations_count(id) > 1 ? LifecycleStatus::Running : LifecycleStatus::Opened
+        else
+          last_settings.nil? ? LifecycleStatus::Created : LifecycleStatus::Configured
+        end
       end
 
       def reload!(id : PkId) : Nil

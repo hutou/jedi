@@ -56,8 +56,8 @@ def binary_files(binary, info_path, smoke_path):
         raise ValueError("Source files changed after build verification")
     if info["binary_sha256"] != sha256(binary) or smoke["binary_sha256"] != sha256(binary):
         raise ValueError("Binary does not match the build or target smoke-test evidence")
-    if info.get("specs") != "493 examples, 0 failures, 0 errors, 0 pending":
-        raise ValueError("A passing 493-spec result is required")
+    if info.get("specs") != "617 examples, 0 failures, 0 errors, 0 pending":
+        raise ValueError("A passing 617-spec result is required")
     if any(info.get(field) != "passed" for field in ("format", "cli_compile", "alpine_smoke")):
         raise ValueError("Incomplete build verification")
     if not smoke.get("success") or smoke.get("system") != "Linux" or smoke.get("architecture") != "x86_64":

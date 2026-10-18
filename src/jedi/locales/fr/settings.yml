@@ -32,6 +32,8 @@ fr:
           et des champs nommés pour les autres paramètres.  
           La syntaxe positionnelle est un raccourci équivalent, sur les champs requis uniquement
           ** Ne pas mélanger les syntaxes **
+          Split peut être combiné avec reinit=reset ou reinit=merge. Les prix doivent
+          être exprimés après le split. Sync ne peut être combiné avec split ou reinit.
       required_arguments: |
         Arguments requis:
           <id>                             Id du trade dans la base de données             
@@ -51,7 +53,7 @@ fr:
       last_settings_not_used: "Le dernier paramétrage enregistré pour le trade %{ref} n'a pas encore été utilisé."
       sync_type_one_only: "La synchronisation de position est uniquement disponible pour les barèmes de type I."
       success: "Paramétrage %{ref_settings} créé pour le trade %{ref}."
-      zero_or_one_option_only: "Les options split, sync et reinit sont mutuellement exclusives, une seule est acceptée."
+      zero_or_one_option_only: "L'option sync ne peut être combinée avec split ou reinit. Split et reinit peuvent être combinés."
       option_not_allowed_in_empty_settings: "Option(s) non autorisée(s) sans paramètrage existant."
       datetime_operation: "Date '%{date}' dépassée par la dernière opération."
       datetime_settings: "Date '%{date}' dépassée par le dernier paramétrage."

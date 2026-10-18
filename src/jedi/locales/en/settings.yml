@@ -31,6 +31,8 @@ en:
           and named options for the other parameters.
           Positional syntax is an equivalent shortcut, on required fields only
           ** Do not mix syntaxes **
+          Split may be combined with reinit=reset or reinit=merge. Prices must use
+          the post-split unit. Sync cannot be combined with split or reinit.
       required_arguments: |
         required arguments:
           <id>                             Trade Id in the database
@@ -50,7 +52,7 @@ en:
       last_settings_not_used: "Last entered settings for trade %{ref} not used yet."
       sync_type_one_only: "Position synchronization is only available for type-I scales."
       success: "Settings %{ref_settings} created for trade %{ref}."
-      zero_or_one_option_only: "Options split, sync and reinit are mutually exclusive, only one is accepted."
+      zero_or_one_option_only: "Option sync cannot be combined with split or reinit. Split and reinit may be combined."
       option_not_allowed_in_empty_settings: "Option(s) not allowed without existing settings."
       datetime_operation: "Date '%{date}' exceeded by last operation."
       datetime_settings: "Date '%{date}' exceeded by last settings."

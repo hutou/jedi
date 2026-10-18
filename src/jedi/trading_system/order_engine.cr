@@ -61,6 +61,10 @@ module Jedi
 
         return calculated_orders if (settings = @trade.last_settings).nil? ||
                                     (operation = @trade.last_operation).nil?
+        # Merge obtains its reference from the next manual transaction.
+        # Automatic orders cannot be calculated while q0 and c0 are pending.
+        return calculated_orders if (reinit = settings.reinit) &&
+                                    reinit.merge? && settings.operations.empty?
         lastdata = TradingRules::LastData.new(settings, operation)
         # last_operation does not necessarily belong to last_settings
         # (a new settings may have been created since !)
@@ -155,13 +159,13 @@ module Jedi
       end
 
       def build_stoploss_order(lastdata, context, stoploss_price, guaranteed_gain, stop_kind, current_price)
-        quantity = original_quantity = lastdata.operation.stock
+        quantity = original_quantity = lastdata.maybe_splitted_stock
         quantity -= context.up_order.quantity if context.option_net_stop
         stoploss_price_formatted = @trade.security.tick_sell.as(Exchange::Security::Tick)
           .round_down(stoploss_price)
         new_stop = TradeStop.new(lastdata.operation.id,
           stop_kind.as(TradeStop::Kind),
-          lastdata.operation.stock,
+          lastdata.maybe_splitted_stock,
           stoploss_price_formatted,
           guaranteed_gain.as(Float64))
         debug_line = String.build do |io|
@@ -183,7 +187,7 @@ module Jedi
           price: stoploss_price_formatted,
           spe: 0.0,
           cpe: 0.0,
-          last_stock: lastdata.operation.stock,
+          last_stock: lastdata.maybe_splitted_stock,
           operation_id: lastdata.operation.id,
           debug_line: debug_line,
           original_quantity: original_quantity,
@@ -202,14 +206,14 @@ module Jedi
           minimum_objective_gain = context.money.target_amount(reference_capital)
           if context.steps_down_gain > minimum_objective_gain # G_n > O ==> GP
             guaranteed_gain = context.steps_down_gain
-            stoploss_price = calculate_stoploss_price(lastdata.operation.stock,
+            stoploss_price = calculate_stoploss_price(lastdata.maybe_splitted_stock,
               step_moves(lastdata, context.money.steps_down))
             stop_kind = TradeStop::Kind::GP
           elsif context.steps_down_gain < -context.risk_amount
             # Here, we must calculate the stoploss price to limit loss at -R
             guaranteed_gain = -context.risk_amount
             stoploss_price = (lastdata.operation.trade_invest/100 - context.risk_amount) /
-                             lastdata.operation.stock
+                             lastdata.maybe_splitted_stock
             stop_kind = TradeStop::Kind::CL
           else
             # No stoploss
@@ -230,11 +234,11 @@ module Jedi
             # a new stoploss as stock has changed
             guaranteed_gain = trade_stop.guaranteed_gain
             stoploss_price = (guaranteed_gain + (lastdata.operation.trade_invest/100)) /
-                             lastdata.operation.stock
+                             lastdata.maybe_splitted_stock
           else
             # context.steps_down_gain become the new guaranteed_gain
             guaranteed_gain = context.steps_down_gain
-            stoploss_price = calculate_stoploss_price(lastdata.operation.stock,
+            stoploss_price = calculate_stoploss_price(lastdata.maybe_splitted_stock,
               context.step_moves)
           end
           stop_kind = TradeStop::Kind::GP
@@ -248,7 +252,7 @@ module Jedi
             # from last operation
             guaranteed_gain = trade_stop.guaranteed_gain
             stoploss_price = (guaranteed_gain + (lastdata.operation.trade_invest/100)) /
-                             lastdata.operation.stock
+                             lastdata.maybe_splitted_stock
           end
           stop_kind = TradeStop::Kind::CL
         end
@@ -261,7 +265,7 @@ module Jedi
           buys += op.buy
           sells += op.sell
         end
-        (((lastdata.operation.stock * current_price * 100).to_i + sells - buys) / 100).round(2)
+        (((lastdata.maybe_splitted_stock * current_price * 100).to_i + sells - buys) / 100).round(2)
       end
 
       def calculate_steps_down_gain(lastdata, steps_down)
@@ -478,7 +482,11 @@ module Jedi
         kcpc = last_settings.kcpc
         kspc = last_settings.kspc
         # Prepare data that will change inside the loop
-        start_position = last_operation.position
+        start_position = if last_settings.operations.empty?
+                           last_settings.position
+                         else
+                           last_operation.position
+                         end
         next_position = start_position.downmove(opscale.emin)
         price = lastdata.maybe_splitted_price # price and stock
         stock = lastdata.maybe_splitted_stock # are already splitted, if applicable

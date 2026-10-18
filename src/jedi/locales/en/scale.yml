@@ -1,6 +1,9 @@
 en:
   scale:
     header: "Manage scales (Type I and type II)"
+    definition_exists: "An equivalent scale already exists: %{ref} (id %{id}). Reuse that scale."
+    name_type_mismatch: "Invalid scale name '%{name}': use %{prefix}_NN with a positive number of at least two digits, or omit the name at creation."
+    name_number_exhausted: "No further number is available for the %{prefix} scale family."
     banner: |
       Manage scales (Type I and type II)
 
@@ -16,18 +19,23 @@ en:
       usage: |
         Usage:
           1st form, with named fields:
-            jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
+            jedi scale create --comment=COMMENT --builder=BUILDER [--name=NAME] [options]
           2nd form, with positional fields:
+            jedi scale create <comment> <builder> [options]
             jedi scale create <name> <comment> <builder> [options]
       notes: |
         Notes:
           The recommended syntax uses named options for all parameters.
           The positional syntax is a shorthand equivalent.
+          Without --name, the builder determines the family: B_kc_NN (type I), B_vr_NN (type II).
+          NN is the next number in that family. An explicit name must match the builder type.
+          Equivalent operational definitions are refused, including with different builders.
           ** Do not mix syntaxes **
       required_name: &required_name |-
-        Scale Name:
-          - Must begin with a letter,
-          - Followed by at least one alphanumeric character.
+        Scale name matching the builder type:
+          B_kc_NN for type I; B_vr_NN for type II.
+          NN is a positive number of at least two digits.
+      optional_name: "Optional explicit name matching the builder type; otherwise generated automatically"
       required_comment: &required_comment "Comment on scale (free-form)"
       required_builder: &required_builder |-
         Valid scale builder keyword sets:
@@ -37,16 +45,16 @@ en:
           - {vr,np,nn,ki,kb,kd}     : Type II, optimized on ks
           - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
         Each keyword expects one or more parameters:
-          - np, nn, mi, kb: a single integer value (e.g., np:3)
+          - np, nn, kb: a single integer value (e.g., np:3)
           - kc, ks: a list of decimal values, separated by commas 
             (e.g., kc:1.45,1.30, 1.15, ...)
-          - vr, sr, ki, kd: a single decimal value (which can be expressed 
+          - vr, sr, mi, ki, kd: a single decimal value (which can be expressed
             as a percentage, except for kd)
             (e.g., vr:15% or vr:0.15)
       examples: |
         Examples:
-          jedi scale create --name sc01 --comment "scale 01" --definition "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
-          jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+          jedi scale create --comment "scale" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+          jedi scale create "scale" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
       # from scale_creator:
       success: "Scale %{ref} created."
       name_exists: "Scale %{ref} already exists."

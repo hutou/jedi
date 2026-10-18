@@ -1,5 +1,7 @@
 # Reading this documentation
 
+This edition accompanies **`next-version`, in preparation for Jedi 1.1**. It includes `split + reinit=reset` and `split + reinit=merge`, together with trade and scale naming conventions. These combinations require the updated executable; the published Jedi 1.0.0 release still rejects them. Chapter 02's installation examples retain the published 1.0.0 distribution: adapt the version for a later release.
+
 Jedi is intended for investors who want to apply and monitor a mechanical trading method. On first reading, start with [The philosophy of Jedi](en_philosophy_of_jedi.md), just before Part I: the method's principle, discipline, the investor's decisions and the limits of historical results.
 
 ## Three reading paths
@@ -26,7 +28,7 @@ Required settings appear before the examples: fees, simulation capital and main 
 
 ## Finding information
 
-Numbers identify files and cross-references. The PDF table of contents covers the three parts, 24 chapters and four appendices. French and English editions follow the same plan.
+Numbers identify files and cross-references. PDFs rebuilt from this edition include the three parts, 24 chapters and five appendices in their table of contents. French and English editions follow the same plan.
 
 To discover the installed version's capabilities, run `jedi` without arguments, then request a subcommand's help, for example `jedi tools backtest --help`. `jedi version` shows the version; `jedi config --paths` shows the paths actually used.
 

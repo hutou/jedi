@@ -4,6 +4,8 @@ A project must answer two questions: how many shares to buy initially, and how m
 
 Our figures describe simulations. The theoretical risk does not guarantee the maximum loss actually obtained: fees, rounding or adverse execution can increase it.
 
+After a split, current gains and stop quantities use the **converted holding**, even before a new transaction has been recorded. With reset, the protection path starts from the new mechanical position. These adjustments do not zero the financial result: past purchases, sales and fees remain retained. With merge, automatic proposals wait for the manual transaction, as explained in [chapter 09](en_09_adapting_or_ending_a_trade.md).
+
 ## Give K, r, o and n a meaning
 
 | Parameter | Practical question | Effect |
@@ -23,6 +25,8 @@ A `money` definition requires all three fields `r`, `o` and `n`: none is implici
 
 For a real trade, capital comes from `trading.capital`. For **`tools play`**, it comes from **`simulation.capital`**. `candidate --capital=20000` sets the capital for that evaluation without modifying configuration.
 
+In play, the risk rate is the required r field of money; simulation.risk_rate and simulation.distance are not used. They contribute to score’s reference opening amount and backtest without --capital. [Appendix 05](en_annex05_default_configuration.md) gives built-in values and each setting’s use.
+
 Before the protection examples, use [chapter 02's experiment environment](en_02_installing_and_preparing_jedi.md#prepare-a-separate-experiment-environment) and check its configuration file:
 
 ~~~yaml
@@ -30,7 +34,7 @@ simulation:
   capital: 20000
 ~~~
 
-Fees remain 0.35%, without a minimum. Part I's €5,000 capital for EXA01 belongs to another example. Changing only `trading.capital` does not change `play` capital.
+Fees remain 0.35%, without a minimum. Part I's €5,000 capital for T_exa_01 belongs to another example. Changing only `trading.capital` does not change `play` capital.
 
 ## Size an opening
 

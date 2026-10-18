@@ -99,9 +99,23 @@ Gain net / investissement maximal : 41.86 %
 Titres détenus en fin de test : 122 ; valeur 1578.97 €
 ~~~
 
-Le gain brut additionne les ventes, soustrait les achats et ajoute la valeur des titres restants à la dernière clôture. Le gain net retire les frais. L'investissement maximal est le pic des achats moins les ventes, hors frais, sur le parcours simulé.
+Le gain brut additionne les ventes, soustrait les achats et ajoute la valeur des titres restants à la dernière clôture. Le gain net retire les frais. L'investissement maximal est le plus grand des pics d’achats moins ventes de chaque trade, hors frais. Les trades du backtest se succèdent sans se chevaucher : ce maximum global doit donc apparaître dans au moins un des trades.
 
 Les 41,86 % couvrent toute la période ; ce n'est pas un taux annuel. La valeur finale de 1 578,97 € est une composante du gain, pas un gain à ajouter aux 627,97 €. Les 122 titres ne sont pas vendus artificiellement à la fin : le rapport ne facture pas une liquidation finale qui n'a pas eu lieu.
+
+## Comprendre le maximum quand un trade est rouvert
+
+Un autre exemple fictif illustre le calcul : le premier trade achète 100 titres à 10 €, puis les vend tous à 8,50 €. Sa perte brute est de 150 €. Le suivant achète de nouveau 100 titres à 10 €.
+
+| Trade | Pic d’investissement hors frais | Situation |
+|---|---:|---|
+| Trade_01 | 1 000 € | Clos, perte brute de 150 €. |
+| Trade_02 | 1 000 € | Ouvert après la clôture du précédent. |
+| Maximum du backtest | **1 000 €** | Le plus grand des deux pics. |
+
+Le solde cumulé achats moins ventes vaut alors 1 150 € : les 150 € perdus restent dans le bilan financier. Ce solde sert à calculer le gain cumulé ; il ne constitue pas le maximum individuel d’un trade. Dans les rapports détaillés et techniques, son libellé est **solde achats–ventes**. Il peut dépasser le maximum, notamment après une perte passée.
+
+Le tableau financier demandé par `-c f` suit désormais **l’ordre de création des trades**, du premier au dernier. La synthèse compacte `r`, la synthèse technique et le total de `f` utilisent le même maximum. Les rendements et les ratios fondés sur ce maximum sont recalculés avec cette valeur.
 
 ## Examiner les opérations et les gaps
 

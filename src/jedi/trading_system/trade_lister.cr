@@ -84,18 +84,20 @@ module Jedi
                                   regex,
                                   option_extended) : Array(Trade)
         return trades if regex.nil?
-        allowed_fields = ["id", "name", "money", "stop"]
+        allowed_fields = ["id", "name", "status", "money", "stop"]
         if option_extended
           allowed_fields += ["isin", "security"]
         end
         tree = Jedi::Core::FilterExpression.compile(regex, allowed_fields)
 
         trades.select do |trade|
+          status = trade.lifecycle_status.to_s.underscore
           named_fields = {
-            "id"    => [trade.id.to_s],
-            "name"  => [trade.name],
-            "money" => [trade.money.to_s],
-            "stop"  => [trade.stop.to_s],
+            "id"     => [trade.id.to_s],
+            "name"   => [trade.name],
+            "status" => [status, I18n.t("trade.list.status.#{status}")],
+            "money"  => [trade.money.to_s],
+            "stop"   => [trade.stop.to_s],
           }
           if option_extended
             named_fields["isin"] = [trade.security.isin]
@@ -151,19 +153,22 @@ module Jedi
         CSV.build do |csv|
           if option_headers
             if option_extended
-              hdr = Trade::Fields.types.keys + {:security_isin, :security_name}
+              hdr = {:id, :name, :status, :money, :stop, :security_id,
+                     :security_isin, :security_name}
               csv.row *hdr
             else
-              hdr = Trade::Fields.types.keys
+              hdr = {:id, :name, :status, :money, :stop, :security_id}
               csv.row *hdr
             end
           end
           trades.each do |trade|
             if option_extended
-              csv.row trade.id, trade.name, trade.money, trade.stop, trade.security_id,
+              csv.row trade.id, trade.name, trade.lifecycle_status.to_s.underscore,
+                trade.money, trade.stop, trade.security_id,
                 trade.security.isin, trade.security.name
             else
-              csv.row trade.id, trade.name, trade.money, trade.stop, trade.security_id
+              csv.row trade.id, trade.name, trade.lifecycle_status.to_s.underscore,
+                trade.money, trade.stop, trade.security_id
             end
           end
         end
@@ -185,6 +190,9 @@ module Jedi
           title: Tablo::Heading.new(title, framed: true)) do |t|
           t.add_column(:id, header: I18n.t("trade.list.table.id"), &.id)
           t.add_column(:name, header: I18n.t("trade.list.table.name"), &.name)
+          t.add_column(:status, header: I18n.t("trade.list.table.status")) do |trade|
+            I18n.t("trade.list.status.#{trade.lifecycle_status.to_s.underscore}")
+          end
           t.add_column(:money, header: I18n.t("trade.list.table.money"), &.money.to_s)
           t.add_column(:stop, header: I18n.t("trade.list.table.stop")) { |n|
             (x = n.stop).nil? ? "" : x.to_s
@@ -196,7 +204,7 @@ module Jedi
           end
         end.pack
         if option_columns
-          max_index = option_extended ? 6 : 3
+          max_index = option_extended ? 7 : 4
           indexes, reordered = Core::Input.parse_column_indexes(
             option_columns, max_index)
           table.using_column_indexes(indexes, reordered: reordered).to_s

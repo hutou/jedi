@@ -4,6 +4,11 @@ module Jedi
       def initialize(@conn_db : DB::Connection)
       end
 
+      def update_fees!(operation_id : PkId, fees : Int32) : Int64
+        @conn_db.exec("UPDATE operation SET fees = ? WHERE id = ?",
+          fees, operation_id).rows_affected
+      end
+
       def insert!(settings_id : Int64, state : OperationState) : Int64
         exec_result = @conn_db.exec(
           "INSERT INTO operation " \

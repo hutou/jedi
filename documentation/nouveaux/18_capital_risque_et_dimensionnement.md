@@ -4,6 +4,8 @@ Un projet doit répondre à deux questions : quelle quantité acheter au départ
 
 Nos montants décrivent des simulations. Le risque théorique ne garantit pas la perte maximale effectivement obtenue : frais, arrondis ou exécution défavorable peuvent l'augmenter.
 
+Après un split, les gains courants et les quantités des stops utilisent le **stock converti**, même si aucune transaction nouvelle n'a encore été enregistrée. Avec reset, le trajet de protection part de la nouvelle position mécanique. Ces adaptations ne remettent pas le résultat financier à zéro : les achats, ventes et frais passés restent conservés. Avec merge, les propositions automatiques attendent la transaction manuelle, selon le [chapitre 09](09_adapter_ou_terminer_un_trade.md).
+
 ## Donner un sens à K, r, o et n
 
 | Paramètre | Question pratique | Effet |
@@ -23,6 +25,8 @@ Une définition `money` exige les trois champs `r`, `o` et `n` : aucun n'est com
 
 Pour un trade réel, le capital vient de `trading.capital`. Pour **`tools play`**, il vient de **`simulation.capital`**. `candidate --capital=20000` impose le capital de cette évaluation sans modifier la configuration.
 
+Dans `play`, le taux de risque est le champ `r` de `money`, obligatoirement fourni ; `simulation.risk_rate` et `simulation.distance` n’y interviennent pas. Ils servent au montant initial de référence de `score` et du backtest sans `--capital`. L’[annexe 05](fr_annex05_configuration_par_defaut.md) donne les valeurs intégrées et l’usage de chaque réglage.
+
 Avant les exemples de protection, utiliser [l'espace d'essai du chapitre 02](02_installer_et_preparer_jedi.md#préparer-un-espace-dessai-séparé) et vérifier dans son fichier de configuration :
 
 ~~~yaml
@@ -30,7 +34,7 @@ simulation:
   capital: 20000
 ~~~
 
-Les frais restent à 0,35 %, sans minimum. Le capital de 5 000 € d'EXA01 dans la partie I est un autre exemple. Modifier seulement `trading.capital` ne modifie pas le capital de `play`.
+Les frais restent à 0,35 %, sans minimum. Le capital de 5 000 € d'T_exa_01 dans la partie I est un autre exemple. Modifier seulement `trading.capital` ne modifie pas le capital de `play`.
 
 ## Dimensionner une ouverture
 

@@ -82,7 +82,7 @@ describe "KISS trading workflow consistency" do
       result.total_fees_cents.should eq(998)
       result.portfolio_cents.should eq(100_000)
       result.current_investment_cents.should eq(115_000)
-      result.maximum_investment_cents.should eq(115_000)
+      result.maximum_investment_cents.should eq(100_000)
       result.gross_gain_cents.should eq(-15_000)
       result.net_gain_cents.should eq(-15_998)
       result.daily_valuations.last.net_gain_cents.should eq(-15_998)

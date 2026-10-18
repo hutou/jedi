@@ -14,6 +14,11 @@ module Jedi
 
         exec_result.last_insert_id
       end
+
+      def clear_money_and_stop!(trade_id : PkId) : Nil
+        @conn_db.exec("UPDATE trade SET money = NULL, stop = NULL WHERE id = ?",
+          trade_id)
+      end
     end
   end
 end

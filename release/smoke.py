@@ -178,12 +178,12 @@ try:
         run(["jedidemo", "security", "create", "--isin=FR4487601001", "--name=Example A",
              "--ticker=EXA", "--tick-buy=0.01", "--tick-sell=0.01", "--tax-rate=0"], workspace, env, "y\n")
         run(["jedidemo", "quote", "set", "FR4487601001", "--price=10"], workspace, env)
-        run(["jedidemo", "scale", "create", "--name=EXA-10", "--comment=Release smoke test", f"--builder={scale}"], workspace, env, "y\n")
-        run(["jedidemo", "trade", "create", "--name=EXA01", "--security=FR4487601001"], workspace, env, "y\n")
-        run(["jedidemo", "settings", "create", "EXA01", "--scale=EXA-10", "--date=2026-09-21", "--time=09:00:00"], workspace, env, "y\n")
-        run(["jedidemo", "operation", "create", "EXA01", "--date=2026-09-21", "--time=09:01:00",
+        run(["jedidemo", "scale", "create", "--comment=Release smoke test", f"--builder={scale}"], workspace, env, "y\n")
+        run(["jedidemo", "trade", "create", "--name=T_exa_01", "--security=FR4487601001"], workspace, env, "y\n")
+        run(["jedidemo", "settings", "create", "T_exa_01", "--scale=B_vr_01", "--date=2026-09-21", "--time=09:00:00"], workspace, env, "y\n")
+        run(["jedidemo", "operation", "create", "T_exa_01", "--date=2026-09-21", "--time=09:01:00",
              "--type=Buy", "--mode=Limit", "--quantity=100", "--price=10", "--fees=3.50"], workspace, env, "y\n")
-        run(["jedidemo", "trade", "orders", "EXA01"], workspace, env)
+        run(["jedidemo", "trade", "orders", "T_exa_01"], workspace, env)
         with sqlite3.connect(selected["jedidemo"]["db_file"]) as connection:
             require(connection.execute("SELECT stock FROM operation ORDER BY id DESC LIMIT 1").fetchone()[0] == 100,
                     "Opening stock was not recorded")

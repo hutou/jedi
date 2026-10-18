@@ -6,6 +6,8 @@ fr:
       Gère les trades (create, update, ...)
 
       Usage: jedi trade <sous-commande>
+    money_requires_settings: "Paramétrez d'abord le trade %{ref} avec settings create, puis définissez money avec trade update."
+    money_on_closed_trade: "Le trade %{ref} est clôturé : seule la suppression de money avec --money=\"\" est autorisée."
     #
     # --- create ---
     #
@@ -17,37 +19,26 @@ fr:
       usage: |
         Usage :
           1ère forme, avec champs nommés :
-            jedi trade create --name NAME --security <ID | ISIN> [--money MONEY] [options]
+            jedi trade create --name NAME --security <ID | ISIN> [options]
                              
           2nde forme, avec champs positionnels :
-            jedi trade create <name> <Security: id | isin> [--money=MONEY] [options]
+            jedi trade create <name> <Security: id | isin> [options]
       notes: |
         Notes:
           La syntaxe recommandée est d'utiliser les champs nommés pour tous les paramètres.
           La syntaxe positionnelle est un raccourci équivalent, sur les champs requis uniquement.
           Ne pas mélanger les deux syntaxes.
+          Paramétrer le trade avec settings create, puis saisir money avec trade update.
       name: &name |-
         Nom du trade :
           - Doit commencer par une lettre
           - Suivie d'au moins une lettre, un chiffre ou un souligné.
       id: "Id du titre dans la base de données"
       isin: "Code ISIN du titre"
-      money: |
-        Définition de money:
-          Une liste de trois paramètres, séparés par des virgules. 
-          Chaque paramètre est défini ainsi <k>:<v>, où <k> est
-          l'un des caractères 'r', 'o' ou 'n' et <v> sa valeur 
-          associée :
-            r:<v>  Taux de risque maximum appliqué sur le capital 
-                   total (K) dédié au trading
-            o:<v>  Coefficient d'objectif financier 
-                   (appliqué sur R = r × K)
-            n:<v>  Marge de fonctionnement de Jedi, en nombre 
-                   d'échelons
       examples: |
         Exemples :
           jedi trade create --name G13 --security FR0000066722
-          jedi trade create g13 FR0000066722 --money r:1.5%,o:1,n:2
+          jedi trade create g13 FR0000066722
       # exclusive_options: "Les options --id et --isin sont mutuellement exclusives"
       #
       success: "Trade %{ref} créé."
@@ -93,21 +84,32 @@ fr:
           jedi trade list [filters] [options]
       filters:
         regex: |2-
-                                             Les champs filtrables sont 'id', 'name', 'money' et 'stop' de
-                                             la table 'trade', ainsi que 'id', 'isin' et 'nom' de la
-                                             table 'security' lorsque l'option --extended est activée.
+                                             Les champs filtrables sont 'id', 'name', 'status', 'money' et 'stop'.
+                                             Avec --extended, 'isin' et 'security' ciblent le titre associé.
       notes: |
         Notes:
           Le filtrage est effectué dans l'ordre suivant :
-            1. Trades en cours
+            1. Trades détenant des titres (statuts ouvert ou en cours)
             2. Expression régulière
             3. Sélection d'enregistrements
+          Le statut est calculé sur tout l'historique du trade.
+          Le champ status accepte son code anglais et son libellé traduit.
+          Exemple : status=^(opened|running)$
+          Colonnes du tableau : 0=id, 1=nom, 2=statut, 3=money, 4=stop.
+          Avec --extended : 5=id du titre, 6=ISIN, 7=nom du titre.
+          En CSV, status utilise created, configured, opened, running ou closed.
       examples: |
         Exemple:
           jedi trade list "g1 "
       option_extended: "Inclut les champs 'id', 'isin' et 'name' du titre"
       #
       option_csv_missing: "L'option --csv est obligatoire avec l'option --headers."
+      status:
+        created: "créé"
+        configured: "paramétré"
+        opened: "ouvert"
+        running: "en cours"
+        closed: "clôturé"
       table:
         title:
           all: "Liste des trades"
@@ -115,6 +117,7 @@ fr:
           some: "Liste des trades sélectionnés"
         id: "\nId"
         name: "\nNom"
+        status: "\nStatut"
         money: "Gestion\nCapital"
         stop: "Statut\ndu stop"
         security_id: "Id\nTitre"
@@ -140,10 +143,14 @@ fr:
           jedi trade update G01 --name "XG01"
       name: *name
       money: |-
-        Nouvelle définition de la gestion du capital, acceptée 
-        seulement si le champ 'stop' est 'null' ou si l'option 
-        --reset-stop est activée.
-        (Voir la commande 'trade create' pour la syntaxe à utiliser)
+        Gestion du capital, pour un trade paramétré, ouvert ou en cours.
+        Syntaxe : r:<taux>,o:<coefficient>,n:<échelons>
+          r : risque maximal rapporté au capital dédié, par exemple 1.5%
+          o : coefficient d'objectif appliqué au montant du risque
+          n : marge de fonctionnement de Jedi, en nombre d'échelons
+        Exemple : --money="r:1.5%,o:2,n:2"
+        --money="" efface la valeur, y compris sur un trade créé ou clôturé.
+        Une modification avec un stop mémorisé exige --reset-stop.
       reset_stop: |-
         Réinitialise le champ 'stop' à 'null', effaçant les données 
         d'un stoploss existant
@@ -360,8 +367,10 @@ fr:
           pct_portf: "Pct.\nPortef."
           pct_inv: "Pct.\nInv."
           current_invest: "Invest.\ncourant"
+          cash_investment_balance: "Solde\nAch.-Vent."
           maximum_invest: "Invest.\nmaximum"
           return_rate: "Taux de\nRendem."
+          return_rate_unsorted: "Taux de\nRendem."
           total: "Total"
           net: "(net)"
     #trade:

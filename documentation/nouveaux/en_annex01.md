@@ -1,5 +1,7 @@
 # Command and option reference
 
+Built-in values and the use of every configuration entry are detailed in [appendix 05](en_annex05_default_configuration.md).
+
 ## Find help for the installed version
 
 Run `jedi` without arguments to see command families. A family alone, such as `jedi tools`, shows its subcommands. Detailed help belongs at subcommand level:
@@ -26,13 +28,39 @@ Global `--border=PRESET` precedes the command family. Styles are `ascii`, `reduc
 | `trade` | `create`, `update`, `delete`, `show`, `list` | Trade identity and capital management |
 | `trade` | `orders`, `status`, `results`, `plot` | Orders, state, results and chart |
 | `settings` | `create`, `delete`, `show`, `list` | Scale applying at a date/time, split, synchronisation and reset |
-| `operation` | `create`, `delete`, `list` | Executions actually performed |
+| `operation` | `create`, `fees`, `delete`, `list` | Actual executions; fee correction by operation identifier |
 | `note` | `create`, `update`, `delete`, `show`, `list` | Journal and exceptional events; `--edit` for an editor |
 | `database` | `dump`, `load`, `schema` | Main database backup, restore and schema |
 
 Each help page describes required fields. Deleting an entity in use may be refused; deleting an operation does not automatically replace it. Chapters 08 and 09 show corrections and adaptations.
 
 `quote get ISIN` displays an external price without recording a security or quotation. `quote set` records a manual price. `quote update` updates one registered security; `quote refresh` handles a selection, defaulting to securities of running trades. `--mode=live|eod` applies to `update` and `refresh`, not `get`. `--force` belongs to `refresh` and forces updates according to its filtering.
+
+## Correct operation fees
+
+~~~console
+jedidemo operation fees 42 3.50
+jedidemo operation fees 42 0
+jedidemo operation fees --help
+~~~
+
+Syntax is `jedi operation fees <operation_id> <amount>`. The numeric identifier belongs to the operation, found with `operation list`, rather than the trade. The amount replaces **total** fees, including any transaction tax; zero cancels them. Use a decimal point and a non-negative value, rounded to cents. An earlier operation or one in a closed trade can be corrected. Net results, lists and exports use the new value. Historical fees are also copied into a new `play` starting from an operation in the same trade. [Chapter 08](en_08_monitoring_a_trade.md#correct-fees-on-a-recorded-operation) gives the complete procedure.
+
+## Adapt settings: split, reinit and sync
+
+New settings require `--scale`, `--date` and `--time`. Their timestamp must follow the latest settings and operations across the whole database; the trade's previous settings must already have been used by an operation.
+
+| Option or combination | Effect |
+|---|---|
+| `--split=NEW:OLD` | Convert units; `1:10` means one new share for ten old shares. |
+| `--reinit=reset,PRICE` | Current stock as `q0`, chosen price as `c0`, position `0:0:0`. |
+| `--reinit=merge,PRICE` | Pending reference; an actual manual transaction then defines `q0` and `c0`. |
+| `--split` + `--reinit=reset,PRICE` | Accepted in next-version / v1.1; reset from converted whole stock. |
+| `--split` + `--reinit=merge,PRICE` | Accepted in next-version / v1.1; merge from converted whole stock. |
+| `--sync=POSITION` | Synchronisation restricted to type I scales. |
+| `--sync` + `--split` or `--reinit` | Rejected. |
+
+With split + reinit, `PRICE` and values of the following operation use **post-split units**. While merge waits for its operation, Jedi proposes no automatic order. Fractional rights are not accounted for. Chapter 09 gives practical cases and chapter 19 gives simulations.
 
 ## Market databases
 
@@ -52,13 +80,15 @@ Each help page describes required fields. Deleting an entity in use may be refus
 
 `import`, `replace` and `update` accept `--date-order=auto|ymd|dmy|mdy`, `--year-pivot=NN` and `--from=DATE`. Updates refuse an extension more than seven calendar days beyond the current end unless `--allow-gap` is supplied. Update does not overwrite conflicting quotations; use `replace` with a corrected corpus. `sync-group` accepts `--as-of=DATE` and `--reference-source=NAME` to describe membership.
 
-`market list` accepts field regex expressions, including `group` and `dataset`, with `&&` and `||`. This does not provide a multi-group option to `profile`. Jedi 1.0 exposes one `--group=CODE` in `profile`; no dedicated command deletes a group. `market quote` displays an OHLCV table and offers no CSV export.
+`market list` accepts field regex expressions, including `group` and `dataset`, with `&&` and `||`. This does not provide a multi-group option to `profile`. Jedi exposes one `--group=CODE` in `profile`; no dedicated command deletes a group. `market quote` displays an OHLCV table and offers no CSV export.
 
 ## Common listing options
 
-Regex filters in lists supporting them are case-insensitive. `field=pattern` targets a field; `&&` means AND, `||` means OR, with AND precedence. Parentheses are unsupported. Available fields vary by command: read its help.
+Regex filters in lists supporting them are case-insensitive. `field=pattern` targets a field; `&&` means AND, `||` means OR, with AND precedence. Parentheses cannot group logical conditions, but remain valid within a regex pattern. Available fields vary by command: read its help.
 
-`--running` limits some lists to running trades. `--select` chooses records after filtering; indices start at 1 and negative indices count from the end. `fN` and `lN` mean first and last rows, `I:J` is a range, and commas combine selections.
+For `trade list`, the `status` field recognises the codes `created`, `configured`, `opened`, `running`, `closed`, as well as labels in the active language. For example, `jedidemo trade list "status=^(opened|running)$"` retains opened and in-progress trades; `jedidemo trade list "status=^closed$ && name=^T_erf"` retains closed trades whose names start with `T_erf`. Status remains calculated from history.
+
+`--running` limits some lists to trades holding shares; for `trade list`, it retains opened and in-progress trades and combines with the regex. `--select` chooses records after filtering; indices start at 1 and negative indices count from the end. `fN` and `lN` mean first and last rows, `I:J` is a range, and commas combine selections.
 
 Lists offering `--csv` may add headings with `--headers`. `--extended` is not universal: for `operation list` CSV, it adds associated names. `--column-indexes` chooses display columns and cannot be combined with CSV.
 
@@ -139,6 +169,8 @@ Signatures recognised by `scale create --builder=...` and the tools are:
 | `vr,ks,ki,kb` | Type II with an explicit stock list |
 | `vr,np,nn,ki,kb,kd` | Type II with optimised construction of `ks` |
 | `vr,np,sr,nn,mi,ki,kb` | Type II compatibility builder |
+
+Without `--name`, `scale create --comment=... --builder=...` assigns `B_kc_NN` for type I or `B_vr_NN` for type II, including Legacy. The next number is computed separately within each family. An explicit name must match the type and use a positive number of at least two digits. Equivalent operational definitions are refused at creation and update, even with `--force`. [Chapter 13](en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) details these rules and preservation of historical data.
 
 `kc` and `ks` are decimal lists; `np`, `nn`, `kb` are integers. `vr`, `sr`, `mi` and `ki` accept a decimal coefficient or percentage; `kd` is decimal. Use a decimal point: `kc:1.4,1.2,0.8,0.6`. Commas separate values and fields.
 

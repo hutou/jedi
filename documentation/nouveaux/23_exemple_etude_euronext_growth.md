@@ -1,5 +1,7 @@
 # Exemple d'étude sur Euronext Growth
 
+Les captures chiffrées de ce chapitre sont celles de l’étude de référence de l’édition 1.0. Avec le calcul du maximum d’investissement corrigé en v1.1, relancer les commandes pour obtenir les valeurs d’investissement, les rendements et les classements actualisés.
+
 ## Un parcours à reproduire, puis à adapter
 
 Ce chapitre montre comment organiser une étude de titres d'Euronext Growth : présélection à fin 2024, recherche sur les données antérieures, puis vérification en 2025. Les fichiers livrés contiennent **trois titres fictifs** EXA, EXB et EXC ; ils ne sont pas un export d'Euronext Growth. Le nom du dataset sert à montrer l'organisation de l'étude.

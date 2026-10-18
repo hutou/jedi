@@ -68,7 +68,7 @@ A progress percentage is displayed during calculation. Time depends on the budge
 
 ## Read the three compact columns
 
-Compact `raw` results are limited to the **first 20 scales**, or fewer when fewer were evaluated. Here are the actual first three rows from the fictional file with a budget of 40:
+Compact `raw` results are limited to the **first 20 scales**, or fewer when fewer were evaluated. The following three rows are a reference extract from the 1.0 edition’s fictional study, with a budget of 40. After the maximum-investment correction in v1.1, rerun the command to obtain values and ranking for your version:
 
 ~~~text
  Fitness   Op/mo   Max.inv  Typed builder
@@ -86,7 +86,7 @@ Compact `raw` results are limited to the **first 20 scales**, or fewer when fewe
 
 Fitness is neither an annual rate nor a net return. Gross gain includes remaining holdings valued at the final close. A rise in the security can therefore contribute without coming from round trips.
 
-Maximum investment is the peak of purchases minus sales. It can exceed the first purchase when the mechanics call for additional purchases. Fees must be examined in the economic display or a backtest.
+Maximum investment is the largest of the successive trades’ peaks of purchases minus sales, excluding fees, as in backtest. It can exceed the first purchase when the mechanics call for additional purchases. Fees must be examined in the economic display or a backtest.
 
 ## Choose the sort
 

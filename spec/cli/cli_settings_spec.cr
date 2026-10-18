@@ -76,4 +76,25 @@ describe Jedi::Command, "CLI settings commands" do
         "settings.create.zero_or_one_option_only")
     end
   end
+
+  it "routes combined split and both reinit modes through the CLI" do
+    ["reset", "merge"].each do |mode|
+      JediCliSpec.with_cli_db do |conn|
+        JediCliSpec.seed_cli_trade(conn)
+        JediCliSpec.run(conn,
+          "settings", "create", "T_TEST",
+          "--scale=S_TEST",
+          "--date=2026-01-01",
+          "--time=11:00:00",
+          "--split=1:10",
+          "--reinit=#{mode},85.0")
+
+        settings = JediSpec.trade(conn).last_settings.not_nil!
+        settings.split.to_s.should eq("1:10")
+        settings.reinit.not_nil!.c0.should eq(85.0)
+        settings.q0.should eq(mode == "reset" ? 10.0 : 0.0)
+        settings.c0.should eq(mode == "reset" ? 85.0 : 0.0)
+      end
+    end
+  end
 end

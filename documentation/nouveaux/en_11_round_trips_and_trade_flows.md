@@ -2,7 +2,7 @@
 
 A rising price brings money into a trade only when a sale takes place. A falling price takes money out only when a purchase takes place. To read a trade, start with the unit price, the number of shares held and the purchases or sales actually executed.
 
-This chapter uses **Example A, a fictional security**, with 100 shares bought at €10. It is a type I example, separate from EXA01's scale in part I. The chosen prices explain the calculations; they describe no real market.
+This chapter uses **Example A, a fictional security**, with 100 shares bought at €10. It is a type I example, separate from T_exa_01's scale in part I. The chosen prices explain the calculations; they describe no real market.
 
 ## Sell and buy back, or buy and sell back
 

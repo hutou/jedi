@@ -12,6 +12,7 @@
 | Paramétrage | Barème applicable à partir d'une date et d'une heure, avec les éléments nécessaires à sa continuité. |
 | Opération | Achat ou vente exécuté et enregistré. Un ordre proposé ne constitue pas une opération. |
 | Stock | Nombre de titres détenus à un moment du parcours. |
+| PRU | Prix de revient unitaire : coût moyen d'acquisition par titre détenu, frais et taxe éventuelle inclus ; repère comptable distinct de `c0`. |
 | Allers-retours | Ventes et achats successifs suivant les déplacements du barème. |
 | Opérabilité | Possibilité de produire les ordres contrôlés avec des quantités entières suffisantes. |
 | Financement | Possibilité de couvrir l'ouverture et les besoins projetés, en tenant compte des autres trades. |
@@ -25,21 +26,48 @@
 | Échelon | Étape locale du barème. |
 | Palier | Niveau de référence pour une série d'échelons ; atteindre une borne provoque un saut. |
 | `q0`, `c0` | Quantité et prix de référence du trade ; initialement ceux du premier achat. |
-| `kc`, `ks` | Listes de coefficients de prix et de stock d'un barème de type I. |
+| `kc`, `ks` | Coefficients de cours (`kc`, type I) et de stock (`ks`, dans les deux types de barème). |
 | `vr` | Variation relative servant à construire le pas d'un barème. |
 | `np`, `nn` | Nombre d'échelons vers les bornes positive et négative. |
+| `emax` | Borne haute positive du barème ; l'atteindre provoque un saut haussier et ramène l'échelon `e` à zéro. |
+| `emin` | Borne basse négative du barème ; l'atteindre provoque un saut baissier et ramène l'échelon `e` à zéro. |
 | `sr` | Fraction de stock visée au dernier échelon intérieur haussier du constructeur de compatibilité. |
 | `mi` | Paramètre de budget des achats baissiers de ce constructeur, rapporté au montant initial. |
 | `ki` | Fraction d'investissement appliquée lors des changements de palier. |
-| `kb` | Coefficient de déplacement des prix de palier. |
+| `kb` | Convention de calcul du coefficient de capital lors des changements de palier. |
 | `kd` | Paramètre du constructeur qui transforme les quantités ; il ne désigne pas un rendement. |
 | `kcb`, `kcp`, `ksp` | Coefficients calculés de capital, de prix et de stock. |
+| `kcpc` | Coefficient cumulé de cours issu des paramétrages antérieurs, conservé pour la continuité du trade. |
+| `kspc` | Coefficient cumulé de stock issu des paramétrages antérieurs, conservé pour la continuité du trade. |
 | `cpe`, `spe` | Cours et stock théoriques à une position cible. |
 | Type I | Échelle reposant sur des coefficients de référence ; `calc` en vérifie les calculs. |
 | Type II | Barème recentré à partir des opérations réelles ; l'examiner avec `play`. |
 | Optimisé | Variante de construction ou de continuité ; ce qualificatif ne prouve pas un meilleur gain. |
 
 Les [chapitres 13 à 16](13_lire_la_structure_d_un_bareme.md) donnent le contexte des paramètres. `q0` et `c0` peuvent être redéfinis par une réinitialisation ; lire le paramétrage actif avant de les interpréter comme le tout premier achat historique.
+
+`kcpc` et `kspc` valent **1 au départ et lors d'une réinitialisation**. Un changement ordinaire de paramétrage multiplie leurs anciennes valeurs par les coefficients de palier `kcp` et `ksp` atteints, tandis que les compteurs de sauts `x` et `y` repartent de zéro. Par exemple, `c0=10` et `kcpc=1.40` reportent une référence de cours de 14 € ; `q0=100` et `kspc=0.785714` reportent une référence de stock théorique d'environ 78,57 titres. Le stock réellement détenu peut être différent. Le [chapitre 16](16_continuite_entre_parametrages.md#changer-le-repère-local) explique ce report.
+
+`emax` et `emin` désignent des **bornes de saut**, et non des échelons où la position reste enregistrée. Avec `emax=+3` et `emin=-3`, les échelons intérieurs vont de `−2` à `+2`, zéro compris. Une hausse depuis `e=+2` augmente `x` et ramène `e` à zéro ; une baisse depuis `e=-2` augmente `y` et ramène `e` à zéro. Pour un constructeur utilisant `np` et `nn`, `emax=np` et `emin=-nn`. Voir le [chapitre 12](12_positions_echelons_et_paliers.md#atteindre-une-borne-et-changer-de-palier).
+
+### Distinguer PRU et référence mécanique
+
+Le PRU est un repère du portefeuille tenu par le courtier. Par exemple, pour un seul achat de 100 titres à 10 €, avec 3,50 € de frais et sans autre taxe, le coût d'acquisition par titre est `(1000 + 3.50) / 100 = 10.035 €`. La référence initiale `c0` de Jedi reste le prix exécuté de **10 €**. Le [calcul du PRU au comptant présenté par BoursoBank](https://www.boursobank.com/aide-en-ligne/bourse/comment-investir-en-bourse/fonctionnement-de-la-bourse/question/comment-se-calcule-le-prix-de-revient-pru-au-comptant-642) illustre la prise en compte des frais et de la taxe éventuelle.
+
+À chaque nouvel achat, le PRU se recalcule en tenant compte du coût des titres encore détenus et du nouvel achat, pondéré par leurs quantités. Ce n'est pas le solde des achats moins les ventes divisé par le stock restant. Jedi ne demande pas le PRU du courtier pour calculer ses ordres : il utilise les opérations et les références du paramétrage. Une réinitialisation peut donc changer `c0` sans faire de cette nouvelle référence un PRU comptable.
+
+## Split et nouvelle origine
+
+| Notation | Sens |
+|---|---|
+| `split=NEW:OLD` | Nombre d'actions nouvelles pour les anciennes ; `1:10` est un regroupement de dix pour une. |
+| Stock effectif | Stock à utiliser après conversion, même si la dernière opération historique conserve l'ancienne quantité. |
+| `reinit=reset,prix` | Nouvelle origine mécanique immédiate ; position `0:0:0`, stock effectif comme `q0`, prix choisi comme `c0`. |
+| `reinit=merge,prix` | Nouvelle origine établie par la transaction manuelle suivante ; références en attente jusque-là. |
+| `split + reinit` | Combinaison de next-version / v1.1 ; convertir le stock avant reset ou merge, saisir les prix après split. |
+| Rompu | Droit fractionnaire issu d'un regroupement ; sa gestion et son règlement ne sont pas comptabilisés par Jedi. |
+
+Le [chapitre 09](09_adapter_ou_terminer_un_trade.md) détaille les effets et les restrictions. Une réinitialisation change les références mécaniques, pas les résultats financiers passés.
 
 ## Ordres et protection
 
@@ -110,7 +138,8 @@ La fraîcheur n'est pas calculée par rapport à la date du jour. Un fichier, un
 | Gain brut | Ventes − achats + stock final valorisé à la dernière clôture, hors frais. |
 | Gain net | Gain brut − frais imputés. |
 | Investissement courant | Achats − ventes cumulés, hors frais. |
-| Investissement maximal | Pic de l'investissement courant sur le parcours. |
+| Investissement maximal | Pic achats moins ventes d’un trade ; pour `backtest` et `score`, plus grand de ces pics sur les trades successifs, hors frais. |
+| Solde achats–ventes du backtest | Bilan cumulé conservant les gains et pertes des trades clos ; il sert au calcul du gain cumulé. |
 | Fitness | Dans `score`, gain brut / montant du premier achat ; couvre toute la période. |
 | Inv.max | Dans `score`, investissement maximal / premier achat, hors frais. |
 | Op/mois | Toutes les opérations, ouvertures comprises, ramenées à 21 séances à partir de la première opération. |

@@ -22,33 +22,36 @@ describe Jedi::Command, "CLI smoke workflow" do
 
       JediCliSpec.run(conn,
         "scale", "create",
-        "--name=S_CLI",
+        "--name=B_vr_01",
         "--comment=CLI scale",
         "--builder=vr:10.0%, ks:0.8,1.2, ki:0.0%, kb:0")
 
-      scale = Jedi::TradingRules::Scale.new(conn, "S_CLI")
-      scale.name.should eq("S_cli")
+      scale = Jedi::TradingRules::Scale.new(conn, "B_vr_01")
+      scale.name.should eq("B_vr_01")
       scale.operational.type.should eq(Jedi::TradingRules::Scale::Operational::Type::Two)
 
       JediCliSpec.run(conn,
         "trade", "create",
         "--name=T_CLI",
-        "--security=1",
-        "--money=r:1.5%,o:2,n:2")
+        "--security=1")
 
       trade = Jedi::TradingSystem::Trade.new(conn, "T_CLI")
       trade.security.id.should eq(security.id)
-      trade.money.to_s.should eq("r:1.5%, o:2.0, n:2")
+      trade.money.should be_nil
 
       JediCliSpec.run(conn,
         "settings", "create",
-        "--scale=S_CLI",
+        "--scale=B_vr_01",
         "--date=2026-01-01",
         "--time=09:00:00",
         "T_CLI")
 
+      JediCliSpec.run(conn, "trade", "update", "T_CLI", "--money=r:1.5%,o:2,n:2")
+      trade.reload!(trade.id)
+      trade.money.to_s.should eq("r:1.5%, o:2.0, n:2")
+
       settings = trade.last_settings.not_nil!
-      settings.scale.name.should eq("S_cli")
+      settings.scale.name.should eq("B_vr_01")
       settings.q0.should be_close(0.0, JediSpec::EPSILON)
       settings.c0.should be_close(0.0, JediSpec::EPSILON)
       settings.position.should eq(Jedi::TradingRules::Position.new("0:0:0"))

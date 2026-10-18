@@ -162,12 +162,8 @@ module Jedi
           !@loss_trigger.nil? && !settings_change?
         end
 
-        def one_option_only? : Bool
-          count = 0
-          count += 1 if @sync
-          count += 1 if @split
-          count += 1 if @reinit
-          (count > 1) ? false : true
+        def options_compatible? : Bool
+          @sync.nil? || (@split.nil? && @reinit.nil?)
         end
       end
 
@@ -524,8 +520,6 @@ module Jedi
 
         trade_id = TradingSystem::TradeCreator.new(conn_memory).call(
           name: "PLAY",
-          money: trade_params.money,
-          stop: trade_params.stop,
           security_ident: security_id
           # security_ident: SIMULATION_SECURITY_ISIN
         )
@@ -539,6 +533,11 @@ module Jedi
           scale_ident: scale_id,
           timestamp: timestamp
         )
+
+        if money = trade_params.money
+          TradingSystem::TradeUpdater.new(mem_trade).call(money: money.to_s)
+        end
+        mem_trade.stop_update(trade_params.stop) unless trade_params.stop.nil?
 
         op_id = TradingLife::OperationCreator.new(conn_memory).call(
           trade_ident: trade_id,
@@ -588,7 +587,7 @@ module Jedi
 
         @mem_trade = TradingSystem::Trade.new(conn_memory, trade_id)
 
-        scale_id = TradingRules::ScaleCreator.new(conn_memory).call(
+        scale_id = TradingRules::ScaleCreator.new(conn_memory).restore(
           name: source_settings.scale.name,
           comment: source_settings.scale.comment,
           builder: source_settings.scale.operational.builder
@@ -707,11 +706,11 @@ module Jedi
               App.warn(key: "tools.play.no_merge_pending")
             end
           when SettingsChangeAction
-            if action.one_option_only?
+            if action.options_compatible?
               execute_settings_change_action(action)
             else
               raise LowLevelError.new(
-                "play reinit, split and sync options are mutually exclusive",
+                "play sync cannot be combined with split or reinit",
                 key: "tools.play.reinit_split_sync_exclusive",
                 kind: LowLevelError::Kind::UserInput,
                 log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
@@ -761,12 +760,8 @@ module Jedi
       end
 
       private def execute_target_price_action(action : TargetPriceAction) : Nil
-        current_price = if context.current_settings.split &&
-                           context.current_settings.operations.size.zero?
-                          context.current_settings.c0
-                        else
-                          context.current_operation.price
-                        end
+        current_price = TradingRules::LastData.new(
+          context.current_settings, context.current_operation).maybe_splitted_price
         target_price = action.price
         return if target_price == current_price
         if target_price > current_price
@@ -786,7 +781,8 @@ module Jedi
             action.price
           )
         elsif action.quantity < 0
-          available_stock = context.current_operation.stock
+          available_stock = TradingRules::LastData.new(
+            context.current_settings, context.current_operation).maybe_splitted_stock
           validate_no_short_selling!(action.quantity.abs, available_stock)
           add_fixed_operation(
             TradingLife::Operation::Type::Sell,
@@ -1000,7 +996,7 @@ module Jedi
         quantity : Int32,
         price : Float64,
       ) : PkId
-        TradingLife::OperationCreator.new(conn_memory).call(
+        operation_id = TradingLife::OperationCreator.new(conn_memory).call(
           trade_ident: mem_trade.id,
           timestamp: context.timestamp,
           type: type,
@@ -1010,6 +1006,8 @@ module Jedi
           cfees: App.fees,
           tickcheck: false
         )
+        mem_trade.reload!(mem_trade.id)
+        operation_id
       end
 
       # ============================================================

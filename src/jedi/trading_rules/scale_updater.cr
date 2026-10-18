@@ -13,13 +13,6 @@ module Jedi
                builder : String? = nil,
                option_force : Bool = false) : Int64
         @ref = Core::Utils.ref(scale.ident.is_a?(PkId) ? scale.id : scale.name)
-        new_name =
-          if name.nil?
-            scale.name
-          else
-            Core::Input.ensure_string_valid!(name, field: "name",
-              regex: ALPHANUM, key: "infra.field_required").capitalize
-          end
         new_comment =
           if comment.nil?
             scale.comment
@@ -34,23 +27,17 @@ module Jedi
           end
 
         new_operational = decode_builder!(new_builder, builder)
+        new_name = name.nil? ? scale.name : ScaleNaming.validate!(name, new_operational)
+        rename_for_type = name.nil? && !builder.nil? &&
+                          new_operational.type != scale.operational.type &&
+                          ScaleNaming.automatic?(scale.name)
 
         if unchanged?(new_name, new_comment, new_operational)
           App.info(key: "scale.update.unchanged", params: {:ref => ref})
           return 0_i64
         end
 
-        if new_name != scale.name && key_exists(new_name)
-          # name is a key, so we must ensure it is not used elsewhere
-          @ref = Core::Utils.ref(new_name)
-          raise LowLevelError.new(
-            key: "scale.update.name_already_used",
-            context: {:ref => ref},
-            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
-        end
-
-        ensure_operational_change_allowed!(new_operational, option_force)
-        persist!(new_name, new_comment, new_operational)
+        persist!(new_name, new_comment, new_operational, rename_for_type, option_force)
       end
 
       private def decode_builder!(
@@ -86,13 +73,6 @@ module Jedi
         end
       end
 
-      private def key_exists(name)
-        count = scale.conn_db.scalar(
-          "SELECT count(*) FROM scale WHERE name = ?",
-          name).as(PkId)
-        !count.zero?
-      end
-
       private def unchanged?(name : String, comment : String, operational : Scale::Operational) : Bool
         name == scale.name &&
           comment == scale.comment &&
@@ -109,18 +89,36 @@ module Jedi
           log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
       end
 
-      private def persist!(name : String, comment : String, operational : Scale::Operational) : Int64
+      private def persist!(name : String, comment : String, operational : Scale::Operational,
+                           rename_for_type : Bool, force : Bool) : Int64
         scale_id = scale.id
-        result = scale.conn_db.exec(
-          "UPDATE scale SET name = ?, comment = ?, operational = ? WHERE id = ?",
-          name,
-          comment,
-          operational.to_json,
-          scale_id)
+        result = scale.conn_db.transaction do |transaction|
+          connection = transaction.connection
+          unless operational.same_definition?(scale.operational)
+            ScaleRepository.new(connection).ensure_definition_available!(operational, scale_id)
+          end
+          name = ScaleNaming.next_name(connection, operational) if rename_for_type
+          if name != scale.name && ScaleNaming.name_in_use?(connection, name, scale_id)
+            raise LowLevelError.new(
+              key: "scale.update.name_already_used",
+              context: {:ref => Core::Utils.ref(name)},
+              log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+          end
+          ensure_operational_change_allowed!(operational, force)
+          connection.exec(
+            "UPDATE scale SET name = ?, comment = ?, operational = ? WHERE id = ?",
+            name, comment, operational.to_json, scale_id).rows_affected
+        end
+        unless result
+          raise LowLevelError.new(
+            "Scale update transaction was rolled back",
+            kind: LowLevelError::Kind::Technical,
+            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+        end
 
         scale.reload!(scale_id)
-        App.info(key: "scale.update.success", params: {:ref => ref})
-        result.rows_affected
+        App.info(key: "scale.update.success", params: {:ref => Core::Utils.ref(name)})
+        result
       end
     end
   end

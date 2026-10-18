@@ -1,5 +1,7 @@
 # Lire cette documentation
 
+Cette édition accompagne **`next-version`, en préparation de Jedi 1.1**. Elle intègre `split + reinit=reset` et `split + reinit=merge`, ainsi que les conventions de nommage des trades et des barèmes. Ces combinaisons demandent le binaire mis à jour ; elles restent refusées par la version publiée Jedi 1.0.0. Les exemples d'installation du chapitre 02 utilisent encore la distribution publiée 1.0.0 : adapter la version lors d'une publication ultérieure.
+
 Jedi s'adresse à l'investisseur qui souhaite appliquer et suivre une méthode de trading mécanique. Pour une première lecture, commencer par [La philosophie de Jedi](philosophie_de_jedi.md), juste avant la partie I : principe de la méthode, discipline, décisions de l'investisseur et limites des résultats historiques.
 
 ## Trois parcours de lecture
@@ -26,7 +28,7 @@ Les réglages nécessaires sont indiqués avant les exemples : frais, capital de
 
 ## Retrouver une information
 
-Les numéros identifient les fichiers et les renvois. Dans les PDF, le sommaire reprend les trois parties, les 24 chapitres et les quatre annexes. Les versions française et anglaise suivent le même plan.
+Les numéros identifient les fichiers et les renvois. Dans les PDF régénérés avec cette édition, le sommaire reprend les trois parties, les 24 chapitres et les cinq annexes. Les versions française et anglaise suivent le même plan.
 
 Pour connaître les possibilités de la version installée, lancer `jedi` sans argument, puis demander l'aide d'une sous-commande, par exemple `jedi tools backtest --help`. `jedi version` affiche la version ; `jedi config --paths` affiche les chemins réellement utilisés.
 

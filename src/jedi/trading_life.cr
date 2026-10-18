@@ -1,6 +1,7 @@
 require "./trading_life/operation.cr"
 require "./trading_life/operation_state.cr"
 require "./trading_life/operation_creator.cr"
+require "./trading_life/operation_fees_updater.cr"
 require "./trading_life/operation_deleter.cr"
 require "./trading_life/operation_lister.cr"
 require "./trading_life/operations.cr"

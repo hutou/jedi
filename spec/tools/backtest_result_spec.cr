@@ -158,4 +158,85 @@ describe Jedi::Tools::BacktestResult do
     value.investment_cents.should eq(2_147_483_648_i64)
     value.gross_gain_cents.should eq(2_147_483_648_i64)
   end
+
+  it "keeps the largest trade peak after an earlier realized gain" do
+    with_backtest_result_environment do |main, memory|
+      Jedi::App.capital = 1_000
+      Jedi::App.distance = 0.015
+      filename = File.expand_path("../fixtures/tools/backtest_sequential_gains.csv", __DIR__)
+      backtest = Jedi::Tools::BackTest.new(
+        main, memory, filename,
+        "kc:1.4,1.2,0.8,0.6,ks:0,1.2,ki:0%,kb:0", nil,
+      )
+      backtest.run(option_command: {} of Char => String)
+      result = backtest.simulation_result
+
+      result.trade_count.should eq(2)
+      result.operations.map(&.stock).should eq([100, 0, 100, 120])
+      result.operations.map(&.global_invest).should eq([100_000, -20_000, 80_000, 96_000])
+      result.trades.map do |trade|
+        Jedi::TradingSystem::TradeMetrics.new(trade).calculate.not_nil!.maximum_investment
+      end.should eq([100_000, 116_000])
+      result.maximum_investment_cents.should eq(116_000)
+      result.gross_gain_cents.should eq(6_000)
+      result.net_gain_cents.should eq(4_824)
+      result.net_return_on_maximum_investment.should be_close(4.158620689655172, JediSpec::EPSILON)
+
+      result.daily_valuations.last.investment_cents.should eq(96_000)
+      result.daily_valuations.last.gross_gain_cents.should eq(6_000)
+      result.daily_valuations.last.net_gain_cents.should eq(4_824)
+    end
+  end
+
+  it "shares the trade maximum across compact technical and detailed backtest reports" do
+    with_backtest_result_environment do |main, memory|
+      Jedi.init_i18n("en")
+      Jedi::App.capital = 1_000
+      Jedi::App.distance = 0.015
+      filename = File.expand_path("../fixtures/tools/backtest_liquidation_gap.csv", __DIR__)
+      backtest = Jedi::Tools::BackTest.new(
+        main, memory, filename,
+        "vr:10%,ks:0.8,1.2,ki:0%,kb:0",
+        Jedi::TradingSystem::Money.new(0.015, 1.0, 2),
+      )
+      compact = backtest.run(option_command: {'r' => ""})
+      result = backtest.simulation_result
+      reporter = Jedi::Tools::BacktestReporter.new(memory, result)
+      detailed = reporter.render({'f' => ""})
+      technical = reporter.render({'r' => ""}, technical: true)
+
+      compact.should contain(I18n.t("tools.backtest.compact.maximum_investment", {:value => "1000.00"}))
+      technical.should contain("maximum 1000.00")
+      total = detailed.lines.find do |line|
+        cells = line.split('|')
+        cells.size > 11 && cells[2].strip == I18n.t("trade.results.list.table.total")
+      end.not_nil!
+      total.split('|')[10].strip.should eq("1000.00")
+      result.net_return_on_maximum_investment.should be_close(-15.998, JediSpec::EPSILON)
+      result.current_investment_cents.should eq(115_000)
+      result.daily_valuations.last.net_gain_cents.should eq(-15_998)
+    end
+  end
+
+  it "lists backtest trade results in creation order while preserving the live return ordering" do
+    with_backtest_result_environment do |main, memory|
+      Jedi.init_i18n("en")
+      Jedi::App.capital = 1_000
+      Jedi::App.distance = 0.015
+      filename = File.expand_path("../fixtures/tools/backtest_liquidation_gap.csv", __DIR__)
+      backtest = Jedi::Tools::BackTest.new(
+        main, memory, filename,
+        "vr:10%,ks:0.8,1.2,ki:0%,kb:0",
+        Jedi::TradingSystem::Money.new(0.015, 1.0, 2),
+      )
+      output = backtest.run(option_command: {'f' => ""})
+
+      output.index("Trade_01").not_nil!.should be < output.index("Trade_02").not_nil!
+      output.should_not contain("↓")
+
+      live = Jedi::TradingSystem::TradeResults.new(memory).list(option_update_now: false)
+      live.index("Trade_02").not_nil!.should be < live.index("Trade_01").not_nil!
+      live.should contain("↓")
+    end
+  end
 end

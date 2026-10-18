@@ -6,6 +6,8 @@ en:
       Trades management (create, update, ...)
 
       Usage: jedi trade <subcommand>
+    money_requires_settings: "Configure trade %{ref} with settings create before setting money with trade update."
+    money_on_closed_trade: "Trade %{ref} is closed: only clearing money with --money=\"\" is allowed."
     #
     # --- create ---
     #
@@ -17,36 +19,26 @@ en:
       usage: |
         Usage:
           1st form, with named fields:
-            jedi trade create --name NAME --security <ID | ISIN> [--money MONEY] [options]
+            jedi trade create --name NAME --security <ID | ISIN> [options]
 
           2nd form, with positional fields
-            jedi trade create <name> <Security: id | isin> [--money=MONEY] [options]
+            jedi trade create <name> <Security: id | isin> [options]
       notes: |
         Notes:
           The recommended syntax uses named options for all parameters.
           The positional syntax is a shorthand equivalent, on required fields only.
           Do not mix both syntaxes.
+          Configure the trade with settings create, then set money with trade update.
       name: &name |-
         Trade Name:
           - Must begin with a letter
           - Followed by at least one letter, digit or underscore.
       id: "Security id in the database"
       isin: "Security ISIN code"
-      money: |
-        Money definition:
-          A comma-separated list of three parameters. 
-          Each parameter is defined as <k>:<v>, where
-          <k> is one of 'r', 'o' or 'n', and <v> is 
-          its associated value:
-            r:<v>  Maximum risk rate applied to the capital (K) 
-                   allocated to trading
-            o:<v>  Financial objective coefficient 
-                   (applied to R = r × K)
-            n:<v>  Jedi operating margin (number of down steps)
       examples: |
         Examples:
           jedi trade create --name G13 --security FR0000066722
-          jedi trade create g13 FR0000066722 --money r:1.5%,o:1,n:2
+          jedi trade create g13 FR0000066722
       #exclusive_options: "Options --id et --isin are mutually exclusive"
       #
       success: "Trade %{ref} created."
@@ -92,21 +84,32 @@ en:
           jedi trade list [filters] [options]
       filters:
         regex: |2-
-                                             The filterable fields are 'id', 'name', 'money' and 'stop'
-                                             in the 'trade' table, as well as 'isin' and 'name' fields 
-                                             in the 'security' table if the --extended option is enabled.
+                                             Filterable fields are 'id', 'name', 'status', 'money' and 'stop'.
+                                             With --extended, 'isin' and 'security' target the associated security.
       notes: |
         Notes:
           Filtering is done in the following order:
-            1. Trades in progress
+            1. Trades holding shares (opened or in progress)
             2. Regular expression
             3. Record selection
+          Status is calculated from the trade's complete history.
+          The status field accepts its English code and translated label.
+          Example: status=^(opened|running)$
+          Table columns: 0=id, 1=name, 2=status, 3=money, 4=stop.
+          With --extended: 5=security id, 6=ISIN, 7=security name.
+          CSV status uses created, configured, opened, running or closed.
       examples: |
         Example:
           jedi trade list "g1 "
       option_extended: "Includes security fields 'id', 'isin' and 'name'"
       #
       option_csv_missing: "--csv option is required with --headers option."
+      status:
+        created: "created"
+        configured: "configured"
+        opened: "opened"
+        running: "in progress"
+        closed: "closed"
       table:
         title:
           all: "List of trades"
@@ -114,6 +117,7 @@ en:
           some: "List of selected trades"
         id: "\nId"
         name: "\nName"
+        status: "\nStatus"
         money: "Money\nManagement"
         stop: "Stop\nStatus"
         security_id: "Id\nSecurity"
@@ -139,10 +143,14 @@ en:
           jedi trade update G01 --name "XG01"
       name: *name
       money: |-
-        New definition of capital management, accepted only if 
-        the 'stop' field is 'null' or if the --reset-stop option
-        is enabled.
-        (See 'trade create' command for syntax details)
+        Money management for a configured, opened or in-progress trade.
+        Syntax: r:<rate>,o:<coefficient>,n:<steps>
+          r: maximum risk relative to dedicated capital, e.g. 1.5%
+          o: objective coefficient applied to the risk amount
+          n: Jedi's operating margin, in number of steps
+        Example: --money="r:1.5%,o:2,n:2"
+        --money="" clears the value, including on created or closed trades.
+        Changing money with a stored stop requires --reset-stop.
       reset_stop: |-
         Reset 'stop' field to 'null', deleting stoploss data
       #
@@ -358,8 +366,10 @@ en:
           pct_portf: "Pct.\nPortf."
           pct_inv: "Pct.\nInv."
           current_invest: "Current\nInvest."
+          cash_investment_balance: "Balance\nBuy-Sell"
           maximum_invest: "Maximum\nInvest."
           return_rate: "Return\n↓ Rate"
+          return_rate_unsorted: "Return\nRate"
           total: "Total"
           net: "(net)"
     #trade:

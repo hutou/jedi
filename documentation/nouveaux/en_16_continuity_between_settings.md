@@ -64,7 +64,7 @@ For type II, the last operation also affects the adjustment described in chapter
 | `split=new:old` | Adapt references to a split or consolidation. |
 | `sync=x:y:e` | Impose a justified position for type I. |
 
-Reinitialisation resets the starting position and cumulative coefficients. It does not erase recorded losses or gains. `sync` retains the imposed step in the new frame; it is not a transaction.
+Reinitialisation returns the starting position to `0:0:0` and cumulative coefficients `kcpc` and `kspc` to **1**. It does not erase recorded losses or gains. `sync` retains the imposed step in the new frame; it is not a transaction.
 
 After selling 20 at €12, resetting at €12 uses the **80 shares held**:
 
@@ -85,6 +85,24 @@ q0=100,c0=10,tick=0.01" 1 reinit=merge,12 "20@12.00" -1
 ~~~
 
 References become 100 shares at €12. The next fall buys 20 at €9.60, leaving 120. The additional purchase is an operation; changing the settings alone does not perform it.
+
+## Apply the split before reinitialisation
+
+`split + reinit=reset` and `split + reinit=merge` are accepted in one settings entry from this Jedi 1.1 change onwards. The latest operation's holding is converted first. Prices supplied to `reinit` and to the following transaction already use new units: they are not converted again.
+
+For 1,790 old shares consolidated at `1:10`, the effective holding is 179 shares. With a €12 resumption price:
+
+| State | Effective holding | q0 | c0 | Starting position |
+|---|---:|---:|---:|---|
+| After `split=1:10,reinit=reset,12` | 179 | 179 | €12 | `0:0:0` |
+| After `split=1:10,reinit=merge,12`, before transaction | 179 | 0 | 0 | `0:0:0` |
+| Merge, after buying 21 new shares at €10 | 200 | 200 | €11.79 | `0:0:0` |
+
+Cumulative coefficients restart at 1 with both reinitialisations. For merge, the €12 price remains in the `reinit` option while pending; it supplies the manual transaction's weighted calculation. Automatic orders become available only after that transaction.
+
+Earlier operations retain their units and positions. Before the first transaction under new settings, the summary, orders and projections use the effective holding and new position. After that transaction, recorded stock is already converted; Jedi does not apply the split again.
+
+`split + sync`, `sync + reinit` and all three options together remain rejected. Settings must still be used by an operation before another set is created. Practical examples are in chapter 09 and complete simulations in [chapter 19](en_19_checking_with_tools_calc_and_play.md#simulate-a-consolidation-with-reset-or-merge).
 
 ## Check the change
 

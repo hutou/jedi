@@ -1,6 +1,6 @@
 # Suivre un exemple complet de trade
 
-Rassemblons les calculs dans un parcours : dimensionner, observer les flux, changer un paramétrage, comparer deux suites et fermer le stock. Ce titre fictif est distinct d'EXA01 dans la partie I. Tous les parcours ci-dessous sont exécutés en mémoire avec `tools play` ; ils ne créent aucun trade.
+Rassemblons les calculs dans un parcours : dimensionner, observer les flux, changer un paramétrage, comparer deux suites et fermer le stock. Ce titre fictif est distinct d'T_exa_01 dans la partie I. Tous les parcours ci-dessous sont exécutés en mémoire avec `tools play` ; ils ne créent aucun trade.
 
 L'exemple utilise un type I, un cours initial de 10 €, un pas de 0,01 € et des frais de 0,35 %, sans minimum. Les commandes de `candidate` se reproduisent dans une base d'essai sans trade ouvert.
 

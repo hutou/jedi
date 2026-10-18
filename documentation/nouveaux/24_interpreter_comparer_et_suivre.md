@@ -9,8 +9,8 @@ Un résultat se lit avec ses dates, son barème, son premier achat et ses conven
 | Gain brut | Quel est le solde ventes − achats + valeur finale des titres ? |
 | Frais | Quel coût de courtage a été imputé aux opérations ? |
 | Gain net | Que reste-t-il après ces frais ? |
-| Investissement maximal | Quel pic des achats moins les ventes le parcours a-t-il demandé, hors frais ? |
-| Gain net / investissement maximal | Quel résultat net représente ce pic de financement ? |
+| Investissement maximal | Quel est le plus grand pic des achats moins ventes d’un des trades successifs, hors frais ? |
+| Gain net / investissement maximal | Que représente le résultat net par rapport au plus grand montant engagé dans un trade ? |
 | Activité | Combien d'opérations et d'interventions le parcours entraîne-t-il ? |
 | Stock final | Quelle part du résultat dépend encore de titres détenus ? |
 
@@ -79,3 +79,5 @@ Une note décrit l'événement ; elle ne modifie ni les opérations ni les ordre
 | Suites | Décision pratique, changements ultérieurs et événements exceptionnels |
 
 Cette fiche permet de relire une étude, d'expliquer une différence entre deux rapports et de distinguer le choix initial des modifications suivantes. Pour un projet réel, revenir à `candidate` avec le prix actuel, puis au suivi des opérations exécutées décrit dans la partie I.
+
+Pour les opérations réelles, contrôler les frais contre les avis d'opéré. Une erreur peut être corrigée avec `operation fees ID MONTANT`, selon le [chapitre 08](08_suivre_un_trade.md#corriger-les-frais-dune-opération-enregistrée), puis vérifier `trade results`. Cette correction change le bilan net du portefeuille enregistré ; les études `backtest` et `score` recréent leurs opérations et leurs frais à partir de leurs propres paramètres.

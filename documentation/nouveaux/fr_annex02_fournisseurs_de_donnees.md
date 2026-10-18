@@ -2,6 +2,8 @@
 
 Cette annexe complète le [chapitre 08](08_suivre_un_trade.md). Elle s'adresse à la personne qui doit **créer ou modifier** un fournisseur de cours courant. Cette tâche demande de savoir lire une documentation d'API ou une page HTML, écrire une expression régulière, examiner une réponse HTTP et vérifier les conditions d'accès de la source. Un fournisseur configuré n'est pas nécessairement disponible ou autorisé. Les exemples de cette annexe emploient des adresses et réponses **fictives** ; ils servent à comprendre la forme de la configuration, pas à obtenir un cours réel.
 
+L’[annexe 05](fr_annex05_configuration_par_defaut.md) recense toutes les valeurs intégrées, y compris les champs actuellement non utilisés.
+
 ## Fournisseurs intégrés et séparation des bases
 
 La configuration d'origine essaie les pages Web ABC Bourse, Tradingsat et Boursorama, puis l'API Alpha Vantage. Ce sont des définitions de collecte, dont la disponibilité dépend du fournisseur et de la structure actuelle de sa réponse. Le nom `live` indique une collecte Web, sans promettre un cours en temps réel ou sans délai. `eod` indique le parcours API ; vérifier la séance effectivement renvoyée.

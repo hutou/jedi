@@ -67,6 +67,42 @@ q0=100,c0=10,tick=0.01" "2x1,-1"
 
 Ces deux allers-retours finissent avec 100 titres et 920 € d'investissement : 80 € de gain brut au cours final de 10 €.
 
+## Simuler un regroupement avec reset ou merge
+
+Ces simulations reproduisent le cas de 1 790 anciens titres regroupés en 179 nouveaux. Elles utilisent une définition littérale : aucun barème permanent ni trade n'est à créer. Le prix ancien de 0,80 € décrit l'opération de départ ; le prix de reprise de 12 € est déjà exprimé après regroupement.
+
+Pour **reset** :
+
+~~~console
+jedidemo tools play -c co0,6-14,17 -- \
+  "scale=vr:10%,ks:0.8,1.2,ki:0%,kb:0,q0=1790,c0=0.8,tick=0.01" \
+  "split=1:10,reinit=reset,12" 1 -1
+~~~
+
+La section `c` affiche le paramétrage et la section `o` les opérations :
+
+| Étape | Stock | Prix | Référence du nouveau paramétrage |
+|---|---:|---:|---|
+| Après split + reset, avant transaction | 179 | Reprise à 12 € | `q0=179`, `c0=12`, position `0:0:0` |
+| Première hausse : vente de 36 titres nouveaux | 143 | 13,20 € | Même référence |
+| Baisse suivante : achat de 36 titres nouveaux | 179 | 11,87 € | Même référence |
+
+Le prix de 11,87 € reprend l'arrondi effectivement produit par Jedi avec le pas de 0,01 €. Le split n'est pas réappliqué après la première transaction.
+
+Pour **merge**, reprendre l'état de départ dans une autre simulation :
+
+~~~console
+jedidemo tools play -c co0,6-14,17 -- \
+  "scale=vr:10%,ks:0.8,1.2,ki:0%,kb:0,q0=1790,c0=0.8,tick=0.01" \
+  "split=1:10,reinit=merge,12" "21@10.00" 1
+~~~
+
+Le paramétrage attend l'achat manuel. Après `21@10.00`, stock et `q0` valent 200 et `c0` vaut 11,79 €. La hausse suivante vend 40 titres à 11 €, laissant 160 titres. Le type II repart du prix réel de cette transaction manuelle pour le prochain mouvement.
+
+La quantité `21` et le prix `10.00` décrivent les **nouvelles actions**, après le regroupement. Une vente manuelle s'écrit avec une quantité négative, par exemple `"-20@14.00"`. Jedi contrôle la vente par rapport au stock converti : `"-180@12.00"` serait refusé avec seulement 179 titres disponibles.
+
+Les deux options appartiennent au même changement de paramétrage. `sync` ne peut accompagner cette combinaison. Après `merge`, fournir une transaction manuelle avant un déplacement automatique ou un prix cible ; sinon Jedi refuse le scénario. Dans le suivi réel, enregistrer uniquement la transaction effectivement exécutée.
+
 ## Choisir les tableaux affichés
 
 | Lettre de `--command` | Lecture |

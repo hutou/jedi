@@ -60,6 +60,17 @@ module Jedi
           jump_up_optimized && jump_down_optimized
         end
 
+        # Compare the rules consumed by the engine, independently of builder
+        # spelling and provenance metadata.
+        def same_definition?(other : Operational) : Bool
+          return false unless type == other.type &&
+                              emax == other.emax && emin == other.emin &&
+                              ki == other.ki && kb == other.kb &&
+                              ks_values == other.ks_values
+
+          type.one? ? kc_values == other.kc_values : vr_value == other.vr_value
+        end
+
         def kclist : Hash(Int32, Float64)
           kc_values || raise LowLevelError.new("scale.operational.missing_kc",
             log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})

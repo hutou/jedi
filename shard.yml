@@ -1,5 +1,5 @@
 name: jedi
-version: 1.0.0
+version: 1.1.0
 
 authors:
   - hutou <hubert.toullec@gmail.com>
@@ -15,7 +15,6 @@ dependencies:
     github: naqvis/cryplot
   tablo:
     github: hutou/tablo
-    #path: ../tablo
   i18n:
     github: crystal-i18n/i18n
 

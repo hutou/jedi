@@ -12,6 +12,7 @@
 | Settings | Scale applying from a date/time, with the information needed for continuity. |
 | Operation | An executed and recorded purchase or sale. A proposed order is not an operation. |
 | Stock, holdings | Number of shares held at a point in the path. |
+| PRU | French abbreviation for *prix de revient unitaire*: average acquisition cost per share held, including fees and any applicable purchase tax; an accounting reference distinct from `c0`. |
 | Round trips | Successive sales and purchases following scale movements. |
 | Operability | Ability to produce checked orders with sufficient integer quantities. |
 | Funding | Ability to cover the opening and projected needs while accounting for other trades. |
@@ -25,21 +26,48 @@
 | Step | Local stage within the scale. |
 | Level | Reference for a series of steps; reaching a boundary causes a jump. |
 | `q0`, `c0` | Trade reference quantity and price, initially those of the first purchase. |
-| `kc`, `ks` | Price and stock coefficient lists for a type I scale. |
+| `kc`, `ks` | Price coefficients (`kc`, type I) and stock coefficients (`ks`, in both scale types). |
 | `vr` | Relative variation used to construct scale spacing. |
 | `np`, `nn` | Step counts towards positive and negative boundaries. |
+| `emax` | Positive upper scale boundary; reaching it triggers an upward jump and returns step `e` to zero. |
+| `emin` | Negative lower scale boundary; reaching it triggers a downward jump and returns step `e` to zero. |
 | `sr` | Target stock fraction at the final internal upward step of the compatibility builder. |
 | `mi` | Downward-purchase budget parameter of that builder, relative to the initial amount. |
 | `ki` | Investment fraction applied at level changes. |
-| `kb` | Coefficient moving level prices. |
+| `kb` | Convention used to calculate the capital coefficient at level changes. |
 | `kd` | Builder parameter transforming quantities; it is not a return. |
 | `kcb`, `kcp`, `ksp` | Calculated capital, price and stock coefficients. |
+| `kcpc` | Cumulative price coefficient from previous settings, retained for trade continuity. |
+| `kspc` | Cumulative stock coefficient from previous settings, retained for trade continuity. |
 | `cpe`, `spe` | Theoretical price and stock at a target position. |
 | Type I | Scale based on reference coefficients; `calc` checks its calculations. |
 | Type II | Scale recentered from actual operations; examine it with `play`. |
 | Optimised | Construction or continuity variant; the term does not prove a better gain. |
 
 [Chapters 13–16](en_13_reading_the_structure_of_a_scale.md) explain the parameters. A reset may redefine `q0` and `c0`; read active settings before interpreting them as the very first historical purchase.
+
+`kcpc` and `kspc` equal **1 initially and on reinitialisation**. An ordinary settings change multiplies their previous values by the reached level coefficients `kcp` and `ksp`, while jump counters `x` and `y` restart at zero. For example, `c0=10` and `kcpc=1.40` carry forward a €14 price reference; `q0=100` and `kspc=0.785714` carry forward a theoretical stock reference of approximately 78.57 shares. Actual holdings may differ. [Chapter 16](en_16_continuity_between_settings.md#change-the-local-frame) explains this carry-forward.
+
+`emax` and `emin` are **jump boundaries**, not steps at which a position remains recorded. With `emax=+3` and `emin=-3`, internal steps range from `−2` to `+2`, including zero. A rise from `e=+2` increases `x` and returns `e` to zero; a fall from `e=-2` increases `y` and returns `e` to zero. For a builder using `np` and `nn`, `emax=np` and `emin=-nn`. See [chapter 12](en_12_positions_steps_and_levels.md#reach-a-boundary-and-change-level).
+
+### Distinguish PRU from the mechanical reference
+
+PRU is an accounting reference in the broker's portfolio. For example, a single purchase of 100 shares at €10, with €3.50 fees and no other tax, has an acquisition cost per share of `(1000 + 3.50) / 100 = €10.035`. Jedi's initial `c0` remains the execution price of **€10**. [BoursoBank's cash-purchase PRU calculation](https://www.boursobank.com/aide-en-ligne/bourse/comment-investir-en-bourse/fonctionnement-de-la-bourse/question/comment-se-calcule-le-prix-de-revient-pru-au-comptant-642), in French, illustrates inclusion of fees and any applicable tax.
+
+Each new purchase recalculates PRU from the cost of shares still held and the new purchase, weighted by their quantities. It is not the balance of purchases minus sales divided by remaining holdings. Jedi does not require the broker's PRU to calculate orders: it uses operations and settings references. Reinitialisation may therefore change `c0` without making that new reference an accounting PRU.
+
+## Split and new origin
+
+| Notation | Meaning |
+|---|---|
+| `split=NEW:OLD` | Number of new shares for old ones; `1:10` is a ten-for-one consolidation. |
+| Effective holding | Holding to use after conversion, even while the latest historical operation retains the old quantity. |
+| `reinit=reset,price` | Immediate new mechanical origin; position `0:0:0`, effective stock as `q0`, chosen price as `c0`. |
+| `reinit=merge,price` | New origin established by the following manual transaction; references remain pending until then. |
+| `split + reinit` | Combination available in next-version / v1.1; convert stock before reset or merge, supply prices after the split. |
+| Fractional entitlement | Fractional right resulting from consolidation; Jedi accounts for neither its handling nor its settlement. |
+
+[Chapter 09](en_09_adapting_or_ending_a_trade.md) details the effects and restrictions. Reinitialisation changes mechanical references, not past financial results.
 
 ## Orders and protection
 
@@ -110,7 +138,8 @@ Freshness is not measured against today's date. A file, historical selection or 
 | Gross gain | Sales − purchases + final holdings valued at the last close, excluding fees. |
 | Net gain | Gross gain − charged fees. |
 | Current investment | Cumulative purchases − sales, excluding fees. |
-| Maximum investment | Peak current investment over the path. |
+| Maximum investment | A trade’s peak purchases minus sales; in backtest and score, the largest such peak among successive trades, excluding fees. |
+| Backtest buy-sell balance | Cumulative balance retaining closed trades’ gains and losses; used to calculate cumulative gain. |
 | Fitness | In `score`, gross gain / first purchase amount, covering the entire period. |
 | Max.inv | In `score`, maximum investment / first purchase, excluding fees. |
 | Op/mo | All operations, including openings, normalised to 21 sessions from the first operation. |

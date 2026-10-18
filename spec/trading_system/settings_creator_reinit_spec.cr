@@ -94,35 +94,41 @@ describe Jedi::TradingSystem::SettingsCreator do
     end
   end
 
-  it "rejects split and reinit reset in the same settings change" do
+  it "combines split and reinit reset in the same settings change" do
     JediSpec.with_db do |conn|
       JediSpec.seed_basic_trade(conn)
 
-      expect_raises(Jedi::LowLevelError) do
-        Jedi::TradingSystem::SettingsCreator.new(conn).call(
-          trade_ident: 1_i64,
-          scale_ident: 1_i64,
-          timestamp: Time.local(2026, 1, 1, 11, 0, 0),
-          option_split: Jedi::Exchange::Security::Split.new("2:1"),
-          option_reinit: Jedi::TradingSystem::ReInitOption.parse("reset,8.5")
-        )
-      end
+      settings_id = Jedi::TradingSystem::SettingsCreator.new(conn).call(
+        trade_ident: 1_i64,
+        scale_ident: 1_i64,
+        timestamp: Time.local(2026, 1, 1, 11, 0, 0),
+        option_split: Jedi::Exchange::Security::Split.new("2:1"),
+        option_reinit: Jedi::TradingSystem::ReInitOption.parse("reset,8.5")
+      )
+      settings = Jedi::TradingSystem::Settings.new(conn, settings_id)
+      settings.split.to_s.should eq("2:1")
+      settings.reinit.not_nil!.reset?.should be_true
+      settings.q0.should be_close(200.0, JediSpec::EPSILON)
+      settings.c0.should be_close(8.5, JediSpec::EPSILON)
     end
   end
 
-  it "rejects split and reinit merge in the same settings change" do
+  it "combines split and pending reinit merge in the same settings change" do
     JediSpec.with_db do |conn|
       JediSpec.seed_basic_trade(conn)
 
-      expect_raises(Jedi::LowLevelError) do
-        Jedi::TradingSystem::SettingsCreator.new(conn).call(
-          trade_ident: 1_i64,
-          scale_ident: 1_i64,
-          timestamp: Time.local(2026, 1, 1, 11, 0, 0),
-          option_split: Jedi::Exchange::Security::Split.new("2:1"),
-          option_reinit: Jedi::TradingSystem::ReInitOption.parse("merge,9.0")
-        )
-      end
+      settings_id = Jedi::TradingSystem::SettingsCreator.new(conn).call(
+        trade_ident: 1_i64,
+        scale_ident: 1_i64,
+        timestamp: Time.local(2026, 1, 1, 11, 0, 0),
+        option_split: Jedi::Exchange::Security::Split.new("2:1"),
+        option_reinit: Jedi::TradingSystem::ReInitOption.parse("merge,9.0")
+      )
+      settings = Jedi::TradingSystem::Settings.new(conn, settings_id)
+      settings.split.to_s.should eq("2:1")
+      settings.reinit.not_nil!.merge?.should be_true
+      settings.q0.should be_close(0.0, JediSpec::EPSILON)
+      settings.c0.should be_close(0.0, JediSpec::EPSILON)
     end
   end
 

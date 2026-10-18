@@ -1,10 +1,16 @@
-# Documentation Jedi 1.0 / Jedi 1.0 documentation
+# Documentation Jedi — next-version / préparation v1.1
 
-Le manuel comprend un avant-propos, la philosophie de Jedi, trois introductions de parties, 24 chapitres et quatre annexes dans chaque langue. Les 66 textes actuels sont dans `nouveaux/` ; les titres Markdown restent sans numéro.
+Mise à jour courante / Current update: **`jedi_v1_1_money_status_20261015.patch`**, à appliquer à l'édition documentaire **`jedi_documentation_20261012_v9.zip`**. Elle réserve la saisie de `money` aux trades paramétrés, ouverts ou en cours, et ajoute le champ `status` à la regex de `trade list`. Apply this patch to documentation edition v9. It restricts nonempty `money` updates to configured, opened or in-progress trades and adds `status` to the existing `trade list` regex filter.
 
-Each language includes a foreword, Jedi’s philosophy, three part introductions, 24 chapters and four appendices. All 66 current texts are in `nouveaux/`; Markdown headings remain unnumbered.
+Cette édition Markdown accompagne la préparation de **Jedi 1.1**. Elle décrit aussi le maximum d’investissement des trades successifs du backtest, leur affichage chronologique et la correction des frais avec `operation fees`. La combinaison `split + reinit` et la commande `operation fees` exigent le binaire de `next-version` intégrant leurs correctifs. Les tableaux des fournisseurs Web de l’annexe 05 utilisent des cellules courtes et des blocs YAML séparés pour les adresses et les regex. [La note de mise à jour](MISE_A_JOUR_v1_1.md) liste les chapitres concernés, les nouveaux noms et les contrôles réalisés. Cette archive contient les Markdown ; les PDF de 1.0 doivent être régénérés à partir du dépôt complet pour refléter ces changements.
 
-Les PDF fournis / Supplied PDFs : [français](../output/pdf/jedi-1.0-fr.pdf), [English](../output/pdf/jedi-1.0-en.pdf).
+This Markdown edition accompanies preparation of **Jedi 1.1**. It also documents the investment maximum of successive backtest trades, their chronological display and fee correction with `operation fees`. The `split + reinit` combination and `operation fees` require the updated `next-version` executable containing their changes. Appendix 05 Web-provider tables use short cells and separate YAML blocks for addresses and regexes. [The update note](MISE_A_JOUR_v1_1.md) lists affected chapters, new names and completed checks. This archive contains Markdown files; rebuild the 1.0 PDFs from the complete repository to reflect these changes.
+
+Le manuel comprend un avant-propos, la philosophie de Jedi, trois introductions de parties, 24 chapitres et cinq annexes dans chaque langue. Les 68 textes actuels sont dans `nouveaux/` ; les titres Markdown restent sans numéro.
+
+Each language includes a foreword, Jedi’s philosophy, three part introductions, 24 chapters and five appendices. All 68 current texts are in `nouveaux/`; Markdown headings remain unnumbered.
+
+PDF de l’édition publiée 1.0 / PDFs from the published 1.0 edition: [français](../output/pdf/jedi-1.0-fr.pdf), [English](../output/pdf/jedi-1.0-en.pdf).
 
 | Repère / Reference | Français | English |
 |---|---|---|
@@ -41,6 +47,15 @@ Les PDF fournis / Supplied PDFs : [français](../output/pdf/jedi-1.0-fr.pdf), [E
 | Annexe / Appendix 02 | [Configuration des fournisseurs de cours API et Web](nouveaux/fr_annex02_fournisseurs_de_donnees.md) | [Configuring API and Web quote providers](nouveaux/en_annex02_data_providers.md) |
 | Annexe / Appendix 03 | [Script de sélection externe ProScreener JEDI](nouveaux/fr_annex03_scripts_de_selection_externe.md) | [External selection script: JEDI ProScreener](nouveaux/en_annex03_external_selection_scripts.md) |
 | Annexe / Appendix 04 | [Glossaire et notations Jedi](nouveaux/fr_annex04_glossaire_et_notations.md) | [Jedi glossary and notation](nouveaux/en_annex04_glossary_and_notation.md) |
+| Annexe / Appendix 05 | [Configuration par défaut et usage des paramètres](nouveaux/fr_annex05_configuration_par_defaut.md) | [Default configuration and parameter usage](nouveaux/en_annex05_default_configuration.md) |
+
+Jedi nomme automatiquement les nouveaux barèmes `B_kc_NN` (type I) ou `B_vr_NN` (type II, Legacy compris) et refuse les définitions opérationnelles équivalentes. Le [chapitre 13](nouveaux/13_lire_la_structure_d_un_bareme.md#nommer-et-numéroter-un-barème) décrit la numérotation et les noms explicites contraints par le builder. Ces comportements demandent le nouveau correctif ; les noms et les doublons historiques sont conservés.
+
+Jedi automatically names new scales `B_kc_NN` (type I) or `B_vr_NN` (type II, including Legacy) and refuses equivalent operational definitions. [Chapter 13](nouveaux/en_13_reading_the_structure_of_a_scale.md#name-and-number-a-scale) describes numbering and explicit names constrained by the builder. These behaviours require the new change; historical names and duplicates are retained.
+
+Les chapitres 03 et 07 présentent aussi la sélection visuelle d'un titre, les canaux latéraux ou haussiers, quelques indicateurs et une entrée sur rebond près du support. ProRealTime, TradingView, Boursorama et Zonebourse sont donnés comme exemples de sites à consulter. Deux figures PNG entièrement fictives accompagnent les Markdown, une dans chaque langue.
+
+Chapters 03 and 07 also cover visual security selection, sideways or rising channels, a few indicators and entry on a rebound near support. ProRealTime, TradingView, Boursorama and Zonebourse are examples of websites to consult. Two entirely fictional PNG figures accompany the Markdown files, one in each language.
 
 ## Utiliser les exemples / Use the examples
 
@@ -59,3 +74,16 @@ bash pdf/build.sh both
 Les paramètres sont dans [pdf/fr.yaml](../pdf/fr.yaml) et [pdf/en.yaml](../pdf/en.yaml). [pdf/README.md](../pdf/README.md) décrit Pandoc, XeLaTeX, les polices et le filtre des renvois internes. Aucun ancien chapitre n’entre dans ces PDF.
 
 The defaults files are [pdf/fr.yaml](../pdf/fr.yaml) and [pdf/en.yaml](../pdf/en.yaml). [pdf/README.md](../pdf/README.md) covers Pandoc, XeLaTeX, fonts and internal cross-references. Former chapters are excluded.
+
+
+Pour inclure l’annexe 05 dans les PDF, vérifier que les listes de fichiers utilisées par la génération comprennent `documentation/nouveaux/fr_annex05_configuration_par_defaut.md` et `documentation/nouveaux/en_annex05_default_configuration.md`, chacune dans sa langue. Les fichiers de génération du dépôt ne sont pas fournis dans cette archive Markdown.
+
+To include appendix 05 in the PDFs, ensure that the build’s input lists include `documentation/nouveaux/fr_annex05_configuration_par_defaut.md` and `documentation/nouveaux/en_annex05_default_configuration.md` in their respective languages. Repository build files are not included in this Markdown archive.
+
+Les figures du chapitre 03 sont dans `documentation/nouveaux/figures/`. Conserver ce dossier avec les Markdown. Leurs chemins sont relatifs aux chapitres. Si Pandoc est lancé depuis la racine du dépôt, inclure `--resource-path=.:documentation/nouveaux` dans son appel pour trouver ces images. Cette option accepte aussi les ressources déjà accessibles depuis la racine. Les figures sont au format PNG, directement lisible par XeLaTeX.
+
+Le rendu contrôlé des chapitres utilise le lecteur Markdown standard de Pandoc (`--from=markdown`), qui permet le retour à la ligne dans les cellules des tableaux.
+
+Chapter 03 figures are in `documentation/nouveaux/figures/`; keep this folder with the Markdown files. Their paths are relative to the chapters. When running Pandoc from the repository root, include `--resource-path=.:documentation/nouveaux` in its invocation to find the images. This option also retains resources accessible from the root. The PNG figures can be read directly by XeLaTeX.
+
+The checked chapter rendering uses Pandoc's standard Markdown reader (`--from=markdown`), allowing text to wrap inside table cells.

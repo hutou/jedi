@@ -210,14 +210,18 @@ module Jedi
       end
 
       def current_investment_cents : Int32
+        # Cumulative net purchases minus sales, including settled trades.
         operation = operations.last?
         operation.nil? ? 0 : operation.global_invest
       end
 
       def maximum_investment_cents : Int32
+        # Trades are sequential, so their largest individual peak is the
+        # simulation peak. global_invest also carries gains and losses from
+        # closed trades and must remain available for cumulative accounting.
         maximum = 0
         operations.each do |operation|
-          maximum = operation.global_invest if operation.global_invest > maximum
+          maximum = operation.trade_invest if operation.trade_invest > maximum
         end
         maximum
       end

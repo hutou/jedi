@@ -68,7 +68,7 @@ Un pourcentage d'avancement est affiché pendant les calculs. Le temps nécessai
 
 ## Lire les trois colonnes compactes
 
-Les résultats compacts `raw` sont limités aux **20 premiers barèmes**, ou moins si la recherche en a évalué moins. Voici les trois premières lignes réellement obtenues avec le fichier fictif et le budget de 40 :
+Les résultats compacts `raw` sont limités aux **20 premiers barèmes**, ou moins si la recherche en a évalué moins. Les trois lignes suivantes sont un extrait de référence de l’étude fictive de l’édition 1.0, avec un budget de 40. Après correction du maximum intertrades en v1.1, relancer la commande pour obtenir les valeurs et le classement de votre version :
 
 ~~~text
  Fitness  Op/mois  Inv.max  Constructeur typé
@@ -86,7 +86,7 @@ Les résultats compacts `raw` sont limités aux **20 premiers barèmes**, ou moi
 
 La fitness n'est ni un taux annuel ni un rendement net. Le gain brut inclut les titres encore détenus, valorisés à la dernière clôture. Une hausse du titre peut donc contribuer au résultat sans provenir d'allers-retours.
 
-L'investissement maximal est le pic des achats moins les ventes. Il peut dépasser le premier achat lorsque la mécanique demande des achats supplémentaires. Les frais doivent être examinés dans la lecture économique ou dans un backtest.
+L'investissement maximal est le plus grand des pics d’achats moins ventes de chaque trade successif, hors frais, comme dans le backtest. Il peut dépasser le premier achat lorsque la mécanique demande des achats supplémentaires. Les frais doivent être examinés dans la lecture économique ou dans un backtest.
 
 ## Choisir le tri
 

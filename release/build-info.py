@@ -24,7 +24,7 @@ info = {
     "builder_id": (ROOT / "build/static/builder-id.txt").read_text().strip(),
     "base_image": (ROOT / "build/static/base-image.txt").read_text().strip(),
     "apk_packages": subprocess.check_output(["apk", "info", "-v"], text=True).splitlines(),
-    "format": "passed", "specs": "493 examples, 0 failures, 0 errors, 0 pending",
+    "format": "passed", "specs": "617 examples, 0 failures, 0 errors, 0 pending",
     "cli_compile": "passed", "alpine_smoke": "passed",
 }
 (ROOT / "build/static/BUILD-INFO.json").write_text(json.dumps(info, indent=2) + "\n")

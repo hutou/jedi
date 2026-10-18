@@ -34,9 +34,9 @@ module Jedi
           if !context.has_settings?
             build_initial_state()
           elsif !option_reinit.nil? && option_reinit.reset?
-            build_reinit_reset_state(context, option_reinit)
+            build_reinit_reset_state(context, option_reinit, option_split)
           elsif !option_reinit.nil? && option_reinit.merge?
-            build_reinit_merge_state(context, option_reinit)
+            build_reinit_merge_state(context, option_reinit, option_split)
           elsif !option_sync.nil?
             if scale.operational.type.one?
               build_sync_state(context, option_sync, scale)
@@ -59,15 +59,13 @@ module Jedi
       end
 
       private def validate_global_options!(context, option_split, option_sync, option_reinit) : Nil
-        count = 0
-        count += 1 if option_sync
-        count += 1 if option_split
-        count += 1 if option_reinit
-        if count > 1
+        # Split and reinit may be combined; sync must remain on its own.
+        if option_sync && (option_split || option_reinit)
           raise LowLevelError.new(
             key: "settings.create.zero_or_one_option_only",
             log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
-        elsif count == 1
+        end
+        if option_sync || option_split || option_reinit
           unless context.has_settings?
             # aucune de ces 3 options n'est autorisée sans paramétrage existant
             # autrement dit : impossible de les utiliser pour un premier paramétrage
@@ -119,14 +117,20 @@ module Jedi
       end
 
       private def build_reinit_reset_state(context : TradeContext,
-                                           option_reinit : ReInitOption,) : SettingsState
+                                           option_reinit : ReInitOption,
+                                           option_split : Exchange::Security::Split?) : SettingsState
         current_settings = context.current_settings.not_nil!
         last_operation = context.last_operation.not_nil!
 
         q0, c0 = {last_operation.stock.to_f, option_reinit.c0}
+        if option_split
+          # The held stock is integral, as in LastData. Fractional rights are
+          # not accounted for by Jedi. The supplied price is already post-split.
+          q0 = option_split.quantity(last_operation.stock).to_i.to_f
+        end
         SettingsState.new(
           rank: current_settings.rank + 1,
-          split: nil,
+          split: option_split,
           sync: nil,
           reinit: option_reinit,
           q0: q0,
@@ -138,12 +142,13 @@ module Jedi
       end
 
       private def build_reinit_merge_state(context : TradeContext,
-                                           option_reinit : TradingSystem::ReInitOption) : SettingsState
+                                           option_reinit : TradingSystem::ReInitOption,
+                                           option_split : Exchange::Security::Split?) : SettingsState
         current_settings = context.current_settings.not_nil!
 
         SettingsState.new(
           rank: current_settings.rank + 1,
-          split: nil,
+          split: option_split,
           sync: nil,
           reinit: option_reinit,
           q0: 0.0,

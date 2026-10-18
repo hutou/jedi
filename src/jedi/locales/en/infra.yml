@@ -140,6 +140,8 @@ en:
       (not compatible with option --csv)
     option_reinit: |-
       Reset the trade with VALUE = 'reset,<price>' or 'merge,<price>': 
+      May be combined with --split. In that case, <price> and the following
+      execution price must use the post-split unit.
       - The financial results of past transactions are retained
       - The history of previous settings is cleared
       - Depending on the parameters passed to the option, the calculation 

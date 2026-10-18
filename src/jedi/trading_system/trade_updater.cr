@@ -10,6 +10,19 @@ module Jedi
       def call(*, name : String? = nil,
                money : String? = nil,
                reset_stop : Bool? = nil) : Int64
+        validate_money_change!(money)
+        update(name: name, money: money, reset_stop: reset_stop)
+      end
+
+      # Backup replay preserves historical money values, including values on
+      # created or closed trades. Ordinary user updates use call instead.
+      def restore_money(raw : String) : Int64
+        update(money: raw)
+      end
+
+      private def update(*, name : String? = nil,
+                         money : String? = nil,
+                         reset_stop : Bool? = nil) : Int64
         @ref = Core::Utils.ref(trade.ident.is_a?(PkId) ? trade.id : trade.name)
         new_name =
           if name.nil?
@@ -94,6 +107,22 @@ module Jedi
         trade.reload!(trade.id)
         App.info(key: "trade.update.success", params: {:ref => ref})
         exec_result.rows_affected
+      end
+
+      private def validate_money_change!(money : String?) : Nil
+        return if money.nil? || money.strip.empty?
+
+        key = case trade.lifecycle_status
+              when Trade::LifecycleStatus::Created then "trade.money_requires_settings"
+              when Trade::LifecycleStatus::Closed  then "trade.money_on_closed_trade"
+              end
+        return if key.nil?
+
+        raise LowLevelError.new(
+          key: key,
+          context: {:ref => Core::Utils.ref(trade.ident)},
+          kind: LowLevelError::Kind::UserInput,
+          log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
       end
 
       private def key_exists(name)

@@ -1,17 +1,17 @@
-# Compiler Jedi 1.0
+# Compiler Jedi 1.1
 
 Ce guide s’adresse à la personne qui prépare la livraison ou souhaite compiler les sources. Pour utiliser le binaire déjà compilé, suivre [l’installation](INSTALL.fr.md).
 
 ## Entrées fixées
 
-| Élément | Choix pour la livraison 1.0 |
-|---|---|
-| Version Jedi | `1.0.0`, déjà déclarée dans `shard.yml`. |
-| Compilateur de livraison | Crystal `1.21.1`. Le projet déclare `>= 1.21.0, < 2.0`. |
-| Dépendances Crystal | Versions de `shard.lock`, révisions et fichiers de `release/dependencies.json`. |
-| Specs | `TZ=UTC`, résultat attendu : 493 exemples sans échec ni erreur. |
-| Binaire public | Linux x86_64, statique avec musl, construit dans Alpine. |
-| PDF | Fichiers fournis conservés ; Pandoc n’est pas nécessaire à la compilation de Jedi. |
+| Élément                  | Choix pour la livraison 1.1                                                        |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| Version Jedi             | `1.1.0`, déjà déclarée dans `shard.yml`.                                           |
+| Compilateur de livraison | Crystal `1.21.1`. Le projet déclare `>= 1.21.0, < 2.0`.                            |
+| Dépendances Crystal      | Versions de `shard.lock`, révisions et fichiers de `release/dependencies.json`.    |
+| Specs                    | `TZ=UTC`, résultat attendu : 493 exemples sans échec ni erreur.                    |
+| Binaire public           | Linux x86_64, statique avec musl, construit dans Alpine.                           |
+| PDF                      | Fichiers fournis conservés ; Pandoc n’est pas nécessaire à la compilation de Jedi. |
 
 Le guide décrit une procédure préparée. Le compte rendu joint à la préparation précise les contrôles exécutés. Il faut confirmer la compilation et les specs sur une machine disposant du compilateur avant de créer la release binaire.
 
@@ -80,13 +80,13 @@ La première préparation télécharge des paquets ; elle demande un accès à I
 
 ```bash
 docker image save "$(cat build/static/builder-id.txt)" | \
-  gzip -n > build/jedi-builder-1.0.0.tar.gz
+  gzip -n > build/jedi-builder-1.1.0.tar.gz
 ```
 
 Sur un autre poste de construction :
 
 ```bash
-gzip -dc build/jedi-builder-1.0.0.tar.gz | docker image load
+gzip -dc build/jedi-builder-1.1.0.tar.gz | docker image load
 bash release/build-static.sh build
 ```
 
@@ -110,8 +110,8 @@ Dans Ubuntu sous WSL2, refaire cette commande après transfert du binaire et des
 Après réussite des contrôles :
 
 ```bash
-python3 release/package.py --output dist/1.0.0
-cd dist/1.0.0
+python3 release/package.py --output dist/1.1.0
+cd dist/1.1.0
 sha256sum -c SHA256SUMS
 ```
 

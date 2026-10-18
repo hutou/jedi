@@ -9,13 +9,20 @@ module Jedi
 
       def call(*, name : String,
                security_ident : PkId | String,
-               money : TradingSystem::Money?,
+               money : TradingSystem::Money? = nil,
                stop : TradingSystem::TradeStop? = nil)
         name = validate_name!(name)
         security_ident = validate_security_ident!(security_ident)
         @ref = Core::Utils.ref(name)
         validate_create(name)
         security = Exchange::Security.new(@conn_db, security_ident) # raise if not found
+        unless money.nil?
+          raise LowLevelError.new(
+            key: "trade.money_requires_settings",
+            context: {:ref => ref},
+            kind: LowLevelError::Kind::UserInput,
+            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+        end
         state = TradeState.new(
           name: name.capitalize,
           money: money,
