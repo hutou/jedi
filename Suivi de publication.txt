@@ -1,0 +1,1977 @@
+Étape 3
+=======
+
+Archlinux
+---------
+
+$ gh auth login --hostname github.com --git-protocol https --web --scopes workflow
+
+! One-time code (7C63-6E4B) copied to clipboard
+Press Enter to open https://github.com/login/device in your browser... 
+✓ Authentication complete.
+- gh config set -h github.com git_protocol https
+✓ Configured git protocol
+✓ Logged in as hutou
+! You were already logged in to this account
+hubert@xps15al:~/work/dev/jedi $ 
+
+
+hubert@xps15al:~/work/dev/jedi $ gh auth login --hostname github.com --git-protocol https --web --scopes workflow
+
+! One-time code (7C63-6E4B) copied to clipboard
+Press Enter to open https://github.com/login/device in your browser... 
+✓ Authentication complete.
+- gh config set -h github.com git_protocol https
+✓ Configured git protocol
+✓ Logged in as hutou
+! You were already logged in to this account
+hubert@xps15al:~/work/dev/jedi $ gh auth refresh --hostname github.com --scopes worklow
+
+The scopes requested are invalid: worklow. (invalid_scope)
+hubert@xps15al:~/work/dev/jedi $ gh auth refresh --hostname github.com --scopes workflow
+
+! One-time code (D379-5C12) copied to clipboard
+Press Enter to open https://github.com/login/device in your browser... 
+✓ Authentication complete.
+hubert@xps15al:~/work/dev/jedi $ gh auth setup-git --hostname github.com
+hubert@xps15al:~/work/dev/jedi $ gh auth status --hostname github.com
+github.com
+  ✓ Logged in to github.com account hutou (keyring)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: gho_************************************
+  - Token scopes: 'gist', 'read:org', 'repo', 'workflow'
+hubert@xps15al:~/work/dev/jedi $ 
+
+hubert@xps15al:~/work/dev/jedi $ jedi_owner="$(gh api --hostname github.com user --jq .login)"
+hubert@xps15al:~/work/dev/jedi $ printf '%s\n' "$jedi_owner"
+hutou
+hubert@xps15al:~/work/dev/jedi $ 
+
+
+Ubuntu
+------
+
+hubert@xps15w11:~$ gh auth login --hostname github.com --git-protocol https --web --scopes workflow
+? Authenticate Git with your GitHub credentials? Yes
+
+! First copy your one-time code: CFC8-AEFC
+Press Enter to open github.com in your browser...
+! Failed opening a web browser at https://github.com/login/device
+  exec: "xdg-open,x-www-browser,www-browser,wslview": executable file not found in $PATH
+  Please try entering the URL in your browser manually
+
+Ok après la manip donnée par chatGPT (se connecter sur https://github.com/login/service)
+
+$ gh auth login --hostname github.com --git-protocol https --web --scopes workflow
+? Authenticate Git with your GitHub credentials? Yes
+
+! First copy your one-time code: CFC8-AEFC
+Press Enter to open github.com in your browser...
+! Failed opening a web browser at https://github.com/login/device
+  exec: "xdg-open,x-www-browser,www-browser,wslview": executable file not found in $PATH
+  Please try entering the URL in your browser manually
+✓ Authentication complete.
+- gh config set -h github.com git_protocol https
+✓ Configured git protocol
+! Authentication credentials saved in plain text
+✓ Logged in as hutou
+hubert@xps15w11:~$ gh auth setup-git --hostname github.com
+hubert@xps15w11:~$ gh auth status --hostname github.com
+github.com
+  ✓ Logged in to github.com account hutou (/home/hubert/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: gho_************************************
+  - Token scopes: 'gist', 'read:org', 'repo', 'workflow'
+hubert@xps15w11:~$ jedi_owner="$(gh api --hostname github.com user --jq .login)"
+hubert@xps15w11:~$ printf '%s\n' "$jedi_owner"
+hutou
+hubert@xps15w11:~$
+
+Étape 4
+=======
+hubert@xps15al:~/work/dev/jedi $ ll jedi_publication/
+total 4308
+-rw-r--r-- 1 hubert hubert 4403367  8 oct.  13:33 jedi_publication_1.0.0_20261008.zip
+-rw-r--r-- 1 hubert hubert     102  9 oct.  07:57 jedi_publication_1.0.0_20261008.zip.sha256
+hubert@xps15al:~/work/dev/jedi $ 
+hubert@xps15al:~/work/dev/jedi $ mkdir "$HOME/jedi-livraison-1.0"
+hubert@xps15al:~/work/dev/jedi $ unzip -q jedi_publication_1.0.0_20261008.zip -d "$HOME/jedi-livraison-1.0"
+unzip:  cannot find or open jedi_publication_1.0.0_20261008.zip, jedi_publication_1.0.0_20261008.zip.zip or jedi_publication_1.0.0_20261008.zip.ZIP.
+hubert@xps15al:~/work/dev/jedi $ unzip -q jedi_publication/jedi_publication_1.0.0_20261008.zip -d "$HOME/jedi-livraison-1.0"
+hubert@xps15al:~/work/dev/jedi $ cd "$HOME/jedi-livraison-1.0/jedi-publication-1.0.0/repository"
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ pwd
+/home/hubert/jedi-livraison-1.0/jedi-publication-1.0.0/repository
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ ls README.fr.md LICENSE shard.yml launchers release
+LICENSE  README.fr.md  shard.yml
+
+launchers:
+jedi  jedidemo  jedidev
+
+release:
+build-in-container.sh  build-local.sh   check-elf.py  collect-native-licenses.py  dependencies.json  notes-1.0.0.md  smoke.py
+build-info.py          build-static.sh  check.sh      common.py                   Dockerfile         package.py      verify-dependencies.py
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+
+Étape 7
+=======
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ bash release/build-static.sh prepare
+1.21.1-alpine: Pulling from crystallang/crystal
+53f8f5e03afd: Pull complete 
+f5cd33ff7e81: Pull complete 
+5c09cca08dd0: Pull complete 
+756827e02e6e: Pull complete 
+Digest: sha256:bf35489a8273a606368bd6a7ab2e24d01f950ca919c85ba4fe4c5bf10cd7a67e
+Status: Downloaded newer image for crystallang/crystal:1.21.1-alpine
+docker.io/crystallang/crystal:1.21.1-alpine
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  132.6kB
+Step 1/4 : ARG JEDI_BASE_IMAGE=crystallang/crystal:1.21.1-alpine
+Step 2/4 : FROM ${JEDI_BASE_IMAGE}
+ ---> afae2c91b71e
+Step 3/4 : RUN apk add --no-cache bash python3 binutils sqlite-dev sqlite-static gnuplot ca-certificates
+ ---> Running in bcf464c24fc6
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+(1/46) Installing bash (5.2.37-r0)
+Executing bash-5.2.37-r0.post-install
+(2/46) Installing ca-certificates (20260909-r0)
+(3/46) Installing libxau (1.0.12-r0)
+(4/46) Installing libmd (1.1.0-r0)
+(5/46) Installing libbsd (0.12.2-r0)
+(6/46) Installing libxdmcp (1.1.5-r1)
+(7/46) Installing libxcb (1.17.0-r0)
+(8/46) Installing libx11 (1.8.11-r0)
+(9/46) Installing libxext (1.3.6-r2)
+(10/46) Installing libxrender (0.9.12-r0)
+(11/46) Installing libpng (1.6.59-r0)
+(12/46) Installing freetype (2.13.3-r0)
+(13/46) Installing fontconfig (2.15.0-r3)
+(14/46) Installing pixman (0.46.4-r0)
+(15/46) Installing cairo (1.18.4-r0)
+(16/46) Installing libcerf (2.4-r0)
+(17/46) Installing libice (1.1.2-r0)
+(18/46) Installing libuuid (2.41.6-r1)
+(19/46) Installing libsm (1.2.5-r0)
+(20/46) Installing libxt (1.3.1-r0)
+(21/46) Installing libxpm (3.5.19-r0)
+(22/46) Installing aom-libs (3.12.1-r0)
+(23/46) Installing libdav1d (1.5.1-r0)
+(24/46) Installing libjpeg-turbo (3.1.0-r0)
+(25/46) Installing libyuv (0.0.1887.20251502-r1)
+(26/46) Installing libavif (1.3.0-r0)
+(27/46) Installing libsharpyuv (1.5.0-r0)
+(28/46) Installing libwebp (1.5.0-r0)
+(29/46) Installing tiff (4.7.2-r0)
+(30/46) Installing libgd (2.3.3-r10)
+(31/46) Installing libintl (0.24.1-r0)
+(32/46) Installing libeconf (0.6.3-r0)
+(33/46) Installing libblkid (2.41.6-r1)
+(34/46) Installing libmount (2.41.6-r1)
+(35/46) Installing glib (2.84.4-r0)
+(36/46) Installing lua5.3-libs (5.3.6-r6)
+(37/46) Installing libxft (2.3.8-r3)
+(38/46) Installing fribidi (1.0.16-r1)
+(39/46) Installing graphite2 (1.3.14-r6)
+(40/46) Installing harfbuzz (11.2.1-r0)
+(41/46) Installing pango (1.56.3-r0)
+(42/46) Installing libwebpmux (1.5.0-r0)
+(43/46) Installing gnuplot (6.0.2-r0)
+(44/46) Installing sqlite (3.49.2-r1)
+(45/46) Installing sqlite-dev (3.49.2-r1)
+(46/46) Installing sqlite-static (3.49.2-r1)
+Executing busybox-1.37.0-r20.trigger
+Executing ca-certificates-20260909-r0.trigger
+Executing glib-2.84.4-r0.trigger
+OK: 309 MiB in 137 packages
+ ---> Removed intermediate container bcf464c24fc6
+ ---> 356e29103cef
+Step 4/4 : WORKDIR /workspace
+ ---> Running in 157e5b46b3bb
+ ---> Removed intermediate container 157e5b46b3bb
+ ---> 650d6310b6b8
+Successfully built 650d6310b6b8
+Successfully tagged jedi-builder:1.0.0
+Builder prepared. Preserve this image for reproducible rebuilds.
+
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ bash release/build-static.sh build
+Crystal 1.21.1 [73ea5c2b1] (2026-09-26)
+
+LLVM: 20.1.8
+Default target: x86_64-unknown-linux-musl
+Shards 0.20.0 [b2b98ca] (2025-12-19)
+I: Resolving dependencies
+I: Fetching https://github.com/crystal-lang/crystal-sqlite3.git
+I: Fetching https://github.com/naqvis/cryplot.git
+I: Fetching https://github.com/hutou/tablo.git
+I: Fetching https://github.com/crystal-i18n/i18n.git
+I: Fetching https://github.com/crystal-ameba/ameba.git
+I: Fetching https://github.com/sija/debug.cr.git
+I: Fetching https://github.com/crystal-lang/crystal-db.git
+I: Fetching https://github.com/naqvis/uni_char_width.git
+I: Fetching https://github.com/naqvis/uni_text_seg.git
+I: Installing db (0.14.0)
+I: Installing sqlite3 (0.23.0)
+I: Installing cryplot (0.2.1)
+I: Postinstall of cryplot: ./install.sh (skipped)
+I: Installing textseg (0.1.3)
+I: Postinstall of textseg: crystal run scripts/generate_properties_data.cr (skipped)
+I: Installing uniwidth (0.1.3)
+I: Postinstall of uniwidth: crystal run scripts/generate_charwidth_data.cr (skipped)
+I: Installing tablo (1.1.0)
+I: Installing i18n (0.2.2)
+I: Installing ameba (1.7.0)
+I: Installing debug (2.0.4)
+sqlite3 0.23.0 / 271a1314a6c64e6c3d98942a39bf1b3e8326b190
+db 0.14.0 / 9fff44dd1f61446f9aaffafbb50c4118fe92a3dc
+cryplot 0.2.1 / 6518fb1417f020ac381e2deba670df49af2c84ca
+tablo 1.1.0 / 69b925ed5db1f8c53b7dc1aa2de16bcda7ec65d8
+i18n 0.2.2 / 27730088123c00d1b61edd9b2d6a646952407f67
+textseg 0.1.3 / f047552aa588af47aca33551e069529118c3a179
+uniwidth 0.1.3 / 658cee2b215076f4a5497311b7810a6be813483b
+ameba 1.7.0 / 9a19f5f98abdf792a5a0ef6ca5c5d89459740e2f
+debug 2.0.4 / 9797e8ca8d029c25682ef66b6459349950215b8b
+All locked dependency files match their recorded upstream revisions.
+..............ALP (FR4487601001) est maintenant absent du groupe PEA.
+...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+Finished in 1:25 minutes
+493 examples, 0 failures, 0 errors, 0 pending
+Source compilation, formatting and all 493 specs passed.
+cc _main.o3.o -o /workspace/build/static/jedi  -rdynamic -static -L/usr/bin/../lib/crystal `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lz -lyaml -lsqlite3 -lpcre2-8 -lgc -lpthread -ldl
+Fully static Linux x86_64 ELF verified.
+Installation and 38 CLI checks passed. Logs: /workspace/build/static/smoke-alpine
+Cloning into '/workspace/build/native-license-sources/musl-1.2.5'...
+Note: switching to '0784374d561435f7c787a555aeab8ede699ed298'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+Cloning into '/workspace/build/native-license-sources/gc-8.2.8'...
+warning: refs/tags/v8.2.8 d54010c33189bfac434d85d315ad69783be7ea9b is not a commit!
+Note: switching to 'ee59af3722e56de8404de6cd0c21c2493cc4d855'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+No upstream license notice found for gc v8.2.8
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+Correctif 
+---------
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0 $ cd "$HOME/jedi-livraison-1.0/jedi-publication-1.0.0/repository"
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git apply --check ../jedi_release_gc_license_20261009.patch
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git apply ../jedi_release_gc_license_20261009.patch
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git add release/collect-native-licenses.py
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git commit -m "Fix native GC license collection"
+[main ec73d82] Fix native GC license collection
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+ubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ bash release/build-static.sh build
+Crystal 1.21.1 [73ea5c2b1] (2026-09-26)
+
+LLVM: 20.1.8
+Default target: x86_64-unknown-linux-musl
+Shards 0.20.0 [b2b98ca] (2025-12-19)
+I: Resolving dependencies
+I: Fetching https://github.com/crystal-lang/crystal-sqlite3.git
+I: Fetching https://github.com/naqvis/cryplot.git
+I: Fetching https://github.com/hutou/tablo.git
+I: Fetching https://github.com/crystal-i18n/i18n.git
+I: Fetching https://github.com/crystal-ameba/ameba.git
+I: Fetching https://github.com/sija/debug.cr.git
+I: Fetching https://github.com/crystal-lang/crystal-db.git
+I: Fetching https://github.com/naqvis/uni_char_width.git
+I: Fetching https://github.com/naqvis/uni_text_seg.git
+I: Using db (0.14.0)
+I: Using sqlite3 (0.23.0)
+I: Using cryplot (0.2.1)
+I: Using textseg (0.1.3)
+I: Using uniwidth (0.1.3)
+I: Using tablo (1.1.0)
+I: Using i18n (0.2.2)
+I: Using ameba (1.7.0)
+I: Using debug (2.0.4)
+sqlite3 0.23.0 / 271a1314a6c64e6c3d98942a39bf1b3e8326b190
+db 0.14.0 / 9fff44dd1f61446f9aaffafbb50c4118fe92a3dc
+cryplot 0.2.1 / 6518fb1417f020ac381e2deba670df49af2c84ca
+tablo 1.1.0 / 69b925ed5db1f8c53b7dc1aa2de16bcda7ec65d8
+i18n 0.2.2 / 27730088123c00d1b61edd9b2d6a646952407f67
+textseg 0.1.3 / f047552aa588af47aca33551e069529118c3a179
+uniwidth 0.1.3 / 658cee2b215076f4a5497311b7810a6be813483b
+ameba 1.7.0 / 9a19f5f98abdf792a5a0ef6ca5c5d89459740e2f
+debug 2.0.4 / 9797e8ca8d029c25682ef66b6459349950215b8b
+All locked dependency files match their recorded upstream revisions.
+..............ALP (FR4487601001) est maintenant absent du groupe PEA.
+...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+Finished in 1:09 minutes
+493 examples, 0 failures, 0 errors, 0 pending
+Source compilation, formatting and all 493 specs passed.
+cc _main.o3.o -o /workspace/build/static/jedi  -rdynamic -static -L/usr/bin/../lib/crystal `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lz -lyaml -lsqlite3 -lpcre2-8 -lgc -lpthread -ldl
+Fully static Linux x86_64 ELF verified.
+Installation and 38 CLI checks passed. Logs: /workspace/build/static/smoke-alpine
+Cloning into '/workspace/build/native-license-sources/pcre2-10.46'...
+warning: refs/tags/pcre2-10.46 56c87ccac13b01c3c1ecdf71e4fc2fedccea50a2 is not a commit!
+Note: switching to 'b2bd4254b379b9d7dc9a3dda060a7e27009ccdff'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+No upstream license notice found for pcre2 pcre2-10.46
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository
+
+Correctif N°2
+-------------
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git commit -m "Fix PCRE2 license collection and check notices before build"
+[main 3c05e62] Fix PCRE2 license collection and check notices before build
+ 4 files changed, 27 insertions(+), 8 deletions(-)
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git status --short
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ bash release/build-static.sh build
+Cloning into '/workspace/build/native-license-sources/yaml-0.2.5'...
+warning: refs/tags/0.2.5 65d19898a301b817261003b00d1dcef00895a7b4 is not a commit!
+Note: switching to '2c891fc7a770e8ba2fec34fc6b545c672beb37e6'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+Cloning into '/workspace/build/native-license-sources/openssl-3.5.8'...
+warning: refs/tags/openssl-3.5.8 090eec6d3628aa0520bdf2cf97b063fafc34e7be is not a commit!
+Note: switching to 'f4dc4d58b48d346a8270183f89acf826d459b0ca'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+Updating files: 100% (5836/5836), done.
+Cloning into '/workspace/build/native-license-sources/zlib-1.3.2'...
+warning: refs/tags/v1.3.2 216c70c020aa53f0c40920d155f808b6b59c9acb is not a commit!
+Note: switching to 'da607da739fa6047df13e66a2af6b8bec7c2a498'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+Native-library license notices collected from matching upstream releases.
+Crystal 1.21.1 [73ea5c2b1] (2026-09-26)
+
+LLVM: 20.1.8
+Default target: x86_64-unknown-linux-musl
+Shards 0.20.0 [b2b98ca] (2025-12-19)
+I: Resolving dependencies
+I: Fetching https://github.com/crystal-lang/crystal-sqlite3.git
+I: Fetching https://github.com/naqvis/cryplot.git
+I: Fetching https://github.com/hutou/tablo.git
+I: Fetching https://github.com/crystal-i18n/i18n.git
+I: Fetching https://github.com/crystal-ameba/ameba.git
+I: Fetching https://github.com/sija/debug.cr.git
+I: Fetching https://github.com/crystal-lang/crystal-db.git
+I: Fetching https://github.com/naqvis/uni_char_width.git
+I: Fetching https://github.com/naqvis/uni_text_seg.git
+I: Using db (0.14.0)
+I: Using sqlite3 (0.23.0)
+I: Using cryplot (0.2.1)
+I: Using textseg (0.1.3)
+I: Using uniwidth (0.1.3)
+I: Using tablo (1.1.0)
+I: Using i18n (0.2.2)
+I: Using ameba (1.7.0)
+I: Using debug (2.0.4)
+sqlite3 0.23.0 / 271a1314a6c64e6c3d98942a39bf1b3e8326b190
+db 0.14.0 / 9fff44dd1f61446f9aaffafbb50c4118fe92a3dc
+cryplot 0.2.1 / 6518fb1417f020ac381e2deba670df49af2c84ca
+tablo 1.1.0 / 69b925ed5db1f8c53b7dc1aa2de16bcda7ec65d8
+i18n 0.2.2 / 27730088123c00d1b61edd9b2d6a646952407f67
+textseg 0.1.3 / f047552aa588af47aca33551e069529118c3a179
+uniwidth 0.1.3 / 658cee2b215076f4a5497311b7810a6be813483b
+ameba 1.7.0 / 9a19f5f98abdf792a5a0ef6ca5c5d89459740e2f
+debug 2.0.4 / 9797e8ca8d029c25682ef66b6459349950215b8b
+All locked dependency files match their recorded upstream revisions.
+..............ALP (FR4487601001) est maintenant absent du groupe PEA.
+...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+Finished in 1:05 minutes
+493 examples, 0 failures, 0 errors, 0 pending
+Source compilation, formatting and all 493 specs passed.
+cc _main.o3.o -o /workspace/build/static/jedi  -rdynamic -static -L/usr/bin/../lib/crystal `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lz -lyaml -lsqlite3 -lpcre2-8 -lgc -lpthread -ldl
+Fully static Linux x86_64 ELF verified.
+Installation and 38 CLI checks passed. Logs: /workspace/build/static/smoke-alpine
+WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.22/main: No such file or directory
+WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.22/community: No such file or directory
+Build evidence recorded in build/static/BUILD-INFO.json.
+Static build and Alpine smoke test passed.
+Static binary ready: build/static/jedi
+Next: run the smoke test on the target Linux or WSL2 machine.
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 -m json.tool build/static/BUILD-INFO.json
+{
+    "version": "1.0.0",
+    "commit": "3c05e629b94317dcee095a4c30031c322543d915",
+    "source_sha256": "d3880284d4815ddae3c2343743fbeb15ff31b1c6f400c31e9170f40b98bc5d56",
+    "binary_sha256": "1e21bd8e0071fb5a5313e85e6c314c4310b9c3d87fa877ce8dc7284ab9202cbe",
+    "compiler": "Crystal 1.21.1 [73ea5c2b1] (2026-09-26)\n\nLLVM: 20.1.8\nDefault target: x86_64-unknown-linux-musl",
+    "shards": "Shards 0.20.0 [b2b98ca] (2025-12-19)",
+    "architecture": "x86_64",
+    "linking": "static-musl",
+    "builder_id": "sha256:650d6310b6b8dd5eace203e636906d4d922051508a14442adb5e4176044cc9d3",
+    "base_image": "crystallang/crystal@sha256:bf35489a8273a606368bd6a7ab2e24d01f950ca919c85ba4fe4c5bf10cd7a67e",
+    "apk_packages": [
+        "alpine-baselayout-3.7.0-r0",
+        "alpine-baselayout-data-3.7.0-r0",
+        "alpine-keys-2.5-r0",
+        "alpine-release-3.22.6-r0",
+        "aom-libs-3.12.1-r0",
+        "apk-tools-2.14.12-r0",
+        "bash-5.2.37-r0",
+        "binutils-2.44-r3",
+        "brotli-libs-1.1.0-r2",
+        "bsd-compat-headers-0.7.2-r6",
+        "busybox-1.37.0-r20",
+        "busybox-binsh-1.37.0-r20",
+        "c-ares-1.34.8-r0",
+        "ca-certificates-20260909-r0",
+        "ca-certificates-bundle-20260909-r0",
+        "cairo-1.18.4-r0",
+        "fontconfig-2.15.0-r3",
+        "freetype-2.13.3-r0",
+        "fribidi-1.0.16-r1",
+        "gc-8.2.8-r1",
+        "gc-dev-8.2.8-r1",
+        "gc-static-8.2.8-r1",
+        "gcc-14.2.0-r6",
+        "gdbm-1.24-r0",
+        "git-2.49.1-r0",
+        "git-init-template-2.49.1-r0",
+        "glib-2.84.4-r0",
+        "gmp-6.3.0-r3",
+        "gmp-dev-6.3.0-r3",
+        "gnuplot-6.0.2-r0",
+        "graphite2-1.3.14-r6",
+        "harfbuzz-11.2.1-r0",
+        "isl26-0.26-r1",
+        "jansson-2.14.1-r0",
+        "libapk2-2.14.12-r0",
+        "libatomic-14.2.0-r6",
+        "libavif-1.3.0-r0",
+        "libblkid-2.41.6-r1",
+        "libbsd-0.12.2-r0",
+        "libbz2-1.0.8-r6",
+        "libcerf-2.4-r0",
+        "libcrypto3-3.5.8-r0",
+        "libcurl-8.14.1-r3",
+        "libdav1d-1.5.1-r0",
+        "libeconf-0.6.3-r0",
+        "libedit-20250104.3.1-r1",
+        "libedit-dev-20250104.3.1-r1",
+        "libexpat-2.8.5-r0",
+        "libffi-3.4.8-r0",
+        "libformw-6.5_p20250503-r0",
+        "libgc++-8.2.8-r1",
+        "libgcc-14.2.0-r6",
+        "libgd-2.3.3-r10",
+        "libgmpxx-6.3.0-r3",
+        "libgomp-14.2.0-r6",
+        "libice-1.1.2-r0",
+        "libidn2-2.3.7-r0",
+        "libintl-0.24.1-r0",
+        "libjpeg-turbo-3.1.0-r0",
+        "libmd-1.1.0-r0",
+        "libmenuw-6.5_p20250503-r0",
+        "libmount-2.41.6-r1",
+        "libncurses++-6.5_p20250503-r0",
+        "libncursesw-6.5_p20250503-r0",
+        "libpanelw-6.5_p20250503-r0",
+        "libpcre16-8.45-r4",
+        "libpcre2-16-10.46-r0",
+        "libpcre2-32-10.46-r0",
+        "libpcre32-8.45-r4",
+        "libpcrecpp-8.45-r4",
+        "libpng-1.6.59-r0",
+        "libpsl-0.21.5-r3",
+        "libsharpyuv-1.5.0-r0",
+        "libsm-1.2.5-r0",
+        "libssl3-3.5.8-r0",
+        "libstdc++-14.2.0-r6",
+        "libunistring-1.3-r0",
+        "libuuid-2.41.6-r1",
+        "libwebp-1.5.0-r0",
+        "libwebpmux-1.5.0-r0",
+        "libx11-1.8.11-r0",
+        "libxau-1.0.12-r0",
+        "libxcb-1.17.0-r0",
+        "libxdmcp-1.1.5-r1",
+        "libxext-1.3.6-r2",
+        "libxft-2.3.8-r3",
+        "libxml2-2.13.9-r1",
+        "libxml2-dev-2.13.9-r1",
+        "libxml2-static-2.13.9-r1",
+        "libxml2-utils-2.13.9-r1",
+        "libxpm-3.5.19-r0",
+        "libxrender-0.9.12-r0",
+        "libxt-1.3.1-r0",
+        "libyuv-0.0.1887.20251502-r1",
+        "lua5.3-libs-5.3.6-r6",
+        "make-4.4.1-r3",
+        "mpc1-1.3.1-r1",
+        "mpdecimal-4.0.1-r0",
+        "mpfr4-4.2.1_p1-r0",
+        "musl-1.2.5-r12",
+        "musl-dev-1.2.5-r12",
+        "musl-utils-1.2.5-r12",
+        "ncurses-dev-6.5_p20250503-r0",
+        "ncurses-terminfo-base-6.5_p20250503-r0",
+        "nghttp2-libs-1.69.0-r0",
+        "openssl-dev-3.5.8-r0",
+        "openssl-libs-static-3.5.8-r0",
+        "pango-1.56.3-r0",
+        "pcre-8.45-r4",
+        "pcre-dev-8.45-r4",
+        "pcre2-10.46-r0",
+        "pcre2-dev-10.46-r0",
+        "pcre2-static-10.46-r0",
+        "pixman-0.46.4-r0",
+        "pkgconf-2.4.3-r0",
+        "pyc-3.12.14-r0",
+        "python3-3.12.14-r0",
+        "python3-pyc-3.12.14-r0",
+        "python3-pycache-pyc0-3.12.14-r0",
+        "readline-8.2.13-r1",
+        "scanelf-1.3.8-r1",
+        "sqlite-3.49.2-r1",
+        "sqlite-dev-3.49.2-r1",
+        "sqlite-libs-3.49.2-r1",
+        "sqlite-static-3.49.2-r1",
+        "ssl_client-1.37.0-r20",
+        "tiff-4.7.2-r0",
+        "tzdata-2026d-r0",
+        "xz-5.8.4-r0",
+        "xz-dev-5.8.4-r0",
+        "xz-libs-5.8.4-r0",
+        "xz-static-5.8.4-r0",
+        "yaml-static-0.2.5-r2",
+        "zlib-1.3.2-r0",
+        "zlib-dev-1.3.2-r0",
+        "zlib-static-1.3.2-r0",
+        "zstd-libs-1.5.7-r0"
+    ],
+    "format": "passed",
+    "specs": "493 examples, 0 failures, 0 errors, 0 pending",
+    "cli_compile": "passed",
+    "alpine_smoke": "passed"
+}
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 -m json.tool build/static/licenses/native/manifest.json
+{
+    "musl": {
+        "apk_package": "musl-dev",
+        "apk_version": "1.2.5-r12",
+        "upstream": "https://git.musl-libc.org/git/musl",
+        "tag": "v1.2.5",
+        "commit": "0784374d561435f7c787a555aeab8ede699ed298",
+        "notices": [
+            "COPYRIGHT"
+        ]
+    },
+    "gc": {
+        "apk_package": "gc-static",
+        "apk_version": "8.2.8-r1",
+        "upstream": "https://github.com/ivmai/bdwgc.git",
+        "tag": "v8.2.8",
+        "commit": "ee59af3722e56de8404de6cd0c21c2493cc4d855",
+        "notices": [
+            "README.md"
+        ]
+    },
+    "pcre2": {
+        "apk_package": "pcre2-static",
+        "apk_version": "10.46-r0",
+        "upstream": "https://github.com/PCRE2Project/pcre2.git",
+        "tag": "pcre2-10.46",
+        "commit": "b2bd4254b379b9d7dc9a3dda060a7e27009ccdff",
+        "notices": [
+            "LICENCE.md"
+        ]
+    },
+    "yaml": {
+        "apk_package": "yaml-static",
+        "apk_version": "0.2.5-r2",
+        "upstream": "https://github.com/yaml/libyaml.git",
+        "tag": "0.2.5",
+        "commit": "2c891fc7a770e8ba2fec34fc6b545c672beb37e6",
+        "notices": [
+            "License"
+        ]
+    },
+    "openssl": {
+        "apk_package": "openssl-libs-static",
+        "apk_version": "3.5.8-r0",
+        "upstream": "https://github.com/openssl/openssl.git",
+        "tag": "openssl-3.5.8",
+        "commit": "f4dc4d58b48d346a8270183f89acf826d459b0ca",
+        "notices": [
+            "LICENSE.txt"
+        ]
+    },
+    "zlib": {
+        "apk_package": "zlib-static",
+        "apk_version": "1.3.2-r0",
+        "upstream": "https://github.com/madler/zlib.git",
+        "tag": "v1.3.2",
+        "commit": "da607da739fa6047df13e66a2af6b8bec7c2a498",
+        "notices": [
+            "LICENSE"
+        ]
+    },
+    "sqlite": {
+        "apk_package": "sqlite-static",
+        "apk_version": "3.49.2-r1",
+        "upstream": "https://www.sqlite.org/copyright.html",
+        "notices": [
+            "PUBLIC-DOMAIN.txt"
+        ]
+    }
+}
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+Étape 8
+=======
+
+ubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 release/smoke.py build/static/jedi \
+  --
+  pys --log-dir build/smoke-target
+Installation and 38 CLI checks passed. Logs: /home/hubert/jedi-livraison-1.0/jedi-publication-1.0.0/repository/build/smoke-target
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 -m json.tool build/smoke-target/result.json
+{
+    "success": true,
+    "binary_sha256": "1e21bd8e0071fb5a5313e85e6c314c4310b9c3d87fa877ce8dc7284ab9202cbe",
+    "version": "1.0.0",
+    "system": "Linux",
+    "architecture": "x86_64",
+    "platform": "Linux-6.18.55-1-lts-x86_64-with-glibc2.44",
+    "graphics": true,
+    "commands": [
+        {
+            "argv": [
+                "bash",
+                "/tmp/jedi-smoke-9bfotlrb/package with spaces/install.sh",
+                "--destdir",
+                "/tmp/jedi-smoke-9bfotlrb/stage"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedi",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidev",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedi"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidev"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "candidate",
+                "--help"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "backtest",
+                "--help"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "candidate",
+                "--help"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "calc",
+                "spe",
+                "scale=kc:1.4,1.2,0.8,0.6,ks:0.8,1.2,ki:10%,kb:1",
+                "position=1:0:0",
+                "q0=100"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "play",
+                "-c",
+                "o0,6-14,17",
+                "--",
+                "scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0,q0=100,c0=10,tick=0.01",
+                "1",
+                "-1"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "init",
+                "demo"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "import",
+                "demo",
+                "Demo",
+                "Demo_initial.txt",
+                "labels_demo.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "update",
+                "demo",
+                "Demo",
+                "Demo_partiel.txt",
+                "labels_demo.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "update",
+                "demo",
+                "Demo",
+                "Demo_update.txt",
+                "labels_demo.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "info",
+                "demo",
+                "--dataset=Demo"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "list",
+                "demo",
+                "--dataset=Demo",
+                "--last-quote"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "profile",
+                "cotations_EXA.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "profile",
+                "--database=demo",
+                "--dataset=Demo",
+                "--rank-criteria=4"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "score",
+                "cotations_EXA.txt",
+                "--budget=40"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "candidate",
+                "FR4487601001",
+                "--price=10",
+                "--scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0",
+                "--amount=1000",
+                "--capital=5000"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "backtest",
+                "cotations_EXA.txt",
+                "--scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "security",
+                "create",
+                "--isin=FR4487601001",
+                "--name=Example A",
+                "--ticker=EXA",
+                "--tick-buy=0.01",
+                "--tick-sell=0.01",
+                "--tax-rate=0"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "quote",
+                "set",
+                "FR4487601001",
+                "--price=10"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "scale",
+                "create",
+                "--name=EXA-10",
+                "--comment=Release smoke test",
+                "--builder=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "trade",
+                "create",
+                "--name=EXA01",
+                "--security=FR4487601001"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "settings",
+                "create",
+                "EXA01",
+                "--scale=EXA-10",
+                "--date=2026-09-21",
+                "--time=09:00:00"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "operation",
+                "create",
+                "EXA01",
+                "--date=2026-09-21",
+                "--time=09:01:00",
+                "--type=Buy",
+                "--mode=Limit",
+                "--quantity=100",
+                "--price=10",
+                "--fees=3.50"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "trade",
+                "orders",
+                "EXA01"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "plot",
+                "cotations_EXA.txt",
+                "--select=l20"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "backtest",
+                "cotations_EXA.txt",
+                "--scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0",
+                "-c",
+                "rp"
+            ],
+            "exit": 0
+        }
+    ],
+    "environments": {
+        "jedi": {
+            "environment": "prod",
+            "config_dir": "/tmp/jedi-smoke-9bfotlrb/production-config/jedi",
+            "config_file": "/tmp/jedi-smoke-9bfotlrb/production-config/jedi/jedi.conf",
+            "log_dir": "/tmp/jedi-smoke-9bfotlrb/production-state/jedi",
+            "log_file": "/tmp/jedi-smoke-9bfotlrb/production-state/jedi/jedi.log",
+            "data_dir": "/tmp/jedi-smoke-9bfotlrb/production-data/jedi",
+            "db_file": "/tmp/jedi-smoke-9bfotlrb/production-data/jedi/jedi.db",
+            "market_dir": "/tmp/jedi-smoke-9bfotlrb/production-data/jedi/market"
+        },
+        "jedidemo": {
+            "environment": "test",
+            "config_dir": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/conf",
+            "config_file": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/conf/jedi_test.conf",
+            "log_dir": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/log",
+            "log_file": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/log/jedi_test.log",
+            "data_dir": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/data",
+            "db_file": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/data/jedi_test.db",
+            "market_dir": "/tmp/jedi-smoke-9bfotlrb/stage/home/hubert/jedi-examples/jedi/env_test/market"
+        },
+        "jedidev": {
+            "environment": "dev",
+            "config_dir": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/conf",
+            "config_file": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/conf/jedi_dev.conf",
+            "log_dir": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/log",
+            "log_file": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/log/jedi_dev.log",
+            "data_dir": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/data",
+            "db_file": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/data/jedi_dev.db",
+            "market_dir": "/tmp/jedi-smoke-9bfotlrb/development with spaces/jedi/env_dev/market"
+        }
+    }
+}
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+Étape 9
+=======
+
+ubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 release/package.py --output dist/1.0.0
+3e8935d53efae926a0d39f968138de5e80686dc1711994b013f7fd5ac8b3e6fb  jedi-1.0.0-documentation.zip
+154924851cbec341ead3c7db96cd9787ea449db5448f680854cb7ae83135e2e8  jedi-1.0.0-linux-x86_64.tar.gz
+76de9c4d3e152e0d1c595e5721c1194d40e11ba822c567cd02af0d3f0f36c58e  jedi-1.0.0-source.tar.gz
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ cd dist
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist $ ls
+1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist $ cd 1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist/1.0.0 $ ls
+jedi-1.0.0-documentation.zip         jedi-1.0.0-linux-x86_64.tar.gz         jedi-1.0.0-source.tar.gz         SHA256SUMS
+jedi-1.0.0-documentation.zip.sha256  jedi-1.0.0-linux-x86_64.tar.gz.sha256  jedi-1.0.0-source.tar.gz.sha256
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist/1.0.0 $ sha256sum -c SHA256SUMS
+jedi-1.0.0-documentation.zip: Réussi
+jedi-1.0.0-linux-x86_64.tar.gz: Réussi
+jedi-1.0.0-source.tar.gz: Réussi
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist/1.0.0 $ cat SHA256SUMS
+3e8935d53efae926a0d39f968138de5e80686dc1711994b013f7fd5ac8b3e6fb  jedi-1.0.0-documentation.zip
+154924851cbec341ead3c7db96cd9787ea449db5448f680854cb7ae83135e2e8  jedi-1.0.0-linux-x86_64.tar.gz
+76de9c4d3e152e0d1c595e5721c1194d40e11ba822c567cd02af0d3f0f36c58e  jedi-1.0.0-source.tar.gz
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist/1.0.0 $ ls -lh
+total 16M
+-rw-r--r-- 1 hubert hubert 1,2M  9 oct.  16:54 jedi-1.0.0-documentation.zip
+-rw-r--r-- 1 hubert hubert   95  9 oct.  16:54 jedi-1.0.0-documentation.zip.sha256
+-rw-r--r-- 1 hubert hubert  13M  9 oct.  16:54 jedi-1.0.0-linux-x86_64.tar.gz
+-rw-r--r-- 1 hubert hubert   97  9 oct.  16:54 jedi-1.0.0-linux-x86_64.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert 1,5M  9 oct.  16:54 jedi-1.0.0-source.tar.gz
+-rw-r--r-- 1 hubert hubert   91  9 oct.  16:54 jedi-1.0.0-source.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert  283  9 oct.  16:54 SHA256SUMS
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository/dist/1.0.0 $ cd ../..
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git status --short
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+Étape 10
+========
+sur wsl/Windows/ubuntu
+
+hubert@xps15w11:~/jedi_1.0.0$ sudo apt update
+[sudo: authenticate] Password:
+Atteint : 1 http://security.ubuntu.com/ubuntu resolute-security InRelease
+Atteint : 2 http://archive.ubuntu.com/ubuntu resolute InRelease
+Atteint : 3 http://archive.ubuntu.com/ubuntu resolute-updates InRelease
+Atteint : 4 http://archive.ubuntu.com/ubuntu resolute-backports InRelease
+16 paquets peuvent être mis à jour. Exécutez « apt list --upgradable » pour les voir.
+hubert@xps15w11:~/jedi_1.0.0$ sudo apt install python3 gnuplot unzip
+python3 est déjà la version la plus récente (3.14.3-0ubuntu2).
+gnuplot est déjà la version la plus récente (6.0.2+dfsg1-2ubuntu2).
+unzip est déjà la version la plus récente (6.0-29ubuntu1).
+Sommaire :
+  Mise à niveau de : 0. Installation de : 0, Supprimé : 0. Non mis à jour : 16
+hubert@xps15w11:~/jedi_1.0.0$ sha256sum -c SHA256SUMS
+jedi-1.0.0-documentation.zip: OK
+jedi-1.0.0-linux-x86_64.tar.gz: OK
+jedi-1.0.0-source.tar.gz: OK
+hubert@xps15w11:~/jedi_1.0.0$ mkdir "$HOME/jedi-verification-1.0.0"
+hubert@xps15w11:~/jedi_1.0.0$ tar -xzf jedi-1.0.0-source.tar.gz -C "$HOME/jedi-verification-1.0.0"
+hubert@xps15w11:~/jedi_1.0.0$ tar -xzf jedi-1.0.0-linux-x86_64.tar.gz -C "$HOME/jedi-verification-1.0.0"
+hubert@xps15w11:~/jedi_1.0.0$ cd "$HOME/jedi-verification-1.0.0/jedi-1.0.0-source"
+hubert@xps15w11:~/jedi-verification-1.0.0/jedi-1.0.0-source$ python3 release/smoke.py ../jedi-1.0.0-linux-x86_64/jedi \
+  --graphics --log-dir build/smoke-wsl2
+Installation and 38 CLI checks passed. Logs: /home/hubert/jedi-verification-1.0.0/jedi-1.0.0-source/build/smoke-wsl2
+hubert@xps15w11:~/jedi-verification-1.0.0/jedi-1.0.0-source$ python3 -m json.tool build/smoke-wsl2/result.json
+{
+    "success": true,
+    "binary_sha256": "1e21bd8e0071fb5a5313e85e6c314c4310b9c3d87fa877ce8dc7284ab9202cbe",
+    "version": "1.0.0",
+    "system": "Linux",
+    "architecture": "x86_64",
+    "platform": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-inconnu-with-glibc2.43",
+    "graphics": true,
+    "commands": [
+        {
+            "argv": [
+                "bash",
+                "/tmp/jedi-smoke-i70k1vt2/package with spaces/install.sh",
+                "--destdir",
+                "/tmp/jedi-smoke-i70k1vt2/stage"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedi",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidev",
+                "config",
+                "--paths"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "version"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedi"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidev"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "candidate",
+                "--help"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "backtest",
+                "--help"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "candidate",
+                "--help"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "calc",
+                "spe",
+                "scale=kc:1.4,1.2,0.8,0.6,ks:0.8,1.2,ki:10%,kb:1",
+                "position=1:0:0",
+                "q0=100"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "play",
+                "-c",
+                "o0,6-14,17",
+                "--",
+                "scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0,q0=100,c0=10,tick=0.01",
+                "1",
+                "-1"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "init",
+                "demo"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "import",
+                "demo",
+                "Demo",
+                "Demo_initial.txt",
+                "labels_demo.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "update",
+                "demo",
+                "Demo",
+                "Demo_partiel.txt",
+                "labels_demo.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "update",
+                "demo",
+                "Demo",
+                "Demo_update.txt",
+                "labels_demo.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "info",
+                "demo",
+                "--dataset=Demo"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "market",
+                "list",
+                "demo",
+                "--dataset=Demo",
+                "--last-quote"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "profile",
+                "cotations_EXA.txt"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "profile",
+                "--database=demo",
+                "--dataset=Demo",
+                "--rank-criteria=4"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "score",
+                "cotations_EXA.txt",
+                "--budget=40"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "candidate",
+                "FR4487601001",
+                "--price=10",
+                "--scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0",
+                "--amount=1000",
+                "--capital=5000"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "backtest",
+                "cotations_EXA.txt",
+                "--scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "security",
+                "create",
+                "--isin=FR4487601001",
+                "--name=Example A",
+                "--ticker=EXA",
+                "--tick-buy=0.01",
+                "--tick-sell=0.01",
+                "--tax-rate=0"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "quote",
+                "set",
+                "FR4487601001",
+                "--price=10"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "scale",
+                "create",
+                "--name=EXA-10",
+                "--comment=Release smoke test",
+                "--builder=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "trade",
+                "create",
+                "--name=EXA01",
+                "--security=FR4487601001"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "settings",
+                "create",
+                "EXA01",
+                "--scale=EXA-10",
+                "--date=2026-09-21",
+                "--time=09:00:00"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "operation",
+                "create",
+                "EXA01",
+                "--date=2026-09-21",
+                "--time=09:01:00",
+                "--type=Buy",
+                "--mode=Limit",
+                "--quantity=100",
+                "--price=10",
+                "--fees=3.50"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "trade",
+                "orders",
+                "EXA01"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "plot",
+                "cotations_EXA.txt",
+                "--select=l20"
+            ],
+            "exit": 0
+        },
+        {
+            "argv": [
+                "jedidemo",
+                "tools",
+                "backtest",
+                "cotations_EXA.txt",
+                "--scale=vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0",
+                "-c",
+                "rp"
+            ],
+            "exit": 0
+        }
+    ],
+    "environments": {
+        "jedi": {
+            "environment": "prod",
+            "config_dir": "/tmp/jedi-smoke-i70k1vt2/production-config/jedi",
+            "config_file": "/tmp/jedi-smoke-i70k1vt2/production-config/jedi/jedi.conf",
+            "log_dir": "/tmp/jedi-smoke-i70k1vt2/production-state/jedi",
+            "log_file": "/tmp/jedi-smoke-i70k1vt2/production-state/jedi/jedi.log",
+            "data_dir": "/tmp/jedi-smoke-i70k1vt2/production-data/jedi",
+            "db_file": "/tmp/jedi-smoke-i70k1vt2/production-data/jedi/jedi.db",
+            "market_dir": "/tmp/jedi-smoke-i70k1vt2/production-data/jedi/market"
+        },
+        "jedidemo": {
+            "environment": "test",
+            "config_dir": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/conf",
+            "config_file": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/conf/jedi_test.conf",
+            "log_dir": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/log",
+            "log_file": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/log/jedi_test.log",
+            "data_dir": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/data",
+            "db_file": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/data/jedi_test.db",
+            "market_dir": "/tmp/jedi-smoke-i70k1vt2/stage/home/hubert/jedi-examples/jedi/env_test/market"
+        },
+        "jedidev": {
+            "environment": "dev",
+            "config_dir": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/conf",
+            "config_file": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/conf/jedi_dev.conf",
+            "log_dir": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/log",
+            "log_file": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/log/jedi_dev.log",
+            "data_dir": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/data",
+            "db_file": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/data/jedi_dev.db",
+            "market_dir": "/tmp/jedi-smoke-i70k1vt2/development with spaces/jedi/env_dev/market"
+        }
+    }
+}
+hubert@xps15w11:~/jedi-verification-1.0.0/jedi-1.0.0-source$
+
+Étape 11
+========
+
+hubert@xps15al:~/work/dev/jedi $ git config --list
+core.editor=vim
+core.quotepath=off
+init.defaultbranch=main
+credential.https://github.com.helper=
+credential.https://github.com.helper=!/usr/bin/gh auth git-credential
+credential.https://gist.github.com.helper=
+credential.https://gist.github.com.helper=!/usr/bin/gh auth git-credential
+user.name=hutou
+user.email=hutou01@gmail.com
+diff.tool=meld
+difftool.prompt=false
+difftool.meld.cmd=meld $LOCAL $REMOTE
+safe.directory=/workspace
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+core.quotepath=off
+remote.origin.url=https://github.com/hutou/jedi.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+gitg.mainline=refs/heads/main
+hubert@xps15al:~/work/dev/jedi $ git config --list | grep -i origin
+remote.origin.url=https://github.com/hutou/jedi.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+hubert@xps15al:~/work/dev/jedi $ git remote set-url origin "https://github.com/hutou/jedi-prive.git"
+hubert@xps15al:~/work/dev/jedi $ git remote -v
+origin	https://github.com/hutou/jedi-prive.git (fetch)
+origin	https://github.com/hutou/jedi-prive.git (push)
+hubert@xps15al:~/work/dev/jedi $ git fetch origin
+hubert@xps15al:~/work/dev/jedi $ 
+
+
+Étape 12
+========
+
+hubert@xps15al:~/work/dev/jedi $ cd "$HOME/jedi-livraison-1.0/jedi-publication-1.0.0/repository"
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ jedi_owner="$(gh api --hostname github.com user --jq .login)"
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git status --short
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git remote -v
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh repo create "$jedi_owner/jedi" --public --source=. --remote=origin \
+  --description "A command-line application for rule-based trade management."
+✓ Created repository hutou/jedi on github.com
+  https://github.com/hutou/jedi
+✓ Added remote https://github.com/hutou/jedi.git
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git remote get-url origin
+https://github.com/hutou/jedi.git
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git push -u origin main
+Énumération des objets: 559, fait.
+Décompte des objets: 100% (559/559), fait.
+Compression par delta en utilisant jusqu'à 8 fils d'exécution
+Compression des objets: 100% (541/541), fait.
+Écriture des objets: 100% (559/559), 1.53 MiO | 3.33 MiO/s, fait.
+Total 559 (delta 56), réutilisés 0 (delta 0), réutilisés du paquet 0 (depuis 0)
+remote: Resolving deltas: 100% (56/56), done.
+To https://github.com/hutou/jedi.git
+ * [new branch]      main -> main
+la branche 'main' est paramétrée pour suivre 'origin/main'.
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh repo edit "$jedi_owner/jedi" --default-branch main
+✓ Edited repository hutou/jedi
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh repo view "$jedi_owner/jedi" --web
+Opening https://github.com/hutou/jedi in your browser.
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+Étape 14
+========
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git status --short
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git log -1
+commit 3c05e629b94317dcee095a4c30031c322543d915 (HEAD -> main, origin/main)
+Author: Hubert Toullec <hutou01@gmail.com>
+Date:   Fri Oct 9 16:34:51 2026 +0200
+
+    Fix PCRE2 license collection and check notices before build
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git rev-parse HEAD
+3c05e629b94317dcee095a4c30031c322543d915
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 -m json.tool build/static/BUILD-INFO.json
+{
+    "version": "1.0.0",
+    "commit": "3c05e629b94317dcee095a4c30031c322543d915",
+    "source_sha256": "d3880284d4815ddae3c2343743fbeb15ff31b1c6f400c31e9170f40b98bc5d56",
+    "binary_sha256": "1e21bd8e0071fb5a5313e85e6c314c4310b9c3d87fa877ce8dc7284ab9202cbe",
+    "compiler": "Crystal 1.21.1 [73ea5c2b1] (2026-09-26)\n\nLLVM: 20.1.8\nDefault target: x86_64-unknown-linux-musl",
+    "shards": "Shards 0.20.0 [b2b98ca] (2025-12-19)",
+    "architecture": "x86_64",
+    "linking": "static-musl",
+    "builder_id": "sha256:650d6310b6b8dd5eace203e636906d4d922051508a14442adb5e4176044cc9d3",
+    "base_image": "crystallang/crystal@sha256:bf35489a8273a606368bd6a7ab2e24d01f950ca919c85ba4fe4c5bf10cd7a67e",
+    "apk_packages": [
+        "alpine-baselayout-3.7.0-r0",
+        "alpine-baselayout-data-3.7.0-r0",
+        "alpine-keys-2.5-r0",
+        "alpine-release-3.22.6-r0",
+        "aom-libs-3.12.1-r0",
+        "apk-tools-2.14.12-r0",
+        "bash-5.2.37-r0",
+        "binutils-2.44-r3",
+        "brotli-libs-1.1.0-r2",
+        "bsd-compat-headers-0.7.2-r6",
+        "busybox-1.37.0-r20",
+        "busybox-binsh-1.37.0-r20",
+        "c-ares-1.34.8-r0",
+        "ca-certificates-20260909-r0",
+        "ca-certificates-bundle-20260909-r0",
+        "cairo-1.18.4-r0",
+        "fontconfig-2.15.0-r3",
+        "freetype-2.13.3-r0",
+        "fribidi-1.0.16-r1",
+        "gc-8.2.8-r1",
+        "gc-dev-8.2.8-r1",
+        "gc-static-8.2.8-r1",
+        "gcc-14.2.0-r6",
+        "gdbm-1.24-r0",
+        "git-2.49.1-r0",
+        "git-init-template-2.49.1-r0",
+        "glib-2.84.4-r0",
+        "gmp-6.3.0-r3",
+        "gmp-dev-6.3.0-r3",
+        "gnuplot-6.0.2-r0",
+        "graphite2-1.3.14-r6",
+        "harfbuzz-11.2.1-r0",
+        "isl26-0.26-r1",
+        "jansson-2.14.1-r0",
+        "libapk2-2.14.12-r0",
+        "libatomic-14.2.0-r6",
+        "libavif-1.3.0-r0",
+        "libblkid-2.41.6-r1",
+        "libbsd-0.12.2-r0",
+        "libbz2-1.0.8-r6",
+        "libcerf-2.4-r0",
+        "libcrypto3-3.5.8-r0",
+        "libcurl-8.14.1-r3",
+        "libdav1d-1.5.1-r0",
+        "libeconf-0.6.3-r0",
+        "libedit-20250104.3.1-r1",
+        "libedit-dev-20250104.3.1-r1",
+        "libexpat-2.8.5-r0",
+        "libffi-3.4.8-r0",
+        "libformw-6.5_p20250503-r0",
+        "libgc++-8.2.8-r1",
+        "libgcc-14.2.0-r6",
+        "libgd-2.3.3-r10",
+        "libgmpxx-6.3.0-r3",
+        "libgomp-14.2.0-r6",
+        "libice-1.1.2-r0",
+        "libidn2-2.3.7-r0",
+        "libintl-0.24.1-r0",
+        "libjpeg-turbo-3.1.0-r0",
+        "libmd-1.1.0-r0",
+        "libmenuw-6.5_p20250503-r0",
+        "libmount-2.41.6-r1",
+        "libncurses++-6.5_p20250503-r0",
+        "libncursesw-6.5_p20250503-r0",
+        "libpanelw-6.5_p20250503-r0",
+        "libpcre16-8.45-r4",
+        "libpcre2-16-10.46-r0",
+        "libpcre2-32-10.46-r0",
+        "libpcre32-8.45-r4",
+        "libpcrecpp-8.45-r4",
+        "libpng-1.6.59-r0",
+        "libpsl-0.21.5-r3",
+        "libsharpyuv-1.5.0-r0",
+        "libsm-1.2.5-r0",
+        "libssl3-3.5.8-r0",
+        "libstdc++-14.2.0-r6",
+        "libunistring-1.3-r0",
+        "libuuid-2.41.6-r1",
+        "libwebp-1.5.0-r0",
+        "libwebpmux-1.5.0-r0",
+        "libx11-1.8.11-r0",
+        "libxau-1.0.12-r0",
+        "libxcb-1.17.0-r0",
+        "libxdmcp-1.1.5-r1",
+        "libxext-1.3.6-r2",
+        "libxft-2.3.8-r3",
+        "libxml2-2.13.9-r1",
+        "libxml2-dev-2.13.9-r1",
+        "libxml2-static-2.13.9-r1",
+        "libxml2-utils-2.13.9-r1",
+        "libxpm-3.5.19-r0",
+        "libxrender-0.9.12-r0",
+        "libxt-1.3.1-r0",
+        "libyuv-0.0.1887.20251502-r1",
+        "lua5.3-libs-5.3.6-r6",
+        "make-4.4.1-r3",
+        "mpc1-1.3.1-r1",
+        "mpdecimal-4.0.1-r0",
+        "mpfr4-4.2.1_p1-r0",
+        "musl-1.2.5-r12",
+        "musl-dev-1.2.5-r12",
+        "musl-utils-1.2.5-r12",
+        "ncurses-dev-6.5_p20250503-r0",
+        "ncurses-terminfo-base-6.5_p20250503-r0",
+        "nghttp2-libs-1.69.0-r0",
+        "openssl-dev-3.5.8-r0",
+        "openssl-libs-static-3.5.8-r0",
+        "pango-1.56.3-r0",
+        "pcre-8.45-r4",
+        "pcre-dev-8.45-r4",
+        "pcre2-10.46-r0",
+        "pcre2-dev-10.46-r0",
+        "pcre2-static-10.46-r0",
+        "pixman-0.46.4-r0",
+        "pkgconf-2.4.3-r0",
+        "pyc-3.12.14-r0",
+        "python3-3.12.14-r0",
+        "python3-pyc-3.12.14-r0",
+        "python3-pycache-pyc0-3.12.14-r0",
+        "readline-8.2.13-r1",
+        "scanelf-1.3.8-r1",
+        "sqlite-3.49.2-r1",
+        "sqlite-dev-3.49.2-r1",
+        "sqlite-libs-3.49.2-r1",
+        "sqlite-static-3.49.2-r1",
+        "ssl_client-1.37.0-r20",
+        "tiff-4.7.2-r0",
+        "tzdata-2026d-r0",
+        "xz-5.8.4-r0",
+        "xz-dev-5.8.4-r0",
+        "xz-libs-5.8.4-r0",
+        "xz-static-5.8.4-r0",
+        "yaml-static-0.2.5-r2",
+        "zlib-1.3.2-r0",
+        "zlib-dev-1.3.2-r0",
+        "zlib-static-1.3.2-r0",
+        "zstd-libs-1.5.7-r0"
+    ],
+    "format": "passed",
+    "specs": "493 examples, 0 failures, 0 errors, 0 pending",
+    "cli_compile": "passed",
+    "alpine_smoke": "passed"
+}
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git log -1
+commit 3c05e629b94317dcee095a4c30031c322543d915 (HEAD -> main, origin/main)
+Author: Hubert Toullec <hutou01@gmail.com>
+Date:   Fri Oct 9 16:34:51 2026 +0200
+
+    Fix PCRE2 license collection and check notices before build
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git tag -a v1.0.0 -m "Jedi 1.0.0"
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git push origin v1.0.0
+Énumération des objets: 1, fait.
+Décompte des objets: 100% (1/1), fait.
+Écriture des objets: 100% (1/1), 163 octets | 163.00 KiO/s, fait.
+Total 1 (delta 0), réutilisés 0 (delta 0), réutilisés du paquet 0 (depuis 0)
+To https://github.com/hutou/jedi.git
+ * [new tag]         v1.0.0 -> v1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ git show --no-patch v1.0.0
+tag v1.0.0
+Tagger: Hubert Toullec <hutou01@gmail.com>
+Date:   Fri Oct 9 18:44:02 2026 +0200
+
+Jedi 1.0.0
+
+commit 3c05e629b94317dcee095a4c30031c322543d915 (HEAD -> main, tag: v1.0.0, origin/main)
+Author: Hubert Toullec <hutou01@gmail.com>
+Date:   Fri Oct 9 16:34:51 2026 +0200
+
+    Fix PCRE2 license collection and check notices before build
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+
+Étape 15
+========
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh release create v1.0.0 --repo "$jedi_owner/jedi" \
+  --verify-tag --draft --title "Jedi 1.0.0" \
+  --notes-file ../NOTES_RELEASE_1.0.0.md \
+  dist/1.0.0/jedi-1.0.0-linux-x86_64.tar.gz \
+  dist/1.0.0/jedi-1.0.0-linux-x86_64.tar.gz.sha256 \
+  dist/1.0.0/jedi-1.0.0-source.tar.gz \
+  dist/1.0.0/jedi-1.0.0-source.tar.gz.sha256 \
+  dist/1.0.0/jedi-1.0.0-documentation.zip \
+  dist/1.0.0/jedi-1.0.0-documentation.zip.sha256 \
+  dist/1.0.0/SHA256SUMS
+https://github.com/hutou/jedi/releases/tag/untagged-8c1316bb159f15252905
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh release view v1.0.0 --repo "$jedi_owner/jedi" --web
+Opening https://github.com/hutou/jedi/releases/tag/untagged-8c1316bb159f15252905 in your browser.
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+
+Étape 16
+========
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh release edit v1.0.0 --repo "$jedi_owner/jedi" --draft=false --latest
+https://github.com/hutou/jedi/releases/tag/v1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh release view v1.0.0 --repo "$jedi_owner/jedi" --web
+Opening https://github.com/hutou/jedi/releases/tag/v1.0.0 in your browser.
+
+
+Étape 17
+========
+
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ mkdir ../controle-telechargement-1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ gh release download v1.0.0 --repo "$jedi_owner/jedi" \
+  --pattern '*' --dir ../controle-telechargement-1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ 
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ cd ../controle-telechargement-1.0.0
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ ll
+total 15668
+-rw-r--r-- 1 hubert hubert  1197283  9 oct.  18:55 jedi-1.0.0-documentation.zip
+-rw-r--r-- 1 hubert hubert       95  9 oct.  18:55 jedi-1.0.0-documentation.zip.sha256
+-rw-r--r-- 1 hubert hubert 13344884  9 oct.  18:55 jedi-1.0.0-linux-x86_64.tar.gz
+-rw-r--r-- 1 hubert hubert       97  9 oct.  18:55 jedi-1.0.0-linux-x86_64.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert  1478124  9 oct.  18:55 jedi-1.0.0-source.tar.gz
+-rw-r--r-- 1 hubert hubert       91  9 oct.  18:55 jedi-1.0.0-source.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert      283  9 oct.  18:55 SHA256SUMS
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ sha256sum -c SHA256SUMS
+jedi-1.0.0-documentation.zip: Réussi
+jedi-1.0.0-linux-x86_64.tar.gz: Réussi
+jedi-1.0.0-source.tar.gz: Réussi
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ tar -tzf jedi-1.0.0-linux-x86_64.tar.gz | sed -n '1,15p'
+jedi-1.0.0-linux-x86_64/BUILD-INFO.json
+jedi-1.0.0-linux-x86_64/BUILD.fr.md
+jedi-1.0.0-linux-x86_64/BUILD.md
+jedi-1.0.0-linux-x86_64/CHANGELOG.fr.md
+jedi-1.0.0-linux-x86_64/CHANGELOG.md
+jedi-1.0.0-linux-x86_64/CONTRIBUTING.md
+jedi-1.0.0-linux-x86_64/INSTALL.fr.md
+jedi-1.0.0-linux-x86_64/INSTALL.md
+jedi-1.0.0-linux-x86_64/LICENSE
+jedi-1.0.0-linux-x86_64/PUBLISHING.fr.md
+jedi-1.0.0-linux-x86_64/PUBLISHING.md
+jedi-1.0.0-linux-x86_64/README.fr.md
+jedi-1.0.0-linux-x86_64/README.md
+jedi-1.0.0-linux-x86_64/TARGET-TEST.json
+jedi-1.0.0-linux-x86_64/THIRD-PARTY.md
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ ll
+total 15668
+-rw-r--r-- 1 hubert hubert  1197283  9 oct.  18:55 jedi-1.0.0-documentation.zip
+-rw-r--r-- 1 hubert hubert       95  9 oct.  18:55 jedi-1.0.0-documentation.zip.sha256
+-rw-r--r-- 1 hubert hubert 13344884  9 oct.  18:55 jedi-1.0.0-linux-x86_64.tar.gz
+-rw-r--r-- 1 hubert hubert       97  9 oct.  18:55 jedi-1.0.0-linux-x86_64.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert  1478124  9 oct.  18:55 jedi-1.0.0-source.tar.gz
+-rw-r--r-- 1 hubert hubert       91  9 oct.  18:55 jedi-1.0.0-source.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert      283  9 oct.  18:55 SHA256SUMS
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ ll
+total 15668
+-rw-r--r-- 1 hubert hubert  1197283  9 oct.  18:55 jedi-1.0.0-documentation.zip
+-rw-r--r-- 1 hubert hubert       95  9 oct.  18:55 jedi-1.0.0-documentation.zip.sha256
+-rw-r--r-- 1 hubert hubert 13344884  9 oct.  18:55 jedi-1.0.0-linux-x86_64.tar.gz
+-rw-r--r-- 1 hubert hubert       97  9 oct.  18:55 jedi-1.0.0-linux-x86_64.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert  1478124  9 oct.  18:55 jedi-1.0.0-source.tar.gz
+-rw-r--r-- 1 hubert hubert       91  9 oct.  18:55 jedi-1.0.0-source.tar.gz.sha256
+-rw-r--r-- 1 hubert hubert      283  9 oct.  18:55 SHA256SUMS
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ tar -xzf jedi-1.0.0-linux-x86_64.tar.gz
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/controle-telechargement-1.0.0 $ cd "$HOME/jedi-livraison-1.0/jedi-publication-1.0.0/repository"
+hubert@xps15al:~/jedi-livraison-1.0/jedi-publication-1.0.0/repository $ python3 release/smoke.py \
+  ../controle-telechargement-1.0.0/jedi-1.0.0-linux-x86_64/jedi \
+  --graphics --log-dir build/smoke-download
+Installation and 38 CLI checks passed. Logs: /home/hubert/jedi-livraison-1.0/jedi-publication-1.0.0/repository/build/smoke-download
+
+
+
+
+
+
+

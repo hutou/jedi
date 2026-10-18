@@ -23,8 +23,8 @@ shards install --frozen --skip-postinstall 2>&1 | tee build/check/dependencies.t
 python3 release/verify-dependencies.py
 TZ=UTC crystal tool format --check src spec 2>&1 | tee build/check/format.txt
 TZ=UTC crystal spec --no-color 2>&1 | tee build/check/specs.txt
-grep -Eq '493 examples, 0 failures, 0 errors, 0 pending' build/check/specs.txt || {
-  printf '%s\n' 'The expected 493-spec release result was not found.' >&2
+grep -Eq '617 examples, 0 failures, 0 errors, 0 pending' build/check/specs.txt || {
+  printf '%s\n' 'The expected 617-spec release result was not found.' >&2
   exit 1
 }
 TZ=UTC crystal build src/jedi_cli.cr -o build/check/jedi 2>&1 | tee build/check/compile.txt
@@ -35,7 +35,7 @@ from pathlib import Path
 sys.path.insert(0, "release")
 from common import source_hash
 Path("build/check/result.json").write_text(json.dumps({
-    "success": True, "source_sha256": source_hash(), "spec_count": 493
+    "success": True, "source_sha256": source_hash(), "spec_count": 617
 }, indent=2) + "\n")
 PY
-printf '%s\n' 'Source compilation, formatting and all 493 specs passed.'
+printf '%s\n' 'Source compilation, formatting and all 617 specs passed.'

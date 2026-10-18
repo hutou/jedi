@@ -20,7 +20,7 @@ The [philosophy of Jedi](documentation/nouveaux/en_philosophy_of_jedi.md) explai
 
 The initial binary distribution targets **Linux x86_64**, including Ubuntu under **WSL2** on Windows. A static binary includes the SQLite library. Bash runs the launchers; gnuplot is required for charts. Crystal is needed only to build from source.
 
-Download `jedi-1.0.0-linux-x86_64.tar.gz` and its `.sha256` file from the project's Releases page. After verifying and extracting the archive, run `bash install.sh` inside its directory. Follow [the installation guide](INSTALL.md) for the exact commands.
+Download `jedi-1.1.0-linux-x86_64.tar.gz` and its `.sha256` file from the project's Releases page. After verifying and extracting the archive, run `bash install.sh` inside its directory. Follow [the installation guide](INSTALL.md) for the exact commands.
 
 The installer copies fictional examples to `~/jedi-examples/` and preserves existing example files. In your terminal:
 
@@ -38,11 +38,11 @@ jedidemo tools play -c o0,6-14,17 -- \
   1 -1
 ```
 
-| Command | Use |
-|---|---|
-| `jedi` | Your production portfolio, using XDG locations. |
+| Command    | Use                                                       |
+| ---------- | --------------------------------------------------------- |
+| `jedi`     | Your production portfolio, using XDG locations.           |
 | `jedidemo` | Fictional examples in a separate demonstration directory. |
-| `jedidev` | Development in a separate project directory. |
+| `jedidev`  | Development in a separate project directory.              |
 
 Each environment also has its own market databases. The shared binary is installed at `~/.local/libexec/jedi`; launchers are at `~/.local/bin/`.
 
@@ -50,8 +50,8 @@ Each environment also has its own market databases. The shared binary is install
 
 The manual contains a foreword, Jedi's philosophy, three parts, 24 chapters and four appendices in each language.
 
-- [English PDF](output/pdf/jedi-1.0-en.pdf)
-- [French PDF](output/pdf/jedi-1.0-fr.pdf)
+- [English PDF](output/pdf/jedi-1.1-en.pdf)
+- [French PDF](output/pdf/jedi-1.1-fr.pdf)
 - [Chapter index in both languages](documentation/README.md)
 - [Example files and their use](examples/README.md)
 - [Release notes](CHANGELOG.md)

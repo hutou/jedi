@@ -1,17 +1,17 @@
-# Build Jedi 1.0
+# Build Jedi 1.1
 
 This guide is for the person preparing a release or building from source. To use an already compiled binary, follow [installation](INSTALL.md).
 
 ## Fixed inputs
 
-| Item | Choice for the 1.0 release |
-|---|---|
-| Jedi version | `1.0.0`, already declared in `shard.yml`. |
-| Release compiler | Crystal `1.21.1`. The project declares `>= 1.21.0, < 2.0`. |
+| Item                 | Choice for the 1.1 release                                                       |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Jedi version         | `1.1.0`, already declared in `shard.yml`.                                        |
+| Release compiler     | Crystal `1.21.1`. The project declares `>= 1.21.0, < 2.0`.                       |
 | Crystal dependencies | `shard.lock` versions; revisions and file hashes in `release/dependencies.json`. |
-| Specs | `TZ=UTC`; expected result: 493 examples, no failures or errors. |
-| Public binary | Linux x86_64, statically linked with musl, built in Alpine. |
-| PDFs | Preserve supplied files; building Jedi does not require Pandoc. |
+| Specs                | `TZ=UTC`; expected result: 493 examples, no failures or errors.                  |
+| Public binary        | Linux x86_64, statically linked with musl, built in Alpine.                      |
+| PDFs                 | Preserve supplied files; building Jedi does not require Pandoc.                  |
 
 This is a prepared procedure. The accompanying preparation report identifies executed checks. Confirm compilation and specs on a machine with the compiler before creating the binary release.
 
@@ -80,13 +80,13 @@ First preparation downloads packages and requires Internet access. To rebuild us
 
 ```bash
 docker image save "$(cat build/static/builder-id.txt)" | \
-  gzip -n > build/jedi-builder-1.0.0.tar.gz
+  gzip -n > build/jedi-builder-1.1.0.tar.gz
 ```
 
 On another build machine:
 
 ```bash
-gzip -dc build/jedi-builder-1.0.0.tar.gz | docker image load
+gzip -dc build/jedi-builder-1.1.0.tar.gz | docker image load
 bash release/build-static.sh build
 ```
 
@@ -110,8 +110,8 @@ Repeat this on Ubuntu under WSL2 after transferring the binary and source tree. 
 After checks pass:
 
 ```bash
-python3 release/package.py --output dist/1.0.0
-cd dist/1.0.0
+python3 release/package.py --output dist/1.1.0
+cd dist/1.1.0
 sha256sum -c SHA256SUMS
 ```
 

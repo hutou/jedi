@@ -20,7 +20,7 @@ La [philosophie de Jedi](documentation/nouveaux/philosophie_de_jedi.md) présent
 
 La première distribution binaire vise **Linux x86_64**, notamment Ubuntu sous **WSL2** pour les utilisateurs Windows. Le binaire statique intègre la bibliothèque SQLite. Bash exécute les lanceurs ; gnuplot est nécessaire aux graphiques. Crystal sert uniquement à compiler les sources.
 
-Télécharger `jedi-1.0.0-linux-x86_64.tar.gz` et son fichier `.sha256` depuis la rubrique Releases du dépôt. Après contrôle et extraction, exécuter `bash install.sh` dans le dossier extrait. Le [guide d’installation](INSTALL.fr.md) donne les commandes exactes.
+Télécharger `jedi-1.1.0-linux-x86_64.tar.gz` et son fichier `.sha256` depuis la rubrique Releases du dépôt. Après contrôle et extraction, exécuter `bash install.sh` dans le dossier extrait. Le [guide d’installation](INSTALL.fr.md) donne les commandes exactes.
 
 L’installateur copie les exemples fictifs dans `~/jedi-examples/` et conserve les fichiers d’exemple déjà présents. Dans le terminal :
 
@@ -38,11 +38,11 @@ jedidemo tools play -c o0,6-14,17 -- \
   1 -1
 ```
 
-| Commande | Usage |
-|---|---|
-| `jedi` | Le portefeuille réel, dans les emplacements XDG. |
+| Commande   | Usage                                                           |
+| ---------- | --------------------------------------------------------------- |
+| `jedi`     | Le portefeuille réel, dans les emplacements XDG.                |
 | `jedidemo` | Les exemples fictifs, dans un espace de démonstration distinct. |
-| `jedidev` | Le développement, dans un espace de projet distinct. |
+| `jedidev`  | Le développement, dans un espace de projet distinct.            |
 
 Chaque environnement possède aussi ses propres bases de marché. Le binaire commun est installé dans `~/.local/libexec/jedi` ; les lanceurs sont dans `~/.local/bin/`.
 
@@ -50,8 +50,8 @@ Chaque environnement possède aussi ses propres bases de marché. Le binaire com
 
 Le manuel comprend un avant-propos, la philosophie de Jedi, trois parties, 24 chapitres et quatre annexes dans chaque langue.
 
-- [PDF français](output/pdf/jedi-1.0-fr.pdf)
-- [PDF anglais](output/pdf/jedi-1.0-en.pdf)
+- [PDF français](output/pdf/jedi-1.1-fr.pdf)
+- [PDF anglais](output/pdf/jedi-1.1-en.pdf)
 - [Index des chapitres dans les deux langues](documentation/README.md)
 - [Fichiers des exemples et leur utilisation](examples/README.md)
 - [Notes de version](CHANGELOG.fr.md)

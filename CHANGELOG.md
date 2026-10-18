@@ -1,5 +1,36 @@
 # Release notes
 
+Notable changes are listed by version, newest first, using the categories from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## 1.1.0 - 2026-10-18
+
+### Added
+
+- Combining a split or consolidation with `reset` or `merge` reinitialisation in `settings create`.
+- The `operation fees ID AMOUNT` command to correct fees on any recorded operation, including an earlier operation or one belonging to a closed trade.
+- A Status column immediately after the name in `trade list`, with five calculated statuses: created, configured, opened, in progress and closed, without a new database field.
+- A `status` field in the existing `trade list` regex filter, for example `"status=^(opened|running)$"`. English codes and active-language labels are recognised; the filter combines with existing fields and operators.
+- Appendix 05 documenting built-in configuration entries and their actual uses, in French and English.
+
+### Changed
+
+- Automatic `B_kc_NN` or `B_vr_NN` scale names according to their operational type. Equivalent operational definitions are rejected on creation and update, regardless of the supplied name or builder.
+- Nonempty `money` values can only be set on configured, opened or in-progress trades, using `trade update`. Clearing with `--money=""` remains allowed at every status.
+- Trade CSV exports include `status` after `name`; table column indexes also shift to accommodate the status.
+- Financial results from `tools backtest` are displayed in trade creation order.
+- Documentation of the recommended `T_<ticker>_<number>` trade naming convention; glossary entries for `kcpc`, `kspc`, `emax`, `emin` and average acquisition cost (PRU).
+- Documentation of security selection through technical analysis and visual reading of trends, channels, support and resistance, with several Web platforms as examples.
+
+### Removed
+
+- The `--money` option from `trade create`. Create the trade and its initial settings first, then set `money` with `trade update`.
+
+### Fixed
+
+- Overall peak investment in backtests now equals the largest individual trade peak, since simulated trades do not overlap. Calculations and presentations using this measure are consistent.
+- Clearing `money` and `stop` to `nil` when a sale reduces holdings to zero, including in simulations.
+- Presentation of Web-provider regexes in the documentation to prevent overflow into adjacent columns in PDF tables.
+
 ## 1.0.0
 
 Prepared first public release of Jedi, a command-line application for mechanical trade management.

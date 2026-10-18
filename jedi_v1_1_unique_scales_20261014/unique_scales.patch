@@ -1,0 +1,937 @@
+diff --git a/src/jedi/command/command_scale.cr b/src/jedi/command/command_scale.cr
+--- a/src/jedi/command/command_scale.cr
++++ b/src/jedi/command/command_scale.cr
+@@ -64,13 +64,15 @@
+       parser.separator I18n.t("#{prefix}.usage")
+       parser.separator I18n.t("#{prefix}.notes")
+       parser.separator I18n.t("infra.required_fields")
+-      parser.on("--name=NAME",
+-        I18n.t("#{prefix}.required_name")) { |v| @raw_name = v }
+       parser.on("--comment=COMMENT",
+         I18n.t("#{prefix}.required_comment")) { |v| @raw_comment = v }
+       parser.on("--builder=BUILDER",
+         I18n.t("#{prefix}.required_builder")) { |v| @raw_builder = v }
+       parser.separator ""
++      parser.separator I18n.t("infra.optional_fields")
++      parser.on("--name=NAME",
++        I18n.t("#{prefix}.optional_name")) { |v| @raw_name = v }
++      parser.separator ""
+       parser.separator I18n.t("infra.options")
+       help(parser)
+       parser.separator ""
+@@ -80,17 +82,19 @@
+     private def create
+       unless ARGV.empty?
+         if @raw_name.nil? && @raw_comment.nil? && @raw_builder.nil?
+-          argc = Core::Input.ensure_argument_count!(3, 3,
++          argc = Core::Input.ensure_argument_count!(2, 3,
+             key: "infra.positional_arguments")
+-          @raw_name, @raw_comment, @raw_builder = ARGV.shift(3)
++          if argc == 3
++            @raw_name, @raw_comment, @raw_builder = ARGV.shift(3)
++          else
++            @raw_comment, @raw_builder = ARGV.shift(2)
++          end
+         end
+       end
+-      name = Core::Input.ensure_string_valid!(@raw_name, field: "name",
+-        regex: /\A[A-z][A-z0-9-]+\z/, key: "infra.field_required")
+       comment = Core::Input.ensure_present!(@raw_comment, field: "comment")
+       builder = Core::Input.ensure_present!(@raw_builder, field: "builder")
+       Core::Input.ensure_argv_empty!
+-      TradingRules::ScaleCreator.new(conn_main).call name: name,
++      TradingRules::ScaleCreator.new(conn_main).call name: @raw_name,
+         comment: comment, builder: builder
+     rescue ex : LowLevelError
+       raise_from_low_level(ex)
+diff --git a/src/jedi/locales/en/scale.yml b/src/jedi/locales/en/scale.yml
+--- a/src/jedi/locales/en/scale.yml
++++ b/src/jedi/locales/en/scale.yml
+@@ -1,6 +1,9 @@
+ en:
+   scale:
+     header: "Manage scales (Type I and type II)"
++    definition_exists: "An equivalent scale already exists: %{ref} (id %{id}). Reuse that scale."
++    name_type_mismatch: "Invalid scale name '%{name}': use %{prefix}_NN with a positive number of at least two digits, or omit the name at creation."
++    name_number_exhausted: "No further number is available for the %{prefix} scale family."
+     banner: |
+       Manage scales (Type I and type II)
+ 
+@@ -16,18 +19,23 @@
+       usage: |
+         Usage:
+           1st form, with named fields:
+-            jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
++            jedi scale create --comment=COMMENT --builder=BUILDER [--name=NAME] [options]
+           2nd form, with positional fields:
++            jedi scale create <comment> <builder> [options]
+             jedi scale create <name> <comment> <builder> [options]
+       notes: |
+         Notes:
+           The recommended syntax uses named options for all parameters.
+           The positional syntax is a shorthand equivalent.
++          Without --name, the builder determines the family: B_kc_NN (type I), B_vr_NN (type II).
++          NN is the next number in that family. An explicit name must match the builder type.
++          Equivalent operational definitions are refused, including with different builders.
+           ** Do not mix syntaxes **
+       required_name: &required_name |-
+-        Scale Name:
+-          - Must begin with a letter,
+-          - Followed by at least one alphanumeric character.
++        Scale name matching the builder type:
++          B_kc_NN for type I; B_vr_NN for type II.
++          NN is a positive number of at least two digits.
++      optional_name: "Optional explicit name matching the builder type; otherwise generated automatically"
+       required_comment: &required_comment "Comment on scale (free-form)"
+       required_builder: &required_builder |-
+         Valid scale builder keyword sets:
+@@ -37,16 +45,16 @@
+           - {vr,np,nn,ki,kb,kd}     : Type II, optimized on ks
+           - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+         Each keyword expects one or more parameters:
+-          - np, nn, mi, kb: a single integer value (e.g., np:3)
++          - np, nn, kb: a single integer value (e.g., np:3)
+           - kc, ks: a list of decimal values, separated by commas 
+             (e.g., kc:1.45,1.30, 1.15, ...)
+-          - vr, sr, ki, kd: a single decimal value (which can be expressed 
++          - vr, sr, mi, ki, kd: a single decimal value (which can be expressed
+             as a percentage, except for kd)
+             (e.g., vr:15% or vr:0.15)
+       examples: |
+         Examples:
+-          jedi scale create --name sc01 --comment "scale 01" --definition "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+-          jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
++          jedi scale create --comment "scale" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
++          jedi scale create "scale" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+       # from scale_creator:
+       success: "Scale %{ref} created."
+       name_exists: "Scale %{ref} already exists."
+diff --git a/src/jedi/locales/fr/scale.yml b/src/jedi/locales/fr/scale.yml
+--- a/src/jedi/locales/fr/scale.yml
++++ b/src/jedi/locales/fr/scale.yml
+@@ -1,6 +1,9 @@
+ fr:
+   scale:
+     header: "Gère les barèmes (Type I et type II)"
++    definition_exists: "Un barème équivalent existe déjà : %{ref} (id %{id}). Réutilisez ce barème."
++    name_type_mismatch: "Nom de barème '%{name}' invalide : utiliser %{prefix}_NN avec un numéro positif d'au moins deux chiffres, ou omettre le nom à la création."
++    name_number_exhausted: "Aucun numéro suivant n'est disponible pour la famille de barèmes %{prefix}."
+     banner: |
+       Gestion des barèmes (Type I et type II)
+ 
+@@ -16,18 +19,23 @@
+       usage: |
+         Usage :
+           1ère forme, avec champs nommés :
+-            jedi scale create --name=NAME --comment=COMMENT --builder=BUILDER [options]
++            jedi scale create --comment=COMMENT --builder=BUILDER [--name=NAME] [options]
+           2ème forme, avec champs positionnels :
++            jedi scale create <comment> <builder> [options]
+             jedi scale create <name> <comment> <builder> [options]
+       notes: |
+         Notes:
+           La syntaxe recommandée est d'utiliser les options nommées pour tous les paramètres.
+           La syntaxe positionnelle est un raccourci équivalent.
++          Sans --name, le builder détermine la famille : B_kc_NN (type I), B_vr_NN (type II).
++          NN est le numéro suivant dans cette famille. Un nom explicite doit correspondre au type.
++          Les définitions opérationnelles équivalentes sont refusées, même avec des builders différents.
+           ** Ne pas mélanger les syntaxes **
+       required_name: &required_name |-
+-        Nom du barème :
+-          - Doit commencer par une lettre,
+-          - Suivie d'au moins un caractère alphanumérique.
++        Nom du barème conforme au type du builder :
++          B_kc_NN pour le type I ; B_vr_NN pour le type II.
++          NN est un numéro positif d'au moins deux chiffres.
++      optional_name: "Nom explicite facultatif conforme au type ; sinon, généré automatiquement"
+       required_comment: &required_comment "Commentaire (forme libre)"
+       required_builder: &required_builder |-
+         Jeux de mots-clés des constructeurs de barème valides :
+@@ -37,16 +45,16 @@
+           - {vr,np,nn,ki,kb,kd}     : Type II, optimisé sur 'ks'
+           - {vr,np,sr,nn,mi,ki,kb}  : Type II, legacy
+          Chaque mot-clé attend un ou plusieurs paramètres :
+-          - np, nn, mi, kb : une seule valeur entière (par exemple, np:3)
++          - np, nn, kb : une seule valeur entière (par exemple, np:3)
+           - kc, ks : une liste de valeurs décimales, séparées par des virgules 
+-            (par exemple, kc:1,45;1,30; 1,15, …)
+-          - vr, sr, ki, kd : une seule valeur décimale (qui peut être exprimée 
++            (par exemple, kc:1.45,1.30,1.15, …)
++          - vr, sr, mi, ki, kd : une seule valeur décimale (qui peut être exprimée
+             en pourcentage, sauf pour kd)
+-            (par exemple, vr:15 % ou vr:0.15)
++            (par exemple, vr:15% ou vr:0.15)
+       examples: |
+         Exemples:
+-          jedi scale create --name sc01 --comment "scale 01" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+-          jedi scale create sc01 "scale 01" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
++          jedi scale create --comment "barème" --builder "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
++          jedi scale create "barème" "vr:15%, np:3, nn:3, ki:15%, kb:1, kd:0.3"
+       # from scale_creator:
+       success: "Barème %{ref} créé."
+       name_exists: "Le barème %{ref} existe déjà."
+diff --git a/src/jedi/persistence/database.cr b/src/jedi/persistence/database.cr
+--- a/src/jedi/persistence/database.cr
++++ b/src/jedi/persistence/database.cr
+@@ -277,7 +277,7 @@
+           when /^scale$/i
+             scale += 1
+             name, comment, builder = args.split(us_sep)
+-            TradingRules::ScaleCreator.new(load_conn).call(
++            TradingRules::ScaleCreator.new(load_transaction).restore(
+               name: name,
+               comment: comment,
+               builder: builder)
+diff --git a/src/jedi/persistence/repositories/scale_repository.cr b/src/jedi/persistence/repositories/scale_repository.cr
+--- a/src/jedi/persistence/repositories/scale_repository.cr
++++ b/src/jedi/persistence/repositories/scale_repository.cr
+@@ -2,6 +2,21 @@
+   module TradingRules
+     class ScaleRepository
+       def initialize(@conn_db : DB::Connection)
++      end
++
++      def find_equivalent(operational : Scale::Operational, excluding_id : PkId? = nil) : Scale?
++        Scales.new(@conn_db).fetch.find do |scale|
++          scale.id != excluding_id && operational.same_definition?(scale.operational)
++        end
++      end
++
++      def ensure_definition_available!(operational : Scale::Operational, excluding_id : PkId? = nil) : Nil
++        if existing = find_equivalent(operational, excluding_id)
++          raise LowLevelError.new(
++            key: "scale.definition_exists",
++            context: {:ref => Core::Utils.ref(existing.name), :id => existing.id.to_s},
++            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++        end
+       end
+ 
+       def insert!(state : ScaleState) : PkId
+diff --git a/src/jedi/tools/helpers.cr b/src/jedi/tools/helpers.cr
+--- a/src/jedi/tools/helpers.cr
++++ b/src/jedi/tools/helpers.cr
+@@ -20,14 +20,22 @@
+           if main_scale.nil?
+             # No, so perhaps a literal scale then, store in memory database
+             # Scales.create raises if builder invalid
+-            scale_id = TradingRules::ScaleCreator.new(conn_memory)
+-              .call name: "LIT-#{Helpers.scale_counter += 1}",
+-                comment: "Literal", builder: defscale, announce: announce
++            operational = TradingRules::Scale::Decoder.new(defscale).decode
++            if equivalent = TradingRules::ScaleRepository.new(conn_memory).find_equivalent(operational)
++              scale_id = equivalent.id
++            else
++              scale_id = TradingRules::ScaleCreator.new(conn_memory)
++                .call comment: "Literal", builder: defscale, announce: announce
++            end
+           else
+             # Yes, defscale is known in production database, add it to memory
+-            scale_id = TradingRules::ScaleCreator.new(conn_memory).call name: main_scale.name,
+-              comment: main_scale.comment, builder: main_scale.operational.builder,
+-              announce: announce
++            if equivalent = TradingRules::ScaleRepository.new(conn_memory).find_equivalent(main_scale.operational)
++              scale_id = equivalent.id
++            else
++              scale_id = TradingRules::ScaleCreator.new(conn_memory).restore name: main_scale.name,
++                comment: main_scale.comment, builder: main_scale.operational.builder,
++                announce: announce
++            end
+           end
+         else
+           # Yes, already in memory database
+diff --git a/src/jedi/tools/play.cr b/src/jedi/tools/play.cr
+--- a/src/jedi/tools/play.cr
++++ b/src/jedi/tools/play.cr
+@@ -584,7 +584,7 @@
+ 
+         @mem_trade = TradingSystem::Trade.new(conn_memory, trade_id)
+ 
+-        scale_id = TradingRules::ScaleCreator.new(conn_memory).call(
++        scale_id = TradingRules::ScaleCreator.new(conn_memory).restore(
+           name: source_settings.scale.name,
+           comment: source_settings.scale.comment,
+           builder: source_settings.scale.operational.builder
+diff --git a/src/jedi/trading_rules/scale_creator.cr b/src/jedi/trading_rules/scale_creator.cr
+--- a/src/jedi/trading_rules/scale_creator.cr
++++ b/src/jedi/trading_rules/scale_creator.cr
+@@ -3,20 +3,40 @@
+     class ScaleCreator
+       getter ref = ""
+ 
+-      def initialize(@conn_db : DB::Connection)
+-        @repo = ScaleRepository.new(@conn_db)
++      def initialize(@transaction_source : DB::Connection | DB::Transaction)
+       end
+ 
+-      def call(*, name : String, comment : String, builder : String, announce : Bool = true) : PkId
+-        @ref = Core::Utils.ref(name)
+-        ensure_name_available!(name)
++      def call(*, comment : String, builder : String, name : String? = nil, announce : Bool = true) : PkId
+         operational = decode_builder!(builder)
+-        state = ScaleState.new(
+-          name: name,
+-          comment: comment,
+-          opscale: operational)
++        explicit_name = name.try { |value| ScaleNaming.validate!(value, operational) }
++        persist!(explicit_name, comment, operational, announce, restoring: false)
++      end
+ 
+-        scale_id = @repo.insert!(state)
++      # Backup replay preserves historical names and pre-existing duplicates.
++      # This path is deliberately separate from normal creation.
++      def restore(*, name : String, comment : String, builder : String, announce : Bool = true) : PkId
++        persist!(name, comment, decode_builder!(builder), announce, restoring: true)
++      end
++
++      private def persist!(name : String?, comment : String, operational : Scale::Operational,
++                           announce : Bool, *, restoring : Bool) : PkId
++        chosen_name = ""
++        scale_id = @transaction_source.transaction do |transaction|
++          connection = transaction.connection
++          repository = ScaleRepository.new(connection)
++          repository.ensure_definition_available!(operational) unless restoring
++          chosen_name = name || ScaleNaming.next_name(connection, operational)
++          ensure_name_available!(chosen_name, connection, restoring)
++          repository.insert!(ScaleState.new(
++            name: chosen_name, comment: comment, opscale: operational))
++        end
++        unless scale_id
++          raise LowLevelError.new(
++            "Scale persistence transaction was rolled back",
++            kind: LowLevelError::Kind::Technical,
++            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++        end
++        @ref = Core::Utils.ref(chosen_name)
+         if announce
+           App.info(
+             key: "scale.create.success",
+@@ -26,14 +46,21 @@
+         scale_id
+       end
+ 
+-      private def ensure_name_available!(name : String) : Nil
+-        exists = @conn_db.scalar(
++      private def ensure_name_available!(name : String, connection : DB::Connection, restoring : Bool) : Nil
++        unless restoring
++          return unless ScaleNaming.name_in_use?(connection, name)
++          raise LowLevelError.new(
++            key: "scale.create.name_exists",
++            context: {:ref => Core::Utils.ref(name)},
++            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++        end
++        exists = connection.scalar(
+           "SELECT EXISTS(SELECT 1 FROM scale WHERE name = ?)",
+           name).as(PkId)
+         return if exists.zero?
+         raise LowLevelError.new(
+           key: "scale.create.name_exists",
+-          context: {:ref => ref},
++          context: {:ref => Core::Utils.ref(name)},
+           log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+       end
+ 
+diff --git a/src/jedi/trading_rules/scale_naming.cr b/src/jedi/trading_rules/scale_naming.cr
+new file mode 100644
+--- /dev/null
++++ b/src/jedi/trading_rules/scale_naming.cr
+@@ -0,0 +1,66 @@
++module Jedi
++  module TradingRules
++    module ScaleNaming
++      extend self
++
++      def prefix(operational : Scale::Operational) : String
++        operational.type.one? ? "B_kc" : "B_vr"
++      end
++
++      def validate!(name : String, operational : Scale::Operational) : String
++        normalized = name.strip.capitalize
++        family = prefix(operational)
++        match = normalized.match(/\A#{family}_(\d{2,})\z/)
++        number = match.try { |value| value[1].to_i64? }
++        unless number && number > 0
++          raise LowLevelError.new(
++            key: "scale.name_type_mismatch",
++            context: {:name => name, :prefix => family},
++            kind: LowLevelError::Kind::UserInput,
++            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++        end
++        "#{family}_#{number.to_s.rjust(2, '0')}"
++      end
++
++      def automatic?(name : String) : Bool
++        !!(name =~ /\AB_(kc|vr)_\d+\z/i)
++      end
++
++      def name_in_use?(conn : DB::Connection, name : String, excluding_id : PkId? = nil) : Bool
++        wanted = normalized_numbered_name(name)
++        conn.query_all("SELECT id, name FROM scale", as: {PkId, String}).any? do |(id, stored)|
++          id != excluding_id &&
++            (stored.downcase == name.downcase ||
++              (wanted && normalized_numbered_name(stored) == wanted))
++        end
++      end
++
++      private def normalized_numbered_name(name : String) : String?
++        if match = name.match(/\AB_(kc|vr)_(\d+)\z/i)
++          if number = match[2].to_i64?
++            return "B_#{match[1].downcase}_#{number.to_s.rjust(2, '0')}" if number > 0
++          end
++        end
++      end
++
++      def next_name(conn : DB::Connection, operational : Scale::Operational) : String
++        family = prefix(operational)
++        maximum = 0_i64
++        conn.query_all("SELECT name FROM scale", as: String).each do |name|
++          if match = name.match(/\A#{family}_(\d+)\z/i)
++            if number = match[1].to_i64?
++              maximum = [maximum, number].max
++            end
++          end
++        end
++        if maximum == Int64::MAX
++          raise LowLevelError.new(
++            key: "scale.name_number_exhausted",
++            context: {:prefix => family},
++            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++        end
++        "#{family}_#{(maximum + 1).to_s.rjust(2, '0')}"
++      end
++    end
++  end
++end
+diff --git a/src/jedi/trading_rules/scale_operational.cr b/src/jedi/trading_rules/scale_operational.cr
+--- a/src/jedi/trading_rules/scale_operational.cr
++++ b/src/jedi/trading_rules/scale_operational.cr
+@@ -60,6 +60,17 @@
+           jump_up_optimized && jump_down_optimized
+         end
+ 
++        # Compare the rules consumed by the engine, independently of builder
++        # spelling and provenance metadata.
++        def same_definition?(other : Operational) : Bool
++          return false unless type == other.type &&
++                              emax == other.emax && emin == other.emin &&
++                              ki == other.ki && kb == other.kb &&
++                              ks_values == other.ks_values
++
++          type.one? ? kc_values == other.kc_values : vr_value == other.vr_value
++        end
++
+         def kclist : Hash(Int32, Float64)
+           kc_values || raise LowLevelError.new("scale.operational.missing_kc",
+             log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+diff --git a/src/jedi/trading_rules/scale_updater.cr b/src/jedi/trading_rules/scale_updater.cr
+--- a/src/jedi/trading_rules/scale_updater.cr
++++ b/src/jedi/trading_rules/scale_updater.cr
+@@ -13,13 +13,6 @@
+                builder : String? = nil,
+                option_force : Bool = false) : Int64
+         @ref = Core::Utils.ref(scale.ident.is_a?(PkId) ? scale.id : scale.name)
+-        new_name =
+-          if name.nil?
+-            scale.name
+-          else
+-            Core::Input.ensure_string_valid!(name, field: "name",
+-              regex: ALPHANUM, key: "infra.field_required").capitalize
+-          end
+         new_comment =
+           if comment.nil?
+             scale.comment
+@@ -34,23 +27,17 @@
+           end
+ 
+         new_operational = decode_builder!(new_builder, builder)
++        new_name = name.nil? ? scale.name : ScaleNaming.validate!(name, new_operational)
++        rename_for_type = name.nil? && !builder.nil? &&
++                          new_operational.type != scale.operational.type &&
++                          ScaleNaming.automatic?(scale.name)
+ 
+         if unchanged?(new_name, new_comment, new_operational)
+           App.info(key: "scale.update.unchanged", params: {:ref => ref})
+           return 0_i64
+         end
+ 
+-        if new_name != scale.name && key_exists(new_name)
+-          # name is a key, so we must ensure it is not used elsewhere
+-          @ref = Core::Utils.ref(new_name)
+-          raise LowLevelError.new(
+-            key: "scale.update.name_already_used",
+-            context: {:ref => ref},
+-            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+-        end
+-
+-        ensure_operational_change_allowed!(new_operational, option_force)
+-        persist!(new_name, new_comment, new_operational)
++        persist!(new_name, new_comment, new_operational, rename_for_type, option_force)
+       end
+ 
+       private def decode_builder!(
+@@ -86,13 +73,6 @@
+         end
+       end
+ 
+-      private def key_exists(name)
+-        count = scale.conn_db.scalar(
+-          "SELECT count(*) FROM scale WHERE name = ?",
+-          name).as(PkId)
+-        !count.zero?
+-      end
+-
+       private def unchanged?(name : String, comment : String, operational : Scale::Operational) : Bool
+         name == scale.name &&
+           comment == scale.comment &&
+@@ -109,18 +89,36 @@
+           log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
+       end
+ 
+-      private def persist!(name : String, comment : String, operational : Scale::Operational) : Int64
++      private def persist!(name : String, comment : String, operational : Scale::Operational,
++                           rename_for_type : Bool, force : Bool) : Int64
+         scale_id = scale.id
+-        result = scale.conn_db.exec(
+-          "UPDATE scale SET name = ?, comment = ?, operational = ? WHERE id = ?",
+-          name,
+-          comment,
+-          operational.to_json,
+-          scale_id)
++        result = scale.conn_db.transaction do |transaction|
++          connection = transaction.connection
++          unless operational.same_definition?(scale.operational)
++            ScaleRepository.new(connection).ensure_definition_available!(operational, scale_id)
++          end
++          name = ScaleNaming.next_name(connection, operational) if rename_for_type
++          if name != scale.name && ScaleNaming.name_in_use?(connection, name, scale_id)
++            raise LowLevelError.new(
++              key: "scale.update.name_already_used",
++              context: {:ref => Core::Utils.ref(name)},
++              log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++          end
++          ensure_operational_change_allowed!(operational, force)
++          connection.exec(
++            "UPDATE scale SET name = ?, comment = ?, operational = ? WHERE id = ?",
++            name, comment, operational.to_json, scale_id).rows_affected
++        end
++        unless result
++          raise LowLevelError.new(
++            "Scale update transaction was rolled back",
++            kind: LowLevelError::Kind::Technical,
++            log_context: {:source => Core::Utils.source(__FILE__, __LINE__)})
++        end
+ 
+         scale.reload!(scale_id)
+-        App.info(key: "scale.update.success", params: {:ref => ref})
+-        result.rows_affected
++        App.info(key: "scale.update.success", params: {:ref => Core::Utils.ref(name)})
++        result
+       end
+     end
+   end
+diff --git a/src/jedi/trading_rules.cr b/src/jedi/trading_rules.cr
+--- a/src/jedi/trading_rules.cr
++++ b/src/jedi/trading_rules.cr
+@@ -1,6 +1,7 @@
+ require "./trading_rules/position.cr"
+ require "./trading_rules/coefficient.cr"
+ require "./trading_rules/scale_operational.cr"
++require "./trading_rules/scale_naming.cr"
+ require "./trading_rules/scale_builder_input.cr"
+ require "./trading_rules/scale_builder.cr"
+ require "./trading_rules/scale_validator.cr"
+diff --git a/spec/cli/cli_scale_duplicates_spec.cr b/spec/cli/cli_scale_duplicates_spec.cr
+new file mode 100644
+--- /dev/null
++++ b/spec/cli/cli_scale_duplicates_spec.cr
+@@ -0,0 +1,101 @@
++require "../spec_helper"
++require "../support/cli_spec_helper"
++
++module JediScaleDuplicatesCliSpec
++  extend self
++
++  TYPE_ONE = "kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0"
++  TYPE_TWO = "vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0"
++
++  def create(conn, name, builder)
++    JediCliSpec.run(conn, "scale", "create", "--name=#{name}",
++      "--comment=Duplicate regression", "--builder=#{builder}")
++  end
++end
++
++describe Jedi::Command, "unique scale definitions" do
++  it "rejects another name for an identical builder" do
++    JediCliSpec.with_cli_db do |conn|
++      JediScaleDuplicatesCliSpec.create(conn, "B_kc_01", JediScaleDuplicatesCliSpec::TYPE_ONE)
++
++      ex = JediCliSpec.expect_failure(conn,
++        ["scale", "create", "--name=B_kc_02", "--comment=Copy",
++         "--builder=#{JediScaleDuplicatesCliSpec::TYPE_ONE}"], "scale.definition_exists")
++
++      ex.context[:ref].should contain("B_kc_01")
++      JediCliSpec.table_count(conn, "scale").should eq(1)
++    end
++  end
++
++  it "rejects different builders that produce the same operational definition" do
++    JediCliSpec.with_cli_db do |conn|
++      JediScaleDuplicatesCliSpec.create(conn, "B_kc_01", JediScaleDuplicatesCliSpec::TYPE_ONE)
++
++      JediCliSpec.expect_failure(conn,
++        ["scale", "create", "--name=B_kc_02", "--comment=Explicit equivalent",
++         "--builder=kc:1.4,1.2,0.8,0.6,ks:0.89,1.25,ki:10%,kb:1"],
++        "scale.definition_exists")
++
++      JediCliSpec.table_count(conn, "scale").should eq(1)
++    end
++  end
++
++  it "compares normalized values despite field order, spaces and percentage spelling" do
++    JediCliSpec.with_cli_db do |conn|
++      JediScaleDuplicatesCliSpec.create(conn, "B_kc_01", JediScaleDuplicatesCliSpec::TYPE_ONE)
++
++      JediCliSpec.expect_failure(conn,
++        ["scale", "create", "--name=B_kc_02", "--comment=Reformatted",
++         "--builder= kd:0.0, kb:1, ki:0.10, kc:1.40,1.20,0.80,0.60 "],
++        "scale.definition_exists")
++
++      JediCliSpec.table_count(conn, "scale").should eq(1)
++    end
++  end
++
++  it "rejects an update into another definition even with force and preserves the record" do
++    JediCliSpec.with_cli_db do |conn|
++      JediScaleDuplicatesCliSpec.create(conn, "B_vr_01", JediScaleDuplicatesCliSpec::TYPE_TWO)
++      JediScaleDuplicatesCliSpec.create(conn, "B_vr_02",
++        "vr:12%,np:3,nn:3,ki:10%,kb:1,kd:0")
++      before = Jedi::TradingRules::Scale.new(conn, "B_vr_02").record
++
++      JediCliSpec.expect_failure(conn,
++        ["scale", "update", "B_vr_02", "--name=B_vr_03", "--comment=Changed",
++         "--builder=#{JediScaleDuplicatesCliSpec::TYPE_TWO}", "--force"],
++        "scale.definition_exists")
++
++      Jedi::TradingRules::Scale.new(conn, "B_vr_02").record.should eq(before)
++      JediCliSpec.table_count(conn, "scale").should eq(2)
++    end
++  end
++
++  it "allows changing a scale's own name and comment" do
++    JediCliSpec.with_cli_db do |conn|
++      JediScaleDuplicatesCliSpec.create(conn, "B_vr_01", JediScaleDuplicatesCliSpec::TYPE_TWO)
++
++      JediCliSpec.run(conn, "scale", "update", "B_vr_01", "--name=B_vr_02", "--comment=Renamed")
++
++      scale = Jedi::TradingRules::Scale.new(conn, "B_vr_02")
++      scale.id.should eq(1)
++      scale.comment.should eq("Renamed")
++      JediCliSpec.table_count(conn, "scale").should eq(1)
++    end
++  end
++
++  it "keeps scales whose effective parameters differ" do
++    JediCliSpec.with_cli_db do |conn|
++      [
++        "vr:10%,ks:0.8,1.2,ki:10%,kb:1",
++        "vr:10%,ks:0.8,1.2,ki:15%,kb:1",
++        "vr:10%,ks:0.8,1.2,ki:10%,kb:0",
++        "vr:12%,ks:0.8,1.2,ki:10%,kb:1",
++        "vr:10%,ks:0.7,1.3,ki:10%,kb:1",
++      ].each_with_index do |builder, index|
++        JediScaleDuplicatesCliSpec.create(conn, "B_vr_0#{index + 1}", builder)
++      end
++
++      JediCliSpec.table_count(conn, "scale").should eq(5)
++    end
++  end
++end
+diff --git a/spec/cli/cli_scale_naming_spec.cr b/spec/cli/cli_scale_naming_spec.cr
+new file mode 100644
+--- /dev/null
++++ b/spec/cli/cli_scale_naming_spec.cr
+@@ -0,0 +1,120 @@
++require "../spec_helper"
++require "../support/cli_spec_helper"
++
++describe Jedi::Command, "automatic scale naming" do
++  it "numbers the two operational types independently across all builder families" do
++    JediCliSpec.with_cli_db do |conn|
++      builders = [
++        "kc:1.4,1.2,0.8,0.6,ks:0.8,1.2,ki:10%,kb:1",
++        "vr:10%,ks:0.8,1.2,ki:0%,kb:0",
++        "kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0",
++        "vr:10%,np:3,nn:3,ki:10%,kb:1,kd:0",
++        "vr:10%,np:3,sr:50%,nn:3,mi:120%,ki:10%,kb:1",
++      ]
++      builders.each do |builder|
++        JediCliSpec.run(conn, "scale", "create", "--comment=Automatic", "--builder=#{builder}")
++      end
++
++      conn.query_all("SELECT name FROM scale ORDER BY id", as: String).should eq(
++        ["B_kc_01", "B_vr_01", "B_kc_02", "B_vr_02", "B_vr_03"])
++      Jedi::TradingRules::Scale.new(conn, "B_vr_03").operational.type.should eq(
++        Jedi::TradingRules::Scale::Operational::Type::Two)
++    end
++  end
++
++  it "supports the positional form without a name" do
++    JediCliSpec.with_cli_db do |conn|
++      JediCliSpec.run(conn, "scale", "create", "Positional automatic",
++        "vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      Jedi::TradingRules::Scale.new(conn, "B_vr_01").comment.should eq("Positional automatic")
++    end
++  end
++
++  it "uses the highest existing number and continues beyond two digits" do
++    JediCliSpec.with_cli_db do |conn|
++      JediCliSpec.run(conn, "scale", "create", "--name=b_vr_98", "--comment=Explicit",
++        "--builder=vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      ["12%", "20%"].each do |vr|
++        JediCliSpec.run(conn, "scale", "create", "--comment=Next",
++          "--builder=vr:#{vr},ks:0.8,1.2,ki:0%,kb:0")
++      end
++      conn.query_all("SELECT name FROM scale ORDER BY id", as: String).should eq(
++        ["B_vr_98", "B_vr_99", "B_vr_100"])
++    end
++  end
++
++  it "rejects explicit names inconsistent with the builder type or number format" do
++    JediCliSpec.with_cli_db do |conn|
++      ["B_kc_01", "Custom", "B_vr_00", "B_vr_1", "B_vr_9223372036854775808"].each do |name|
++        JediCliSpec.expect_failure(conn,
++          ["scale", "create", "--name=#{name}", "--comment=Invalid",
++           "--builder=vr:10%,ks:0.8,1.2,ki:0%,kb:0"], "scale.name_type_mismatch")
++      end
++      JediCliSpec.table_count(conn, "scale").should eq(0)
++    end
++  end
++
++  it "does not consume a number when an equivalent definition is rejected" do
++    JediCliSpec.with_cli_db do |conn|
++      builder = "vr:10%,ks:0.8,1.2,ki:0%,kb:0"
++      JediCliSpec.run(conn, "scale", "create", "--comment=First", "--builder=#{builder}")
++      JediCliSpec.expect_failure(conn,
++        ["scale", "create", "--comment=Duplicate", "--builder=#{builder}"], "scale.definition_exists")
++      JediCliSpec.run(conn, "scale", "create", "--comment=Second",
++        "--builder=vr:12%,ks:0.8,1.2,ki:0%,kb:0")
++      conn.query_all("SELECT name FROM scale ORDER BY id", as: String).should eq(["B_vr_01", "B_vr_02"])
++    end
++  end
++
++  it "renames an unused numbered scale when an update changes its type" do
++    JediCliSpec.with_cli_db do |conn|
++      JediCliSpec.run(conn, "scale", "create", "--comment=Type I",
++        "--builder=kc:1.4,1.2,0.8,0.6,ks:0.8,1.2,ki:10%,kb:1")
++      JediCliSpec.run(conn, "scale", "create", "--comment=Type II",
++        "--builder=vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      JediCliSpec.run(conn, "scale", "update", "B_kc_01",
++        "--builder=vr:12%,ks:0.8,1.2,ki:0%,kb:0")
++
++      renamed = Jedi::TradingRules::Scale.new(conn, "B_vr_02")
++      renamed.id.should eq(1)
++      renamed.operational.type.should eq(Jedi::TradingRules::Scale::Operational::Type::Two)
++      JediCliSpec.table_count(conn, "scale").should eq(2)
++    end
++  end
++
++  it "rejects a rename to the wrong family without changing the record" do
++    JediCliSpec.with_cli_db do |conn|
++      JediCliSpec.run(conn, "scale", "create", "--comment=Type II",
++        "--builder=vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      before = Jedi::TradingRules::Scale.new(conn, "B_vr_01").record
++      JediCliSpec.expect_failure(conn,
++        ["scale", "update", "B_vr_01", "--name=B_kc_01"], "scale.name_type_mismatch")
++      Jedi::TradingRules::Scale.new(conn, "B_vr_01").record.should eq(before)
++    end
++  end
++
++  it "normalizes explicit padding and prevents another record using the same number" do
++    JediCliSpec.with_cli_db do |conn|
++      JediCliSpec.run(conn, "scale", "create", "--name=b_vr_0007", "--comment=Explicit",
++        "--builder=vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      Jedi::TradingRules::Scale.new(conn, "B_vr_07").id.should eq(1)
++      JediCliSpec.expect_failure(conn,
++        ["scale", "create", "--name=B_vr_007", "--comment=Collision",
++         "--builder=vr:12%,ks:0.8,1.2,ki:0%,kb:0"], "scale.create.name_exists")
++      JediCliSpec.table_count(conn, "scale").should eq(1)
++    end
++  end
++
++  it "reserves numbers found under a historical padding convention" do
++    JediCliSpec.with_cli_db do |conn|
++      Jedi::TradingRules::ScaleCreator.new(conn).restore(
++        name: "B_vr_001", comment: "Historical", builder: "vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      JediCliSpec.expect_failure(conn,
++        ["scale", "create", "--name=B_vr_01", "--comment=Collision",
++         "--builder=vr:12%,ks:0.8,1.2,ki:0%,kb:0"], "scale.create.name_exists")
++      JediCliSpec.run(conn, "scale", "create", "--comment=Next",
++        "--builder=vr:12%,ks:0.8,1.2,ki:0%,kb:0")
++      Jedi::TradingRules::Scale.new(conn, "B_vr_02").id.should eq(2)
++    end
++  end
++end
+diff --git a/spec/cli/cli_workflow_spec.cr b/spec/cli/cli_workflow_spec.cr
+--- a/spec/cli/cli_workflow_spec.cr
++++ b/spec/cli/cli_workflow_spec.cr
+@@ -22,12 +22,12 @@
+ 
+       JediCliSpec.run(conn,
+         "scale", "create",
+-        "--name=S_CLI",
++        "--name=B_vr_01",
+         "--comment=CLI scale",
+         "--builder=vr:10.0%, ks:0.8,1.2, ki:0.0%, kb:0")
+ 
+-      scale = Jedi::TradingRules::Scale.new(conn, "S_CLI")
+-      scale.name.should eq("S_cli")
++      scale = Jedi::TradingRules::Scale.new(conn, "B_vr_01")
++      scale.name.should eq("B_vr_01")
+       scale.operational.type.should eq(Jedi::TradingRules::Scale::Operational::Type::Two)
+ 
+       JediCliSpec.run(conn,
+@@ -42,13 +42,13 @@
+ 
+       JediCliSpec.run(conn,
+         "settings", "create",
+-        "--scale=S_CLI",
++        "--scale=B_vr_01",
+         "--date=2026-01-01",
+         "--time=09:00:00",
+         "T_CLI")
+ 
+       settings = trade.last_settings.not_nil!
+-      settings.scale.name.should eq("S_cli")
++      settings.scale.name.should eq("B_vr_01")
+       settings.q0.should be_close(0.0, JediSpec::EPSILON)
+       settings.c0.should be_close(0.0, JediSpec::EPSILON)
+       settings.position.should eq(Jedi::TradingRules::Position.new("0:0:0"))
+diff --git a/spec/persistence/database_dump_load_spec.cr b/spec/persistence/database_dump_load_spec.cr
+--- a/spec/persistence/database_dump_load_spec.cr
++++ b/spec/persistence/database_dump_load_spec.cr
+@@ -44,7 +44,7 @@
+         quotation_price: 57.3456,
+         quotation_variation: -1.25
+       )
+-      Jedi::TradingRules::ScaleCreator.new(source).call(
++      Jedi::TradingRules::ScaleCreator.new(source).restore(
+         name: "ACTIVE_SCALE",
+         comment: "Active scale",
+         builder: JediSpec.type_two_scale.builder,
+@@ -127,7 +127,8 @@
+         name: "JEDI UNTICKERED SECURITY",
+         ticker: ""
+       )
+-      Jedi::TradingRules::ScaleCreator.new(source).call(
++      # Historical backups can contain distinct names for equivalent scales.
++      Jedi::TradingRules::ScaleCreator.new(source).restore(
+         name: "UNUSED_SCALE",
+         comment: "Unused scale",
+         builder: JediSpec.type_two_scale.builder,
+diff --git a/spec/trading_rules/scale_identity_spec.cr b/spec/trading_rules/scale_identity_spec.cr
+new file mode 100644
+--- /dev/null
++++ b/spec/trading_rules/scale_identity_spec.cr
+@@ -0,0 +1,103 @@
++require "../support/cli_spec_helper"
++
++describe "Scale operational identity" do
++  it "ignores different builders when their effective rules are identical" do
++    constructed = Jedi::TradingRules::Scale::Decoder.new(
++      "kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0").decode
++    explicit = Jedi::TradingRules::Scale::Decoder.new(
++      "kc:1.4,1.2,0.8,0.6,ks:0.89,1.25,ki:10%,kb:1").decode
++
++    constructed.builder.should_not eq(explicit.builder)
++    constructed.same_definition?(explicit).should be_true
++    explicit.same_definition?(constructed).should be_true
++  end
++
++  it "does not equate the two operational types" do
++    fixed = Jedi::TradingRules::Scale::Decoder.new(
++      "kc:1.21,1.1,0.9,0.81,ks:0.8,1.2,ki:0%,kb:0").decode
++    relative = Jedi::TradingRules::Scale::Decoder.new(
++      "vr:10%,ks:0.8,1.2,ki:0%,kb:0").decode
++
++    fixed.ks_values.should eq(relative.ks_values)
++    fixed.same_definition?(relative).should be_false
++  end
++
++  it "includes boundaries even when presentation text is identical" do
++    original = Jedi::TradingRules::Scale::Decoder.new(
++      "vr:10%,ks:0.8,1.2,ki:0%,kb:0").decode
++    different_boundary = Jedi::TradingRules::Scale::Operational.new(
++      type: original.type, definition: original.definition, builder: original.builder,
++      ks_values: original.ks_values, emax: original.emax + 1, emin: original.emin,
++      ki: original.ki, kb: original.kb, vr_value: original.vr_value)
++
++    original.same_definition?(different_boundary).should be_false
++  end
++
++  it "keeps legacy duplicates and permits metadata changes without rewriting references" do
++    JediSpec.with_db do |conn|
++      builder = "vr:10%,ks:0.8,1.2,ki:0%,kb:0"
++      first_id = Jedi::TradingRules::ScaleCreator.new(conn).restore(
++        name: "Legacy_first", comment: "Historical", builder: builder)
++      second_id = Jedi::TradingRules::ScaleCreator.new(conn).restore(
++        name: "Legacy_second", comment: "Historical duplicate", builder: builder)
++      JediSpec.insert_security(conn)
++      JediSpec.insert_trade(conn)
++      JediSpec.insert_settings(conn, scale_id: first_id)
++      JediSpec.insert_operation(conn)
++
++      Jedi::TradingRules::ScaleUpdater.new(Jedi::TradingRules::Scale.new(conn, first_id))
++        .call(comment: "Corrected context").should eq(1)
++
++      Jedi::TradingRules::Scale.new(conn, first_id).name.should eq("Legacy_first")
++      Jedi::TradingRules::Scale.new(conn, second_id).name.should eq("Legacy_second")
++      JediSpec.trade(conn).last_settings.not_nil!.scale.id.should eq(first_id)
++      conn.scalar("SELECT COUNT(*) FROM scale").should eq(2_i64)
++    end
++  end
++
++  it "uses savepoints within an outer transaction without consuming rejected names" do
++    JediSpec.with_db do |conn|
++      conn.transaction do |transaction|
++        creator = Jedi::TradingRules::ScaleCreator.new(transaction)
++        creator.call(comment: "First", builder: "vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++        ex = expect_raises(Jedi::LowLevelError) do
++          creator.call(comment: "Duplicate", builder: "vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++        end
++        ex.key.should eq("scale.definition_exists")
++        creator.call(comment: "Second", builder: "vr:12%,ks:0.8,1.2,ki:0%,kb:0")
++      end
++      conn.query_all("SELECT name FROM scale ORDER BY id", as: String).should eq(["B_vr_01", "B_vr_02"])
++    end
++  end
++
++  it "reuses an equivalent literal in a simulation database" do
++    JediCliSpec.with_cli_db do |conn|
++      memory = Jedi::App.conn_memory
++      JediSpec.create_schema(memory)
++      first = Jedi::Tools::Helpers.scale(conn, memory,
++        "kc:1.4,1.2,0.8,0.6,ki:10%,kb:1,kd:0", announce: false)
++      equivalent = Jedi::Tools::Helpers.scale(conn, memory,
++        "kc:1.4,1.2,0.8,0.6,ks:0.89,1.25,ki:10%,kb:1", announce: false)
++
++      equivalent.id.should eq(first.id)
++      memory.scalar("SELECT COUNT(*) FROM scale").should eq(1_i64)
++    end
++  end
++
++  it "reuses equivalent historical names when copying them into a simulation" do
++    JediCliSpec.with_cli_db do |conn|
++      memory = Jedi::App.conn_memory
++      JediSpec.create_schema(memory)
++      creator = Jedi::TradingRules::ScaleCreator.new(conn)
++      creator.restore(name: "Legacy_a", comment: "First", builder: "vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++      creator.restore(name: "Legacy_b", comment: "Second", builder: "vr:10%,ks:0.8,1.2,ki:0%,kb:0")
++
++      first = Jedi::Tools::Helpers.scale(conn, memory, "Legacy_a", announce: false)
++      second = Jedi::Tools::Helpers.scale(conn, memory, "Legacy_b", announce: false)
++
++      second.id.should eq(first.id)
++      conn.scalar("SELECT COUNT(*) FROM scale").should eq(2_i64)
++      memory.scalar("SELECT COUNT(*) FROM scale").should eq(1_i64)
++    end
++  end
++end

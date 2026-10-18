@@ -37,7 +37,7 @@ input-files:
   - documentation/nouveaux/en_annex03_external_selection_scripts.md
   - documentation/nouveaux/en_annex04_glossary_and_notation.md
   - documentation/nouveaux/en_annex05_default_configuration.md
-output-file: output/pdf/jedi-1.0-en.pdf
+output-file: output/pdf/jedi-1.1-en.pdf
 pdf-engine: xelatex
 table-of-contents: true
 toc-depth: 1
@@ -47,7 +47,7 @@ filters:
 include-in-header:
   - pdf/header.tex
 metadata:
-  title: Jedi 1.0
+  title: Jedi 1.1
   subtitle: User manual
   date: October 2026
   lang: en-GB
