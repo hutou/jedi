@@ -17,3 +17,6 @@ __pycache__/
 /jedi_plot.svg
 /jedi_backtest.svg
 /jedi_trade.svg
+
+# Local scratch script
+/z.sh
